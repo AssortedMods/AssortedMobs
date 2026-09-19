@@ -1,7 +1,6 @@
 package com.grim3212.assorted.mobs.gametest;
 
 import com.grim3212.assorted.mobs.MobsCommonMod;
-import com.grim3212.assorted.mobs.common.entity.IcePixie;
 import com.grim3212.assorted.mobs.common.entity.MobsEntities;
 import com.grim3212.assorted.mobs.common.entity.TreasureMob;
 import net.minecraft.core.BlockPos;
@@ -50,7 +49,6 @@ final class SpawnTests {
     static void register(BiConsumer<String, Consumer<GameTestHelper>> out) {
         out.accept("creatures_spawn_with_their_attributes", SpawnTests::creaturesSpawnWithTheirAttributes);
         out.accept("creatures_are_added_to_their_biomes", SpawnTests::creaturesAreAddedToTheirBiomes);
-        out.accept("ice_pixies_spawn_only_on_the_surface", SpawnTests::icePixiesSpawnOnlyOnTheSurface);
         out.accept("treasure_mobs_spawn_only_in_their_structures",SpawnTests::treasureMobsSpawnOnlyInTheirStructures);
         out.accept("treasure_mobs_spawn_in_the_dark", SpawnTests::treasureMobsSpawnInTheDark);
         out.accept("treasure_mobs_have_their_own_category", SpawnTests::treasureMobsHaveTheirOwnCategory);
@@ -161,28 +159,6 @@ final class SpawnTests {
         helper.assertFalse(TreasureMob.hasWildOneNear(helper.getLevel(), pos), "a tame treasure mob kept a wild one from spawning");
         helper.spawnWithNoFreeWill(MobsEntities.TREASURE_MOB.get(), aloft.west(2));
         helper.assertTrue(TreasureMob.hasWildOneNear(helper.getLevel(), pos), "a wild treasure mob next door did not keep another from spawning");
-        helper.succeed();
-    }
-
-    /** A floor 150 blocks up, where nothing else is overhead, then the same floor under a roof. */
-    private static void icePixiesSpawnOnlyOnTheSurface(GameTestHelper helper) {
-        ServerLevel level = helper.getLevel();
-        BlockPos pos = helper.absolutePos(CENTRE.above(150));
-        BlockPos roof = pos.above(3);
-        level.setBlockAndUpdate(pos.below(), Blocks.STONE.defaultBlockState());
-        helper.runBeforeTestEnd(() -> {
-            level.setBlockAndUpdate(pos.below(), Blocks.AIR.defaultBlockState());
-            level.setBlockAndUpdate(roof, Blocks.AIR.defaultBlockState());
-        });
-
-        helper.assertTrue(IcePixie.checkIcePixieSpawnRules(MobsEntities.ICE_PIXIE.get(), level, EntitySpawnReason.NATURAL, pos, level.getRandom()), "an ice pixie cannot spawn under the open sky");
-        level.setBlockAndUpdate(roof.above(), Blocks.OAK_LEAVES.defaultBlockState());
-        helper.assertTrue(IcePixie.checkIcePixieSpawnRules(MobsEntities.ICE_PIXIE.get(), level, EntitySpawnReason.NATURAL, pos, level.getRandom()), "leaves overhead kept an ice pixie from spawning");
-        level.setBlockAndUpdate(roof.above(), Blocks.AIR.defaultBlockState());
-
-        level.setBlockAndUpdate(roof, Blocks.STONE.defaultBlockState());
-        helper.assertFalse(IcePixie.checkIcePixieSpawnRules(MobsEntities.ICE_PIXIE.get(), level, EntitySpawnReason.NATURAL, pos, level.getRandom()), "an ice pixie spawned under a roof");
-        helper.assertTrue(IcePixie.checkIcePixieSpawnRules(MobsEntities.ICE_PIXIE.get(), level, EntitySpawnReason.SPAWNER, pos, level.getRandom()), "a spawner under a roof cannot spawn an ice pixie");
         helper.succeed();
     }
 
