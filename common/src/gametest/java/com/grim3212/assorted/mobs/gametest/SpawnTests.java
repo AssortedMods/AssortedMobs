@@ -24,6 +24,7 @@ import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.biome.MobSpawnSettings;
+import net.minecraft.world.level.block.Blocks;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -46,7 +47,7 @@ final class SpawnTests {
         out.accept("creatures_spawn_with_their_attributes", SpawnTests::creaturesSpawnWithTheirAttributes);
         out.accept("creatures_are_added_to_their_biomes", SpawnTests::creaturesAreAddedToTheirBiomes);
         out.accept("treasure_mobs_spawn_only_in_their_structures", SpawnTests::treasureMobsSpawnOnlyInTheirStructures);
-        out.accept("treasure_mobs_spawn_apart", SpawnTests::treasureMobsSpawnApart);
+        out.accept("treasure_mobs_spawn_in_the_dark", SpawnTests::treasureMobsSpawnInTheDark);
         out.accept("creatures_have_spawn_placements", SpawnTests::creaturesHaveSpawnPlacements);
     }
 
@@ -88,19 +89,22 @@ final class SpawnTests {
         helper.succeed();
     }
 
-    /** Run 150 blocks up so other tests' treasure mobs are outside SPAWN_SPACING. */
-    private static void treasureMobsSpawnApart(GameTestHelper helper) {
-        helper.assertTrue(MobsEntities.TREASURE_MOB.get().getCategory() != MobCategory.CREATURE, "treasure mobs share the animals' spawn cap");
+    /** A sealed stone cell; waits for the light engine to darken it before asking. */
+    private static void treasureMobsSpawnInTheDark(GameTestHelper helper) {
+        for (int x = -1; x <= 1; x++) {
+            for (int z = -1; z <= 1; z++) {
+                for (int y = -1; y <= 2; y++) {
+                    helper.setBlock(CENTRE.offset(x, y, z), x == 0 && z == 0 && (y == 0 || y == 1) ? Blocks.AIR : Blocks.STONE);
+                }
+            }
+        }
+        TreasureMob mob = helper.spawnWithNoFreeWill(MobsEntities.TREASURE_MOB.get(), CENTRE);
 
-        BlockPos aloft = CENTRE.above(150);
-        BlockPos pos = helper.absolutePos(aloft);
-        helper.assertFalse(TreasureMob.hasWildOneNear(helper.getLevel(), pos), "a wild treasure mob was found high over the box");
-        TreasureMob tame = helper.spawnWithNoFreeWill(MobsEntities.TREASURE_MOB.get(), aloft.east(2));
-        tame.setTame(true, false);
-        helper.assertFalse(TreasureMob.hasWildOneNear(helper.getLevel(), pos), "a tame treasure mob kept a wild one from spawning");
-        helper.spawnWithNoFreeWill(MobsEntities.TREASURE_MOB.get(), aloft.west(2));
-        helper.assertTrue(TreasureMob.hasWildOneNear(helper.getLevel(), pos), "a wild treasure mob next door did not keep another from spawning");
-        helper.succeed();
+        helper.succeedWhen(() -> {
+            helper.assertValueEqual(helper.getLevel().getMaxLocalRawBrightness(mob.blockPosition()), 0, "light in the sealed cell");
+            helper.assertTrue(mob.checkSpawnRules(helper.getLevel(), EntitySpawnReason.NATURAL), "a treasure mob cannot spawn in the dark");
+            mob.discard();
+        });
     }
 
     private static Optional<Weighted<MobSpawnSettings.SpawnerData>> treasureMobAmong(WeightedList<MobSpawnSettings.SpawnerData> spawns) {

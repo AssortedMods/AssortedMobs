@@ -82,16 +82,14 @@ public class TreasureMob extends TamableAnimal {
         return Animal.createAnimalAttributes().add(Attributes.MAX_HEALTH, WILD_HEALTH).add(Attributes.MOVEMENT_SPEED, 0.25D);
     }
 
-    public static final double SPAWN_SPACING = 48.0D;
-
-    /** Fails 1 in 3, and within SPAWN_SPACING of a wild one: ambient spawning runs every tick. */
     public static boolean checkTreasureMobSpawnRules(EntityType<TreasureMob> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
-        return Mob.checkMobSpawnRules(type, level, spawnReason, pos, random) && random.nextInt(3) != 0 && !hasWildOneNear(level, pos);
+        return Mob.checkMobSpawnRules(type, level, spawnReason, pos, random);
     }
 
-    /** Tame ones don't count. */
-    public static boolean hasWildOneNear(LevelAccessor level, BlockPos pos) {
-        return !level.getEntitiesOfClass(TreasureMob.class, new AABB(pos).inflate(SPAWN_SPACING), mob -> !mob.isTame()).isEmpty();
+    /** Animal's rule needs grass or light 12+, which no structure interior has. */
+    @Override
+    public boolean checkSpawnRules(LevelAccessor level, EntitySpawnReason spawnReason) {
+        return true;
     }
 
     @Override
