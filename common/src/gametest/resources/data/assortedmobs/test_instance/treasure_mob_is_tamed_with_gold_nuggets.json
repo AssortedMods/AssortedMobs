@@ -1,9 +1,9 @@
 {
   "type": "minecraft:function",
   "environment": "minecraft:default",
-  "function": "assortedmobs:bobomb_goes_off_when_a_monster_hits_back",
+  "function": "assortedmobs:treasure_mob_is_tamed_with_gold_nuggets",
   "structure": "assortedmobs:test_box",
-  "max_ticks": 200,
+  "max_ticks": 300,
   "setup_ticks": 0,
   "required": true
 }

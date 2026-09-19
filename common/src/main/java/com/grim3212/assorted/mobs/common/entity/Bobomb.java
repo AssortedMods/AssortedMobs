@@ -1,5 +1,6 @@
 package com.grim3212.assorted.mobs.common.entity;
 
+import com.grim3212.assorted.mobs.common.entity.ai.DefendNearbyPlayerGoal;
 import com.grim3212.assorted.mobs.common.entity.ai.FollowNearestPlayerGoal;
 import com.grim3212.assorted.mobs.common.item.MobsItems;
 import com.grim3212.assorted.mobs.common.sounds.MobsSounds;
@@ -14,9 +15,11 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -26,23 +29,28 @@ import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
-import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
+import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.OptionalInt;
 
 /**
- * A walking bomb that sides with players. It follows the nearest one, picks fights with monsters,
- * and goes off the moment one hits back, setting fire to every creature nearby. A player's hit only
- * lights its fuse. It will sit on a player's head, water puts it out for good, and an empty hand
- * while sneaking picks it back up as an item.
+ * A walking bomb that sides with players. The player who puts one down owns it, and it follows and
+ * looks after them alone; one with no owner, from a spawn egg, does the same for whichever player is
+ * nearest. When a monster hurts that player it walks up to the monster and lights its fuse, going off a moment later and setting fire
+ * to every creature nearby. Any creature's hit lights the fuse too, a player's or a monster's. It
+ * will sit on a player's head, water puts it out for good, and an empty hand while sneaking picks
+ * it back up as an item.
  */
-public class Bobomb extends PathfinderMob implements PerchingMob {
+public class Bobomb extends PathfinderMob implements PerchingMob, OwnableEntity {
 
     private static final EntityDataAccessor<Boolean> DATA_LIT = SynchedEntityData.defineId(Bobomb.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<OptionalInt> DATA_PERCHED_ON = SynchedEntityData.defineId(Bobomb.class, EntityDataSerializers.OPTIONAL_UNSIGNED_INT);
@@ -56,6 +64,8 @@ public class Bobomb extends PathfinderMob implements PerchingMob {
 
     private final Perch perch = new Perch(this, DATA_PERCHED_ON);
     private int fuse = FUSE;
+    @Nullable
+    private EntityReference<LivingEntity> owner;
 
     public Bobomb(EntityType<? extends Bobomb> type, Level level) {
         super(type, level);
@@ -66,6 +76,9 @@ public class Bobomb extends PathfinderMob implements PerchingMob {
         return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 15.0D).add(Attributes.MOVEMENT_SPEED, 0.35D).add(Attributes.ATTACK_DAMAGE, 2.0D);
     }
 
+    /** How far off a player can be and still be defended. */
+    public static final float DEFEND_RANGE = 16.0F;
+
     /** What the 8-bit mobs go after: monsters, but never each other. */
     public static boolean isEnemy(LivingEntity target) {
         return target instanceof Enemy && !(target instanceof Bobomb) && !(target instanceof Parabuzzy);
@@ -74,13 +87,54 @@ public class Bobomb extends PathfinderMob implements PerchingMob {
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new FloatGoal(this));
-        this.goalSelector.addGoal(4, new FollowNearestPlayerGoal(this, 1.0D, 8.0F, 2.0F, 16.0F));
+        this.goalSelector.addGoal(4, new FollowNearestPlayerGoal(this, this::playersToLookAfter, this::isOwnedBy, 1.0D, 8.0F, 2.0F, 16.0F));
         this.goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.0D, false));
         this.goalSelector.addGoal(5, new WaterAvoidingRandomStrollGoal(this, 0.8D));
         this.goalSelector.addGoal(6, new LookAtPlayerGoal(this, Player.class, 8.0F));
         this.goalSelector.addGoal(6, new RandomLookAroundGoal(this));
 
-        this.targetSelector.addGoal(0, new NearestAttackableTargetGoal<>(this, Mob.class, 10, true, true, (target, level) -> isEnemy(target)));
+        this.targetSelector.addGoal(0, new DefendNearbyPlayerGoal(this, this::playersToLookAfter, DEFEND_RANGE, Bobomb::isEnemy));
+    }
+
+    /**
+     * Its owner, or every player for one with no owner. An owner who is offline or in another
+     * dimension leaves it with no one, not with whoever is closest, and a lit one has no one: it
+     * stays put, not even teleporting after its owner.
+     */
+    private List<? extends Player> playersToLookAfter() {
+        if (this.isLit()) {
+            return List.of();
+        }
+        if (this.owner == null) {
+            return this.level().players();
+        }
+        return this.getOwner() instanceof Player player ? List.of(player) : List.of();
+    }
+
+    @Override
+    @Nullable
+    public EntityReference<LivingEntity> getOwnerReference() {
+        return this.owner;
+    }
+
+    public boolean isOwnedBy(LivingEntity entity) {
+        return this.owner != null && this.owner.matches(entity);
+    }
+
+    public void setOwner(@Nullable LivingEntity owner) {
+        this.owner = EntityReference.of(owner);
+    }
+
+    @Override
+    protected void addAdditionalSaveData(ValueOutput output) {
+        super.addAdditionalSaveData(output);
+        EntityReference.store(this.owner, output, "Owner");
+    }
+
+    @Override
+    protected void readAdditionalSaveData(ValueInput input) {
+        super.readAdditionalSaveData(input);
+        this.owner = EntityReference.read(input, "Owner");
     }
 
     @Override
@@ -144,6 +198,13 @@ public class Bobomb extends PathfinderMob implements PerchingMob {
         this.discard();
     }
 
+    /** Its melee attack: reaching the monster lights the fuse rather than hitting it. */
+    @Override
+    public boolean doHurtTarget(ServerLevel level, Entity target) {
+        this.light();
+        return true;
+    }
+
     @Override
     public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
         Entity attacker = source.getEntity();
@@ -151,13 +212,8 @@ public class Bobomb extends PathfinderMob implements PerchingMob {
             return false;
         }
 
-        if (attacker instanceof Player) {
-            this.light();
-            return true;
-        }
-
         if (attacker instanceof LivingEntity) {
-            this.explode(level);
+            this.light();
             return true;
         }
 

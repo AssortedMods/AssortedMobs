@@ -11,7 +11,10 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.gameevent.GameEvent;
 
-/** A Bob-omb waiting to be put down. It stands on the face that was clicked, facing the same way. */
+/**
+ * A Bob-omb waiting to be put down. It stands on the face that was clicked, facing the same way, and
+ * belongs to the player who put it there.
+ */
 public class BobombItem extends Item {
 
     public BobombItem(Item.Properties properties) {
@@ -32,6 +35,7 @@ public class BobombItem extends Item {
         BlockPos pos = context.getClickedPos().relative(context.getClickedFace());
         Player player = context.getPlayer();
         bobomb.snapTo(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, player != null ? player.getYRot() : 0.0F, 0.0F);
+        bobomb.setOwner(player);
         level.addFreshEntity(bobomb);
         level.gameEvent(player, GameEvent.ENTITY_PLACE, pos);
         context.getItemInHand().consume(1, player);

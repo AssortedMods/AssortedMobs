@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedmobs:treasure_mob_stands_still_while_open",
+  "structure": "assortedmobs:test_box",
+  "max_ticks": 200,
+  "setup_ticks": 0,
+  "required": true
+}

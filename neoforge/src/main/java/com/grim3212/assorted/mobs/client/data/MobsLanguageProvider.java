@@ -78,7 +78,7 @@ public class MobsLanguageProvider extends LibLanguageProvider {
                         + "Sneak on the ground to put it down.");
         this.add("manual.assortedmobs.chapter.eight_bit.bobomb.title", "Bob-omb");
         this.add("manual.assortedmobs.chapter.eight_bit.bobomb",
-                "Bob-ombs follow you and pick fights with monsters. Be careful when hitting one yourself as it's fuse will light." + BREAK
+                "A Bob-omb you put down follows you, and when a monster hurts you it will walk up to it and light its fuse. Be careful when hitting one yourself as its fuse will light." + BREAK
                         + "One will ride on your head too. Sneak and use one with an empty hand to pick it back up.");
     }
 

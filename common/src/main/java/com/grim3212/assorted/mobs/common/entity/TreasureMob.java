@@ -2,6 +2,8 @@ package com.grim3212.assorted.mobs.common.entity;
 
 import com.grim3212.assorted.mobs.Constants;
 import com.grim3212.assorted.mobs.api.MobsTags;
+import com.grim3212.assorted.mobs.common.entity.ai.StayWhileOpenGoal;
+import com.grim3212.assorted.mobs.common.entity.ai.WildAvoidPlayerGoal;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -23,7 +25,6 @@ import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.FollowOwnerGoal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
@@ -49,7 +50,7 @@ import org.jetbrains.annotations.Nullable;
  * A chest on legs, a mimic that would rather run than bite. It wanders the overworld with a chest of
  * loot rolled when it appears, and drops the lot when it dies. Tempt one with gold nuggets and feed
  * it a few to tame it; a tame one follows its owner, sits when told to, and opens as a chest for
- * its owner when they sneak.
+ * its owner when they sneak, standing still while it is open.
  */
 public class TreasureMob extends TamableAnimal {
 
@@ -80,11 +81,15 @@ public class TreasureMob extends TamableAnimal {
 
     @Override
     protected void registerGoals() {
-        this.temptGoal = new TemptGoal(this, 0.6D, stack -> stack.is(MobsTags.Items.TREASURE_MOB_TEMPT_ITEMS), true);
+        // Not scared off by the player moving or turning: aiming at it to feed it would end the
+        // temptation, and taming only takes while tempted. The avoid goal ranks below so the
+        // nuggets win, as the ocelot's does.
+        this.temptGoal = new TemptGoal(this, 0.6D, stack -> stack.is(MobsTags.Items.TREASURE_MOB_TEMPT_ITEMS), false);
         this.goalSelector.addGoal(1, new FloatGoal(this));
         this.goalSelector.addGoal(2, new SitWhenOrderedToGoal(this));
+        this.goalSelector.addGoal(2, new StayWhileOpenGoal(this));
         this.goalSelector.addGoal(3, this.temptGoal);
-        this.goalSelector.addGoal(3, new WildAvoidPlayerGoal(this));
+        this.goalSelector.addGoal(4, new WildAvoidPlayerGoal(this));
         this.goalSelector.addGoal(5, new FollowOwnerGoal(this, 1.0D, 10.0F, 4.0F));
         this.goalSelector.addGoal(6, new WaterAvoidingRandomStrollGoal(this, 1.0D));
         this.goalSelector.addGoal(7, new LookAtPlayerGoal(this, Player.class, 8.0F));
@@ -191,21 +196,5 @@ public class TreasureMob extends TamableAnimal {
     @Override
     public @Nullable AgeableMob getBreedOffspring(ServerLevel level, AgeableMob partner) {
         return null;
-    }
-
-    /** Wild ones keep their distance from players; a tame one has no reason to. */
-    private static class WildAvoidPlayerGoal extends AvoidEntityGoal<Player> {
-
-        private final TreasureMob mob;
-
-        WildAvoidPlayerGoal(TreasureMob mob) {
-            super(mob, Player.class, 10.0F, 1.0D, 1.2D);
-            this.mob = mob;
-        }
-
-        @Override
-        public boolean canUse() {
-            return !this.mob.isTame() && super.canUse();
-        }
     }
 }

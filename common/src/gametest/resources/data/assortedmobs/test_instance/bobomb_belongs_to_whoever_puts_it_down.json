@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedmobs:bobomb_belongs_to_whoever_puts_it_down",
+  "structure": "assortedmobs:test_box",
+  "max_ticks": 1,
+  "setup_ticks": 0,
+  "required": true
+}

@@ -22,5 +22,6 @@ public final class MobsGameTests {
         IcePixieTests.register(out);
         TreasureMobTests.register(out);
         EightBitTests.register(out);
+        FollowOwnerTests.register(out);
     }
 }
