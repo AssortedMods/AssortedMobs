@@ -7,6 +7,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.levelgen.structure.Structure;
 
 public class MobsTags {
 
@@ -34,11 +35,19 @@ public class MobsTags {
 
     public static class Biomes {
         public static final TagKey<Biome> SPAWNS_ICE_PIXIES = create("spawns_ice_pixies");
-        public static final TagKey<Biome> SPAWNS_TREASURE_MOBS = create("spawns_treasure_mobs");
         public static final TagKey<Biome> SPAWNS_PARABUZZIES = create("spawns_parabuzzies");
 
         private static TagKey<Biome> create(String name) {
             return TagKey.create(Registries.BIOME, Identifier.fromNamespaceAndPath(Constants.MOD_ID, name));
+        }
+    }
+
+    public static class Structures {
+        /** Treasure mobs spawn only inside these, wherever one of their pieces is. */
+        public static final TagKey<Structure> SPAWNS_TREASURE_MOBS = create("spawns_treasure_mobs");
+
+        private static TagKey<Structure> create(String name) {
+            return TagKey.create(Registries.STRUCTURE, Identifier.fromNamespaceAndPath(Constants.MOD_ID, name));
         }
     }
 }

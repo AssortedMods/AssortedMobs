@@ -30,7 +30,7 @@ public class MobsCommonConfig {
         eightBitMobsEnabled = builder.defineBoolean("parts.eightBitMobsEnabled", true, "Set this to true if you would like parabuzzies to spawn, Bob-ombs to be craftable and both to be found in the creative tab.");
 
         icePixieWeight = builder.defineInteger("spawning.icePixieWeight", 20, 0, 1000, "How often ice pixies spawn in snowy biomes, against the other monsters there. Zombies are 95. Set to 0 to stop them spawning.");
-        treasureMobWeight = builder.defineInteger("spawning.treasureMobWeight", 5, 0, 1000, "How often treasure mobs spawn in the overworld, against the other animals there. Sheep are 12. Set to 0 to stop them spawning.");
+        treasureMobWeight = builder.defineInteger("spawning.treasureMobWeight", 5, 0, 1000, "How often treasure mobs spawn inside the structures in the assortedmobs:spawns_treasure_mobs structure tag. Set to 0 to stop them spawning.");
         parabuzzyWeight = builder.defineInteger("spawning.parabuzzyWeight", 6, 0, 1000, "How often parabuzzies spawn in the overworld, against the other animals there. Sheep are 12. Set to 0 to stop them spawning.");
 
         builder.setup();

@@ -10,9 +10,9 @@ import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.levelgen.Heightmap;
 
 /**
- * Attributes, where each creature may spawn, and which biomes it spawns in. The biomes are the
- * mod's biome tags, so a datapack can move them; the part switches and weights are read as a world
- * loads its biomes.
+ * Attributes, where each creature may spawn, and which biomes or structures it spawns in. Those are
+ * the mod's biome and structure tags, so a datapack can move them. The part switches and weights are
+ * read as a world loads its biomes, and for structures on every spawn attempt.
  */
 public class MobsSpawns {
 
@@ -29,7 +29,8 @@ public class MobsSpawns {
 
         MobsCommonConfig config = MobsCommonMod.COMMON_CONFIG;
         Services.WORLD_GEN.addSpawnToBiomes((key, biome) -> biome.is(MobsTags.Biomes.SPAWNS_ICE_PIXIES) && config.icePixieEnabled.get() && config.icePixieWeight.get() > 0, MobsEntities.ICE_PIXIE, config.icePixieWeight::get, 1, 3);
-        Services.WORLD_GEN.addSpawnToBiomes((key, biome) -> biome.is(MobsTags.Biomes.SPAWNS_TREASURE_MOBS) && config.treasureMobEnabled.get() && config.treasureMobWeight.get() > 0, MobsEntities.TREASURE_MOB, config.treasureMobWeight::get, 1, 1);
         Services.WORLD_GEN.addSpawnToBiomes((key, biome) -> biome.is(MobsTags.Biomes.SPAWNS_PARABUZZIES) && config.eightBitMobsEnabled.get() && config.parabuzzyWeight.get() > 0, MobsEntities.PARABUZZY, config.parabuzzyWeight::get, 1, 4);
+        // Never on the surface: only inside mineshafts, strongholds and the like.
+        Services.WORLD_GEN.addSpawnToStructures(MobsTags.Structures.SPAWNS_TREASURE_MOBS, MobsEntities.TREASURE_MOB, () -> config.treasureMobEnabled.get() ? config.treasureMobWeight.get() : 0, 1, 1);
     }
 }

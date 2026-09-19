@@ -8,6 +8,7 @@ import com.grim3212.assorted.mobs.client.data.MobsLanguageProvider;
 import com.grim3212.assorted.mobs.client.data.MobsManualProvider;
 import com.grim3212.assorted.mobs.data.MobsAdvancements;
 import com.grim3212.assorted.mobs.data.MobsBiomeTagProvider;
+import com.grim3212.assorted.mobs.data.MobsStructureTagProvider;
 import com.grim3212.assorted.mobs.data.MobsBlockTagProvider;
 import com.grim3212.assorted.mobs.data.MobsChestLoot;
 import com.grim3212.assorted.mobs.data.MobsEntityLoot;
@@ -52,6 +53,7 @@ public class AssortedMobsNeoForge {
         ForgeBlockTagProvider blockTagProvider = event.addProvider(new ForgeBlockTagProvider(packOutput, lookupProvider, Constants.MOD_ID, new MobsBlockTagProvider(packOutput, lookupProvider)));
         event.addProvider(new ForgeItemTagProvider(packOutput, lookupProvider, blockTagProvider.contentsGetter(), Constants.MOD_ID, new MobsItemTagProvider(packOutput, lookupProvider, blockTagProvider.contentsGetter())));
         event.addProvider(new ForgeBiomeTagProvider(packOutput, lookupProvider, Constants.MOD_ID, new MobsBiomeTagProvider(packOutput, lookupProvider)));
+        event.addProvider(new MobsStructureTagProvider(packOutput, lookupProvider));
         // Recipe providers are not data providers any more - the Runner owns the output.
         event.addProvider(new MobsRecipes.Runner(packOutput, lookupProvider));
         event.addProvider(new LootTableProvider(packOutput, Collections.emptySet(), List.of(

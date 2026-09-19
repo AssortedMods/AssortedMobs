@@ -47,8 +47,9 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A chest on legs, a mimic that would rather run than bite. It wanders the overworld with a chest of
- * loot rolled when it appears, and drops the lot when it dies. Tempt one with gold nuggets and feed
+ * A chest on legs, a mimic that would rather run than bite. It turns up inside mineshafts, temples
+ * and the other structures in {@code MobsTags.Structures.SPAWNS_TREASURE_MOBS}, never out on the
+ * surface, with a chest of loot rolled when it appears, and drops the lot when it dies. Tempt one with gold nuggets and feed
  * it a few to tame it; a tame one follows its owner, sits when told to, and opens as a chest for
  * its owner when they sneak, standing still while it is open.
  */

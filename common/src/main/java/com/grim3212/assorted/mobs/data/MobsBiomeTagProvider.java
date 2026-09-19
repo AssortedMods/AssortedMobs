@@ -27,7 +27,6 @@ public class MobsBiomeTagProvider extends LibBiomeTagProvider {
     @Override
     public void addCommonTags(Function<TagKey<Biome>, TagAppender<Biome>> tagger) {
         tagger.apply(MobsTags.Biomes.SPAWNS_ICE_PIXIES).addTag(IS_SNOWY);
-        tagger.apply(MobsTags.Biomes.SPAWNS_TREASURE_MOBS).addTag(BiomeTags.IS_OVERWORLD);
         tagger.apply(MobsTags.Biomes.SPAWNS_PARABUZZIES).addTag(BiomeTags.IS_OVERWORLD);
     }
 }
