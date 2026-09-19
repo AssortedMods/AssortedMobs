@@ -65,6 +65,11 @@ public class MobsChestLoot implements LootTableSubProvider {
         structure(output, BuiltinStructures.ANCIENT_CITY, BuiltInLootTables.ANCIENT_CITY);
         structure(output, BuiltinStructures.DESERT_PYRAMID, BuiltInLootTables.DESERT_PYRAMID);
         structure(output, BuiltinStructures.JUNGLE_TEMPLE, BuiltInLootTables.JUNGLE_TEMPLE);
+        structure(output, BuiltinStructures.WOODLAND_MANSION, BuiltInLootTables.WOODLAND_MANSION);
+        structure(output, BuiltinStructures.BASTION_REMNANT, BuiltInLootTables.BASTION_TREASURE, BuiltInLootTables.BASTION_OTHER,
+                BuiltInLootTables.BASTION_BRIDGE, BuiltInLootTables.BASTION_HOGLIN_STABLE);
+        structure(output, BuiltinStructures.FORTRESS, BuiltInLootTables.NETHER_BRIDGE);
+        structure(output, BuiltinStructures.END_CITY, BuiltInLootTables.END_CITY_TREASURE);
 
         // The snowball has no chests, so a treasure mob there carries the usual loot.
         assortedWorld(output, "fountain", "chests/fountain");

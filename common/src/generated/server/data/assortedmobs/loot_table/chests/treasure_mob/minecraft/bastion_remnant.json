@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:chest",
+  "pools": [
+    {
+      "entries": [
+        {
+          "type": "minecraft:loot_table",
+          "value": "minecraft:chests/bastion_treasure"
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "minecraft:chests/bastion_other"
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "minecraft:chests/bastion_bridge"
+        },
+        {
+          "type": "minecraft:loot_table",
+          "value": "minecraft:chests/bastion_hoglin_stable"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "assortedmobs:chests/treasure_mob/minecraft/bastion_remnant"
+}

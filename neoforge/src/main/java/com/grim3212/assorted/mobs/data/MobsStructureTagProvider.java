@@ -27,7 +27,8 @@ public class MobsStructureTagProvider extends StructureTagsProvider {
     protected void addTags(HolderLookup.Provider provider) {
         this.tag(MobsTags.Structures.SPAWNS_TREASURE_MOBS)
                 .add(BuiltinStructures.MINESHAFT, BuiltinStructures.MINESHAFT_MESA, BuiltinStructures.STRONGHOLD, BuiltinStructures.TRIAL_CHAMBERS,
-                        BuiltinStructures.ANCIENT_CITY, BuiltinStructures.DESERT_PYRAMID, BuiltinStructures.JUNGLE_TEMPLE)
+                        BuiltinStructures.ANCIENT_CITY, BuiltinStructures.DESERT_PYRAMID, BuiltinStructures.JUNGLE_TEMPLE, BuiltinStructures.WOODLAND_MANSION,
+                        BuiltinStructures.BASTION_REMNANT, BuiltinStructures.FORTRESS, BuiltinStructures.END_CITY)
                 .addOptional(assortedWorld("fountain"))
                 .addOptional(assortedWorld("pyramid"))
                 .addOptional(assortedWorld("snowball"))
