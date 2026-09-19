@@ -292,11 +292,6 @@ public class Parabuzzy extends TamableAnimal implements PerchingMob {
     }
 
     @Override
-    public boolean removeWhenFarAway(double distSqr) {
-        return !this.isTame();
-    }
-
-    @Override
     protected void updateControlFlags() {
         super.updateControlFlags();
         if (this.perch.isPerched()) {
@@ -360,10 +355,11 @@ public class Parabuzzy extends TamableAnimal implements PerchingMob {
     }
 
     public enum Variant implements StringRepresentable {
-        BLUE("blue", 30.0D, 2.0D, 66, true),
-        RED("red", 35.0D, 2.0D, 20, false),
-        BLUE_SPIKED("blue_spiked", 45.0D, 3.0D, 10, true),
-        RED_SPIKED("red_spiked", 50.0D, 4.0D, 4, false);
+        // A spiked one hits twice as hard as its plain colour.
+        BLUE("blue", 30.0D, 2.0D, true),
+        RED("red", 35.0D, 3.0D, false),
+        BLUE_SPIKED("blue_spiked", 45.0D, BLUE.damage * 2.0D, true),
+        RED_SPIKED("red_spiked", 50.0D, RED.damage * 2.0D, false);
 
         public static final Codec<Variant> CODEC = StringRepresentable.fromEnum(Variant::values);
         private static final Variant[] VALUES = values();
@@ -371,15 +367,12 @@ public class Parabuzzy extends TamableAnimal implements PerchingMob {
         private final String name;
         public final double health;
         public final double damage;
-        /** Out of 100 wild spawns, how many are this colour. */
-        public final int weight;
         public final boolean dropsShell;
 
-        Variant(String name, double health, double damage, int weight, boolean dropsShell) {
+        Variant(String name, double health, double damage, boolean dropsShell) {
             this.name = name;
             this.health = health;
             this.damage = damage;
-            this.weight = weight;
             this.dropsShell = dropsShell;
         }
 
@@ -387,15 +380,13 @@ public class Parabuzzy extends TamableAnimal implements PerchingMob {
             return id >= 0 && id < VALUES.length ? VALUES[id] : BLUE;
         }
 
+        /** Colour is a coin flip, and one in four of either colour is spiked. */
         public static Variant pick(RandomSource random) {
-            int roll = random.nextInt(100);
-            for (Variant variant : VALUES) {
-                roll -= variant.weight;
-                if (roll < 0) {
-                    return variant;
-                }
+            boolean red = random.nextBoolean();
+            if (random.nextInt(4) == 0) {
+                return red ? RED_SPIKED : BLUE_SPIKED;
             }
-            return BLUE;
+            return red ? RED : BLUE;
         }
 
         @Override

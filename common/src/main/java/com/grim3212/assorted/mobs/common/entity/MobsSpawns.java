@@ -6,7 +6,6 @@ import com.grim3212.assorted.mobs.api.MobsTags;
 import com.grim3212.assorted.mobs.config.MobsCommonConfig;
 import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.levelgen.Heightmap;
 
 /**
@@ -23,7 +22,7 @@ public class MobsSpawns {
         Services.PLATFORM.registerEntityAttributes(MobsEntities.PARABUZZY, Parabuzzy::createAttributes);
 
         // Pixies are out in daylight too, which is most of what makes them unlike other monsters.
-        Services.PLATFORM.registerSpawnPlacement(MobsEntities.ICE_PIXIE, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Monster::checkAnyLightMonsterSpawnRules);
+        Services.PLATFORM.registerSpawnPlacement(MobsEntities.ICE_PIXIE, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, IcePixie::checkIcePixieSpawnRules);
         Services.PLATFORM.registerSpawnPlacement(MobsEntities.TREASURE_MOB, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, TreasureMob::checkTreasureMobSpawnRules);
         Services.PLATFORM.registerSpawnPlacement(MobsEntities.PARABUZZY, SpawnPlacementTypes.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Animal::checkAnimalSpawnRules);
 

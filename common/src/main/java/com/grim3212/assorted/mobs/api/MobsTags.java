@@ -36,7 +36,6 @@ public class MobsTags {
     public static class Biomes {
         public static final TagKey<Biome> SPAWNS_ICE_PIXIES = create("spawns_ice_pixies");
         public static final TagKey<Biome> SPAWNS_PARABUZZIES = create("spawns_parabuzzies");
-
         private static TagKey<Biome> create(String name) {
             return TagKey.create(Registries.BIOME, Identifier.fromNamespaceAndPath(Constants.MOD_ID, name));
         }
