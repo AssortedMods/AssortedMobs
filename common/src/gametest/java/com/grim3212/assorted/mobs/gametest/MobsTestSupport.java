@@ -4,12 +4,21 @@ import com.grim3212.assorted.mobs.Constants;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.structure.BoundingBox;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.TagValueOutput;
 
@@ -46,6 +55,32 @@ final class MobsTestSupport {
         reloaded.load(TagValueInput.create(problems, helper.getLevel().registryAccess(), saved));
         helper.assertTrue(problems.isEmpty(), type.getDescriptionId() + " reported problems loading: " + problems.getReport());
         return reloaded;
+    }
+
+    /**
+     * Lays {@code key} out at the box, as the world would for a structure generated there, without
+     * building a block of it, and takes it out of the chunk again when the test ends. The structure
+     * manager then finds it at {@link LaidOut#inside()}, the middle of its first piece, and not at
+     * {@link LaidOut#above()}, a little way over the top of it in the same chunk.
+     */
+    static LaidOut layOutStructure(GameTestHelper helper, ResourceKey<Structure> key) {
+        ServerLevel level = helper.getLevel();
+        Holder.Reference<Structure> structure = level.registryAccess().lookupOrThrow(Registries.STRUCTURE).getOrThrow(key);
+        ChunkGenerator generator = level.getChunkSource().getGenerator();
+        ChunkPos origin = ChunkPos.containing(helper.absolutePos(CENTRE));
+        StructureStart start = structure.value().generate(structure, level.dimension(), level.registryAccess(), generator, generator.getBiomeSource(),
+                level.getChunkSource().randomState(), level.getStructureManager(), level.getSeed(), origin, 0, level, biome -> true);
+        helper.assertTrue(start.isValid(), "could not lay out " + key.identifier() + " to test in");
+
+        BoundingBox bounds = start.getPieces().getFirst().getBoundingBox();
+        BlockPos inside = bounds.getCenter();
+        level.getChunk(origin.x(), origin.z()).setStartForStructure(structure.value(), start);
+        level.getChunk(inside).addReferenceForStructure(structure.value(), origin.pack());
+        helper.runBeforeTestEnd(() -> level.getChunk(origin.x(), origin.z()).setStartForStructure(structure.value(), StructureStart.INVALID_START));
+        return new LaidOut(inside, new BlockPos(inside.getX(), bounds.maxY() + 8, inside.getZ()));
+    }
+
+    record LaidOut(BlockPos inside, BlockPos above) {
     }
 
     static boolean resourceExists(String path) {

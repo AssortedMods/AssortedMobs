@@ -8,23 +8,19 @@ import com.grim3212.assorted.mobs.client.data.MobsLanguageProvider;
 import com.grim3212.assorted.mobs.client.data.MobsManualProvider;
 import com.grim3212.assorted.mobs.data.MobsAdvancements;
 import com.grim3212.assorted.mobs.data.MobsBiomeTagProvider;
-import com.grim3212.assorted.mobs.data.MobsStructureTagProvider;
 import com.grim3212.assorted.mobs.data.MobsBlockTagProvider;
-import com.grim3212.assorted.mobs.data.MobsChestLoot;
-import com.grim3212.assorted.mobs.data.MobsEntityLoot;
 import com.grim3212.assorted.mobs.data.MobsItemTagProvider;
+import com.grim3212.assorted.mobs.data.MobsLootTableProvider;
 import com.grim3212.assorted.mobs.data.MobsRecipes;
+import com.grim3212.assorted.mobs.data.MobsStructureTagProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.advancements.AdvancementProvider;
-import net.minecraft.data.loot.LootTableProvider;
-import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -56,9 +52,7 @@ public class AssortedMobsNeoForge {
         event.addProvider(new MobsStructureTagProvider(packOutput, lookupProvider));
         // Recipe providers are not data providers any more - the Runner owns the output.
         event.addProvider(new MobsRecipes.Runner(packOutput, lookupProvider));
-        event.addProvider(new LootTableProvider(packOutput, Collections.emptySet(), List.of(
-                new LootTableProvider.SubProviderEntry(MobsEntityLoot::new, LootContextParamSets.ENTITY),
-                new LootTableProvider.SubProviderEntry(MobsChestLoot::new, LootContextParamSets.CHEST)), lookupProvider));
+        event.addProvider(new MobsLootTableProvider(packOutput, lookupProvider));
         event.addProvider(new AdvancementProvider(packOutput, lookupProvider, List.of(new MobsAdvancements())));
     }
 

@@ -38,6 +38,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.level.storage.loot.LootParams;
@@ -46,15 +48,19 @@ import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Optional;
+
 /**
  * A chest on legs, a mimic that would rather run than bite. It turns up inside mineshafts, temples
  * and the other structures in {@code MobsTags.Structures.SPAWNS_TREASURE_MOBS}, never out on the
- * surface, with a chest of loot rolled when it appears, and drops the lot when it dies. Tempt one with gold nuggets and feed
+ * surface, with a chest of what that place's own chests hold, rolled when it appears. It drops the
+ * lot when it dies. Tempt one with gold nuggets and feed
  * it a few to tame it; a tame one follows its owner, sits when told to, and opens as a chest for
  * its owner when they sneak, standing still while it is open.
  */
 public class TreasureMob extends TamableAnimal {
 
+    /** What its chest holds when it turns up outside any structure with a table of its own. */
     public static final ResourceKey<LootTable> CHEST_LOOT = ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(Constants.MOD_ID, "chests/treasure_mob"));
 
     private static final double WILD_HEALTH = 8.0D;
@@ -106,8 +112,35 @@ public class TreasureMob extends TamableAnimal {
         return super.finalizeSpawn(level, difficulty, spawnReason, groupData);
     }
 
+    /**
+     * The table for one found in {@code structure}, {@code assortedmobs:chests/treasure_mob/<namespace>/<path>}.
+     * A datapack that adds a structure to the spawn tag gives it its own loot by adding this table.
+     */
+    public static ResourceKey<LootTable> chestLootFor(ResourceKey<Structure> structure) {
+        Identifier id = structure.identifier();
+        return ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(Constants.MOD_ID, "chests/treasure_mob/" + id.getNamespace() + "/" + id.getPath()));
+    }
+
+    /**
+     * The table for its chest at {@code pos}: the one for the structure it is standing in, so it
+     * carries what that place's chests would, or {@link #CHEST_LOOT} outside one or for a structure
+     * with no table.
+     */
+    public static ResourceKey<LootTable> chestLootAt(ServerLevel level, BlockPos pos) {
+        StructureStart start = level.structureManager().getStructureWithPieceAt(pos, structure -> true);
+        if (start.isValid()) {
+            Optional<ResourceKey<LootTable>> table = level.registryAccess().lookupOrThrow(Registries.STRUCTURE).getResourceKey(start.getStructure())
+                    .map(TreasureMob::chestLootFor)
+                    .filter(key -> level.getServer().reloadableRegistries().getLootTable(key) != LootTable.EMPTY);
+            if (table.isPresent()) {
+                return table.get();
+            }
+        }
+        return CHEST_LOOT;
+    }
+
     private void fillChest(ServerLevel level) {
-        LootTable table = level.getServer().reloadableRegistries().getLootTable(CHEST_LOOT);
+        LootTable table = level.getServer().reloadableRegistries().getLootTable(chestLootAt(level, this.blockPosition()));
         LootParams params = new LootParams.Builder(level).withParameter(LootContextParams.ORIGIN, this.position()).create(LootContextParamSets.CHEST);
         table.fill(this.chest, params, this.random.nextLong());
     }

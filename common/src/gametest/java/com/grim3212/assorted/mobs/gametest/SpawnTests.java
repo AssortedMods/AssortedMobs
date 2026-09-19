@@ -10,15 +10,10 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.random.Weighted;
 import net.minecraft.util.random.WeightedList;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.NaturalSpawner;
 import net.minecraft.world.level.StructureManager;
-import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.BuiltinStructures;
-import net.minecraft.world.level.levelgen.structure.Structure;
-import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -78,32 +73,16 @@ final class SpawnTests {
     /**
      * Through vanilla's own lookup of what may spawn at a position, {@code NaturalSpawner#mobsAt},
      * which each loader extends differently through AssortedLib: inside a desert pyramid the treasure
-     * mob is among the creatures, at its configured weight, and just above the pyramid it is not. The
-     * pyramid is only laid out, not built, and is taken out of the chunk again afterwards.
+     * mob is among the creatures, at its configured weight, and just above the pyramid it is not.
      */
     private static void treasureMobsSpawnOnlyInTheirStructures(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
-        Holder.Reference<Structure> pyramid = level.registryAccess().lookupOrThrow(Registries.STRUCTURE).getOrThrow(BuiltinStructures.DESERT_PYRAMID);
-        ChunkGenerator generator = level.getChunkSource().getGenerator();
-        ChunkPos origin = ChunkPos.containing(helper.absolutePos(CENTRE));
-        StructureStart start = pyramid.value().generate(pyramid, level.dimension(), level.registryAccess(), generator, generator.getBiomeSource(),
-                level.getChunkSource().randomState(), level.getStructureManager(), level.getSeed(), origin, 0, level, biome -> true);
-        helper.assertTrue(start.isValid(), "could not lay out a desert pyramid to test in");
+        LaidOut pyramid = layOutStructure(helper, BuiltinStructures.DESERT_PYRAMID);
 
-        BoundingBox bounds = start.getPieces().getFirst().getBoundingBox();
-        BlockPos inside = bounds.getCenter();
-        BlockPos above = new BlockPos(inside.getX(), bounds.maxY() + 8, inside.getZ());
-        ChunkAccess originChunk = level.getChunk(origin.x(), origin.z());
-        originChunk.setStartForStructure(pyramid.value(), start);
-        level.getChunk(inside).addReferenceForStructure(pyramid.value(), origin.pack());
-        try {
-            Optional<Weighted<MobSpawnSettings.SpawnerData>> entry = treasureMobAmong(mobsAt(helper, level, inside));
-            helper.assertTrue(entry.isPresent(), "treasure mobs are not among the creatures inside a desert pyramid");
-            helper.assertValueEqual(entry.get().weight(), MobsCommonMod.COMMON_CONFIG.treasureMobWeight.get(), "treasure mob spawn weight inside a desert pyramid");
-            helper.assertTrue(treasureMobAmong(mobsAt(helper, level, above)).isEmpty(), "treasure mobs are among the creatures above a desert pyramid");
-        } finally {
-            originChunk.setStartForStructure(pyramid.value(), StructureStart.INVALID_START);
-        }
+        Optional<Weighted<MobSpawnSettings.SpawnerData>> entry = treasureMobAmong(mobsAt(helper, level, pyramid.inside()));
+        helper.assertTrue(entry.isPresent(), "treasure mobs are not among the creatures inside a desert pyramid");
+        helper.assertValueEqual(entry.get().weight(), MobsCommonMod.COMMON_CONFIG.treasureMobWeight.get(), "treasure mob spawn weight inside a desert pyramid");
+        helper.assertTrue(treasureMobAmong(mobsAt(helper, level, pyramid.above())).isEmpty(), "treasure mobs are among the creatures above a desert pyramid");
         helper.succeed();
     }
 

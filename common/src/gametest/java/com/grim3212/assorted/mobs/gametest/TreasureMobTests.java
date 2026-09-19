@@ -1,16 +1,27 @@
 package com.grim3212.assorted.mobs.gametest;
 
+import com.grim3212.assorted.lib.platform.Services;
+import com.grim3212.assorted.mobs.api.MobsTags;
 import com.grim3212.assorted.mobs.common.entity.MobsEntities;
 import com.grim3212.assorted.mobs.common.entity.TreasureChest;
 import com.grim3212.assorted.mobs.common.entity.TreasureMob;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.ReloadableServerRegistries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.levelgen.structure.BuiltinStructures;
+import net.minecraft.world.level.levelgen.structure.Structure;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.function.BiConsumer;
@@ -32,6 +43,8 @@ final class TreasureMobTests {
         out.accept("tame_treasure_mob_opens_for_its_owner", TreasureMobTests::tameTreasureMobOpensForItsOwner);
         out.accept("treasure_mob_is_tamed_with_gold_nuggets", TreasureMobTests::treasureMobIsTamedWithGoldNuggets);
         out.accept("treasure_mob_stands_still_while_open", TreasureMobTests::treasureMobStandsStillWhileOpen);
+        out.accept("treasure_mob_carries_what_its_structure_holds", TreasureMobTests::treasureMobCarriesWhatItsStructureHolds);
+        out.accept("treasure_structures_have_their_own_loot", TreasureMobTests::treasureStructuresHaveTheirOwnLoot);
     }
 
     private static void treasureMobArrivesWithLoot(GameTestHelper helper) {
@@ -105,6 +118,37 @@ final class TreasureMobTests {
             helper.assertFalse(mob.getChest().isOpen(), "closing the menu left the chest counted as open");
             helper.succeed();
         });
+    }
+
+    /**
+     * One that turns up inside a desert pyramid fills its chest from the pyramid's table, and one just
+     * above it from the usual one.
+     */
+    private static void treasureMobCarriesWhatItsStructureHolds(GameTestHelper helper) {
+        LaidOut pyramid = layOutStructure(helper, BuiltinStructures.DESERT_PYRAMID);
+        helper.assertValueEqual(TreasureMob.chestLootAt(helper.getLevel(), pyramid.inside()), TreasureMob.chestLootFor(BuiltinStructures.DESERT_PYRAMID), "chest loot inside a desert pyramid");
+        helper.assertValueEqual(TreasureMob.chestLootAt(helper.getLevel(), pyramid.above()), TreasureMob.CHEST_LOOT, "chest loot above a desert pyramid");
+        helper.succeed();
+    }
+
+    /**
+     * Every structure treasure mobs spawn in has a table of its own, but the snowball, which has no
+     * chests. Assorted World's tables load only with it, so without it they are absent too.
+     */
+    private static void treasureStructuresHaveTheirOwnLoot(GameTestHelper helper) {
+        ReloadableServerRegistries.Holder loot = helper.getLevel().getServer().reloadableRegistries();
+        HolderSet.Named<Structure> structures = helper.getLevel().registryAccess().lookupOrThrow(Registries.STRUCTURE).getOrThrow(MobsTags.Structures.SPAWNS_TREASURE_MOBS);
+        for (Holder<Structure> structure : structures) {
+            ResourceKey<Structure> key = structure.unwrapKey().orElseThrow();
+            if (!key.identifier().getPath().equals("snowball")) {
+                helper.assertTrue(loot.getLootTable(TreasureMob.chestLootFor(key)) != LootTable.EMPTY, "no treasure mob loot for " + key.identifier());
+            }
+        }
+
+        boolean assortedWorld = Services.PLATFORM.isModLoaded("assortedworld");
+        ResourceKey<Structure> fountain = ResourceKey.create(Registries.STRUCTURE, Identifier.fromNamespaceAndPath("assortedworld", "fountain"));
+        helper.assertValueEqual(loot.getLootTable(TreasureMob.chestLootFor(fountain)) != LootTable.EMPTY, assortedWorld, "treasure mob loot for Assorted World's fountain loaded");
+        helper.succeed();
     }
 
     private static void tameTreasureMobOpensForItsOwner(GameTestHelper helper) {

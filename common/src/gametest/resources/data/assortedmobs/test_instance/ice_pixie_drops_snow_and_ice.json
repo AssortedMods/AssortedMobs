@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedmobs:ice_pixie_drops_snow_and_ice",
+  "structure": "assortedmobs:test_box",
+  "max_ticks": 200,
+  "setup_ticks": 0,
+  "required": true
+}

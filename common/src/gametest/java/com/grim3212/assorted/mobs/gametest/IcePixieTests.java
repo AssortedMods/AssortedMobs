@@ -24,6 +24,27 @@ final class IcePixieTests {
         out.accept("ice_pixie_shrugs_off_bare_hands", IcePixieTests::icePixieShrugsOffBareHands);
         out.accept("ice_pixie_is_hurt_by_a_torch_bearer", IcePixieTests::icePixieIsHurtByATorchBearer);
         out.accept("ice_pixie_burns_near_torches", IcePixieTests::icePixieBurnsNearTorches);
+        out.accept("ice_pixie_drops_snow_and_ice", IcePixieTests::icePixieDropsSnowAndIce);
+    }
+
+    /**
+     * Snowballs every time, and nothing that is not snow or ice but, rarely, Assorted Tools' frost
+     * rod - by its tag, so the pool is there whether Tools is or not.
+     */
+    private static void icePixieDropsSnowAndIce(GameTestHelper helper) {
+        IcePixie pixie = helper.spawnWithNoFreeWill(MobsEntities.ICE_PIXIE.get(), CENTRE);
+        ServerPlayer player = survivalPlayer(helper, new ItemStack(Items.TORCH));
+        pixie.hurtServer(helper.getLevel(), pixie.damageSources().playerAttack(player), 1000.0F);
+        helper.assertFalse(pixie.isAlive(), "a torch bearer could not kill the ice pixie");
+
+        String table = readJson(helper, "/data/assortedmobs/loot_table/entities/ice_pixie.json").toString();
+        helper.assertTrue(table.contains("\"c:rods/frost\""), "the ice pixie has no chance of dropping a frost rod");
+
+        helper.succeedWhen(() -> {
+            helper.assertItemEntityPresent(Items.SNOWBALL, CENTRE, 2.0D);
+            helper.assertItemEntityNotPresent(Items.COD, CENTRE, 2.0D);
+            helper.assertItemEntityNotPresent(Items.STICK, CENTRE, 2.0D);
+        });
     }
 
     private static void icePixieShrugsOffBareHands(GameTestHelper helper) {
