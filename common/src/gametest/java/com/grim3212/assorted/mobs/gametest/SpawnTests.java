@@ -2,6 +2,7 @@ package com.grim3212.assorted.mobs.gametest;
 
 import com.grim3212.assorted.mobs.MobsCommonMod;
 import com.grim3212.assorted.mobs.common.entity.MobsEntities;
+import com.grim3212.assorted.mobs.common.entity.TreasureMob;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
@@ -45,6 +46,7 @@ final class SpawnTests {
         out.accept("creatures_spawn_with_their_attributes", SpawnTests::creaturesSpawnWithTheirAttributes);
         out.accept("creatures_are_added_to_their_biomes", SpawnTests::creaturesAreAddedToTheirBiomes);
         out.accept("treasure_mobs_spawn_only_in_their_structures", SpawnTests::treasureMobsSpawnOnlyInTheirStructures);
+        out.accept("treasure_mobs_spawn_apart", SpawnTests::treasureMobsSpawnApart);
         out.accept("creatures_have_spawn_placements", SpawnTests::creaturesHaveSpawnPlacements);
     }
 
@@ -66,7 +68,7 @@ final class SpawnTests {
         helper.assertTrue(spawnEntry(helper, Biomes.DESERT, MobCategory.MONSTER, MobsEntities.ICE_PIXIE.get()).isEmpty(), "ice pixies spawn in the desert");
         helper.assertTrue(spawnEntry(helper, Biomes.NETHER_WASTES, MobCategory.CREATURE, MobsEntities.PARABUZZY.get()).isEmpty(), "parabuzzies spawn in the nether");
         helper.getLevel().registryAccess().lookupOrThrow(Registries.BIOME).listElementIds().forEach(biome ->
-                helper.assertTrue(spawnEntry(helper, biome, MobCategory.CREATURE, MobsEntities.TREASURE_MOB.get()).isEmpty(), "treasure mobs spawn anywhere in " + biome.identifier()));
+                helper.assertTrue(spawnEntry(helper, biome, MobsEntities.TREASURE_MOB.get().getCategory(), MobsEntities.TREASURE_MOB.get()).isEmpty(), "treasure mobs spawn anywhere in " + biome.identifier()));
         helper.succeed();
     }
 
@@ -86,17 +88,32 @@ final class SpawnTests {
         helper.succeed();
     }
 
+    /** Run 150 blocks up so other tests' treasure mobs are outside SPAWN_SPACING. */
+    private static void treasureMobsSpawnApart(GameTestHelper helper) {
+        helper.assertTrue(MobsEntities.TREASURE_MOB.get().getCategory() != MobCategory.CREATURE, "treasure mobs share the animals' spawn cap");
+
+        BlockPos aloft = CENTRE.above(150);
+        BlockPos pos = helper.absolutePos(aloft);
+        helper.assertFalse(TreasureMob.hasWildOneNear(helper.getLevel(), pos), "a wild treasure mob was found high over the box");
+        TreasureMob tame = helper.spawnWithNoFreeWill(MobsEntities.TREASURE_MOB.get(), aloft.east(2));
+        tame.setTame(true, false);
+        helper.assertFalse(TreasureMob.hasWildOneNear(helper.getLevel(), pos), "a tame treasure mob kept a wild one from spawning");
+        helper.spawnWithNoFreeWill(MobsEntities.TREASURE_MOB.get(), aloft.west(2));
+        helper.assertTrue(TreasureMob.hasWildOneNear(helper.getLevel(), pos), "a wild treasure mob next door did not keep another from spawning");
+        helper.succeed();
+    }
+
     private static Optional<Weighted<MobSpawnSettings.SpawnerData>> treasureMobAmong(WeightedList<MobSpawnSettings.SpawnerData> spawns) {
         return spawns.unwrap().stream().filter(weighted -> weighted.value().type() == MobsEntities.TREASURE_MOB.get()).findFirst();
     }
 
-    /** {@code NaturalSpawner#mobsAt} for creatures, private to vanilla, whose result both loaders extend. */
+    /** Private NaturalSpawner#mobsAt, which both loaders extend through AssortedLib. */
     @SuppressWarnings("unchecked")
     private static WeightedList<MobSpawnSettings.SpawnerData> mobsAt(GameTestHelper helper, ServerLevel level, BlockPos pos) {
         try {
             Method mobsAt = NaturalSpawner.class.getDeclaredMethod("mobsAt", ServerLevel.class, StructureManager.class, ChunkGenerator.class, MobCategory.class, BlockPos.class, Holder.class);
             mobsAt.setAccessible(true);
-            return (WeightedList<MobSpawnSettings.SpawnerData>) mobsAt.invoke(null, level, level.structureManager(), level.getChunkSource().getGenerator(), MobCategory.CREATURE, pos, null);
+            return (WeightedList<MobSpawnSettings.SpawnerData>) mobsAt.invoke(null, level, level.structureManager(), level.getChunkSource().getGenerator(), MobsEntities.TREASURE_MOB.get().getCategory(), pos, null);
         } catch (ReflectiveOperationException e) {
             throw helper.assertionException("could not ask NaturalSpawner#mobsAt: " + e);
         }

@@ -46,6 +46,7 @@ import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -81,9 +82,16 @@ public class TreasureMob extends TamableAnimal {
         return Animal.createAnimalAttributes().add(Attributes.MAX_HEALTH, WILD_HEALTH).add(Attributes.MOVEMENT_SPEED, 0.25D);
     }
 
-    /** Any ground a mob could stand on, but only two times in three: they are meant to be a find. */
+    public static final double SPAWN_SPACING = 48.0D;
+
+    /** Fails 1 in 3, and within SPAWN_SPACING of a wild one: ambient spawning runs every tick. */
     public static boolean checkTreasureMobSpawnRules(EntityType<TreasureMob> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
-        return Mob.checkMobSpawnRules(type, level, spawnReason, pos, random) && random.nextInt(3) != 0;
+        return Mob.checkMobSpawnRules(type, level, spawnReason, pos, random) && random.nextInt(3) != 0 && !hasWildOneNear(level, pos);
+    }
+
+    /** Tame ones don't count. */
+    public static boolean hasWildOneNear(LevelAccessor level, BlockPos pos) {
+        return !level.getEntitiesOfClass(TreasureMob.class, new AABB(pos).inflate(SPAWN_SPACING), mob -> !mob.isTame()).isEmpty();
     }
 
     @Override

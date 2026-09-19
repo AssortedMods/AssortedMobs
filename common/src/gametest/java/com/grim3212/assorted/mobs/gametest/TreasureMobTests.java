@@ -44,6 +44,7 @@ final class TreasureMobTests {
         out.accept("treasure_mob_is_tamed_with_gold_nuggets", TreasureMobTests::treasureMobIsTamedWithGoldNuggets);
         out.accept("treasure_mob_stands_still_while_open", TreasureMobTests::treasureMobStandsStillWhileOpen);
         out.accept("treasure_mob_carries_what_its_structure_holds", TreasureMobTests::treasureMobCarriesWhatItsStructureHolds);
+        out.accept("tame_treasure_mob_never_despawns", TreasureMobTests::tameTreasureMobNeverDespawns);
         out.accept("treasure_structures_have_their_own_loot", TreasureMobTests::treasureStructuresHaveTheirOwnLoot);
     }
 
@@ -148,6 +149,25 @@ final class TreasureMobTests {
         boolean assortedWorld = Services.PLATFORM.isModLoaded("assortedworld");
         ResourceKey<Structure> fountain = ResourceKey.create(Registries.STRUCTURE, Identifier.fromNamespaceAndPath("assortedworld", "fountain"));
         helper.assertValueEqual(loot.getLootTable(TreasureMob.chestLootFor(fountain)) != LootTable.EMPTY, assortedWorld, "treasure mob loot for Assorted World's fountain loaded");
+        helper.succeed();
+    }
+
+    /**
+     * 300 blocks up, past the 128-block instant despawn from every test's players; the wild one is the
+     * control. Spawned without the persistence gametests give every mob by default.
+     */
+    private static void tameTreasureMobNeverDespawns(GameTestHelper helper) {
+        survivalPlayer(helper);
+        TreasureMob tame = helper.spawnEntity(MobsEntities.TREASURE_MOB.get(), CENTRE.above(300)).requirePersistence(false).spawn();
+        tame.setTame(true, false);
+        TreasureMob wild = helper.spawnEntity(MobsEntities.TREASURE_MOB.get(), CENTRE.above(300).east(2)).requirePersistence(false).spawn();
+        tame.tickCount = wild.tickCount = 100000;
+
+        tame.checkDespawn();
+        wild.checkDespawn();
+        helper.assertTrue(wild.isRemoved(), "the wild control did not despawn, so nothing was tested");
+        helper.assertFalse(tame.isRemoved(), "a tame treasure mob despawned out of range");
+        tame.discard();
         helper.succeed();
     }
 

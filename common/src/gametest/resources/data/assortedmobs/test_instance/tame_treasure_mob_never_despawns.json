@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedmobs:tame_treasure_mob_never_despawns",
+  "structure": "assortedmobs:test_box",
+  "max_ticks": 1,
+  "setup_ticks": 0,
+  "required": true
+}
