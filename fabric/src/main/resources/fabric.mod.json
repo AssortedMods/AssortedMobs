@@ -21,6 +21,10 @@
       "com.grim3212.assorted.mobs.AssortedMobsFabricClient"
     ]
   },
+  "mixins": [
+    "${mod_id}_fabric.mixins.json"
+  ],
+  "accessWidener": "${mod_id}_fabric.accesswidener",
   "depends": {
     "fabricloader": ">=0.19",
     "fabric-api": "*",

@@ -64,6 +64,11 @@ final class MobsTestSupport {
      * {@link LaidOut#above()}, a little way over the top of it in the same chunk.
      */
     static LaidOut layOutStructure(GameTestHelper helper, ResourceKey<Structure> key) {
+        return layOutStructure(helper, key, 0);
+    }
+
+    /** {@code lift} blocks higher than it generated, clear of other tests' players and mobs. */
+    static LaidOut layOutStructure(GameTestHelper helper, ResourceKey<Structure> key, int lift) {
         ServerLevel level = helper.getLevel();
         Holder.Reference<Structure> structure = level.registryAccess().lookupOrThrow(Registries.STRUCTURE).getOrThrow(key);
         ChunkGenerator generator = level.getChunkSource().getGenerator();
@@ -72,6 +77,7 @@ final class MobsTestSupport {
                 level.getChunkSource().randomState(), level.getStructureManager(), level.getSeed(), origin, 0, level, biome -> true);
         helper.assertTrue(start.isValid(), "could not lay out " + key.identifier() + " to test in");
 
+        start.getPieces().forEach(piece -> piece.move(0, lift, 0));
         BoundingBox bounds = start.getPieces().getFirst().getBoundingBox();
         BlockPos inside = bounds.getCenter();
         level.getChunk(origin.x(), origin.z()).setStartForStructure(structure.value(), start);

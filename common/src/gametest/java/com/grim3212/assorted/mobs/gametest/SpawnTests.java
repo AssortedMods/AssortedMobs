@@ -9,6 +9,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.random.Weighted;
 import net.minecraft.util.random.WeightedList;
 import net.minecraft.world.level.NaturalSpawner;
@@ -25,6 +26,7 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.AABB;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -32,6 +34,7 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import static com.grim3212.assorted.lib.test.TestSupport.survivalPlayer;
 import static com.grim3212.assorted.mobs.gametest.MobsTestSupport.*;
 
 /**
@@ -48,6 +51,9 @@ final class SpawnTests {
         out.accept("creatures_are_added_to_their_biomes", SpawnTests::creaturesAreAddedToTheirBiomes);
         out.accept("treasure_mobs_spawn_only_in_their_structures", SpawnTests::treasureMobsSpawnOnlyInTheirStructures);
         out.accept("treasure_mobs_spawn_in_the_dark", SpawnTests::treasureMobsSpawnInTheDark);
+        out.accept("treasure_mobs_have_their_own_category", SpawnTests::treasureMobsHaveTheirOwnCategory);
+        out.accept("treasure_mobs_spawn_apart", SpawnTests::treasureMobsSpawnApart);
+        out.accept("vanilla_spawns_a_treasure_mob_in_a_structure", SpawnTests::vanillaSpawnsATreasureMobInAStructure);
         out.accept("creatures_have_spawn_placements", SpawnTests::creaturesHaveSpawnPlacements);
     }
 
@@ -86,6 +92,67 @@ final class SpawnTests {
         helper.assertTrue(entry.isPresent(), "treasure mobs are not among the creatures inside a desert pyramid");
         helper.assertValueEqual(entry.get().weight(), MobsCommonMod.COMMON_CONFIG.treasureMobWeight.get(), "treasure mob spawn weight inside a desert pyramid");
         helper.assertTrue(treasureMobAmong(mobsAt(helper, level, pyramid.above())).isEmpty(), "treasure mobs are among the creatures above a desert pyramid");
+        helper.succeed();
+    }
+
+    /** The values each loader's enum extension gives the category; they are written out twice. */
+    private static void treasureMobsHaveTheirOwnCategory(GameTestHelper helper) {
+        MobCategory category = MobsEntities.TREASURE_MOB.get().getCategory();
+        helper.assertValueEqual(category.name(), "ASSORTEDMOBS_TREASURE", "treasure mob category");
+        helper.assertValueEqual(category.getName(), "assortedmobs:treasure", "category name");
+        helper.assertValueEqual(category.getMaxInstancesPerChunk(), 4, "category cap");
+        helper.assertTrue(category.isFriendly(), "the category does not spawn on peaceful");
+        helper.assertFalse(category.isPersistent(), "the category only gets a spawn pass every 400 ticks");
+        helper.assertValueEqual(category.getDespawnDistance(), 128, "category despawn distance");
+
+        // Only wild ones count toward the cap.
+        TreasureMob mob = helper.spawnWithNoFreeWill(MobsEntities.TREASURE_MOB.get(), CENTRE);
+        helper.assertFalse(mob.requiresCustomPersistence(), "a wild treasure mob is left out of the category count");
+        mob.setTame(true, false);
+        helper.assertTrue(mob.requiresCustomPersistence(), "a tame treasure mob counts toward the category cap");
+        mob.discard();
+        helper.succeed();
+    }
+
+    /**
+     * NaturalSpawner's own routine for one position, everything but the category caps: a desert
+     * pyramid laid out in the sky with a floor in it, and a player 40 blocks off.
+     */
+    private static void vanillaSpawnsATreasureMobInAStructure(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        LaidOut pyramid = layOutStructure(helper, BuiltinStructures.DESERT_PYRAMID, 220);
+        // Absolute: this far outside the box, the helper's relative positions do not map back reliably.
+        BlockPos floor = pyramid.inside().below();
+        BlockPos.betweenClosed(floor.offset(-7, 0, -7), floor.offset(7, 0, 7)).forEach(pos -> level.setBlockAndUpdate(pos, Blocks.STONE.defaultBlockState()));
+
+        ServerPlayer player = survivalPlayer(helper);
+        player.snapTo(pyramid.inside().getX() + 40.5D, pyramid.inside().getY(), pyramid.inside().getZ() + 0.5D);
+        player.setNoGravity(true);
+        player.setInvulnerable(true);
+
+        AABB around = new AABB(pyramid.inside()).inflate(32.0D);
+        for (int attempt = 0; attempt < 200 && level.getEntitiesOfClass(TreasureMob.class, around).isEmpty(); attempt++) {
+            NaturalSpawner.spawnCategoryForPosition(MobsEntities.TREASURE_CATEGORY, level, pyramid.inside());
+        }
+
+        List<TreasureMob> spawned = level.getEntitiesOfClass(TreasureMob.class, around);
+        BlockPos.betweenClosed(floor.offset(-7, 0, -7), floor.offset(7, 0, 7)).forEach(pos -> level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState()));
+        helper.assertValueEqual(spawned.size(), 1, "treasure mobs vanilla spawned inside a desert pyramid");
+        helper.assertFalse(spawned.getFirst().getChest().isEmpty(), "the spawned treasure mob has an empty chest");
+        spawned.getFirst().discard();
+        helper.succeed();
+    }
+
+    /** Run 150 blocks up so other tests' treasure mobs are outside SPAWN_SPACING. */
+    private static void treasureMobsSpawnApart(GameTestHelper helper) {
+        BlockPos aloft = CENTRE.above(150);
+        BlockPos pos = helper.absolutePos(aloft);
+        helper.assertFalse(TreasureMob.hasWildOneNear(helper.getLevel(), pos), "a wild treasure mob was found high over the box");
+        TreasureMob tame = helper.spawnWithNoFreeWill(MobsEntities.TREASURE_MOB.get(), aloft.east(2));
+        tame.setTame(true, false);
+        helper.assertFalse(TreasureMob.hasWildOneNear(helper.getLevel(), pos), "a tame treasure mob kept a wild one from spawning");
+        helper.spawnWithNoFreeWill(MobsEntities.TREASURE_MOB.get(), aloft.west(2));
+        helper.assertTrue(TreasureMob.hasWildOneNear(helper.getLevel(), pos), "a wild treasure mob next door did not keep another from spawning");
         helper.succeed();
     }
 
