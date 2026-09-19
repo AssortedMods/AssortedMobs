@@ -1,0 +1,36 @@
+{
+  "parent": "assortedmobs:root",
+  "criteria": {
+    "tamed_parabuzzy": {
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "minecraft:entity_type": "assortedmobs:parabuzzy"
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:tame_animal"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.assortedmobs.shell_game.description"
+    },
+    "icon": {
+      "id": "assortedmobs:parabuzzy_spawn_egg"
+    },
+    "title": {
+      "translate": "advancements.assortedmobs.shell_game.title"
+    }
+  },
+  "requirements": [
+    [
+      "tamed_parabuzzy"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedmobs:bobomb_goes_off_when_a_monster_hits_back",
+  "structure": "assortedmobs:test_box",
+  "max_ticks": 200,
+  "setup_ticks": 0,
+  "required": true
+}

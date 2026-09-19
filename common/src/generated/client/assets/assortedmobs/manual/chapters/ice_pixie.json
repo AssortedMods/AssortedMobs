@@ -1,0 +1,25 @@
+{
+  "conditions": [
+    {
+      "type": "assortedlib:part_enabled",
+      "part": "ice_pixie"
+    }
+  ],
+  "pages": [
+    {
+      "type": "assortedlib:image",
+      "height": 104,
+      "id": "info",
+      "image": "assortedmobs:textures/gui/manual/ice_pixie.png",
+      "text": "manual.assortedmobs.chapter.ice_pixie.info",
+      "title": "manual.assortedmobs.chapter.ice_pixie.info.title",
+      "width": 104
+    },
+    {
+      "type": "assortedlib:text",
+      "id": "fire",
+      "text": "manual.assortedmobs.chapter.ice_pixie.fire",
+      "title": "manual.assortedmobs.chapter.ice_pixie.fire.title"
+    }
+  ]
+}

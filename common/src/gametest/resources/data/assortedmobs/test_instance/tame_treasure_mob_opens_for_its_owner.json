@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedmobs:tame_treasure_mob_opens_for_its_owner",
+  "structure": "assortedmobs:test_box",
+  "max_ticks": 1,
+  "setup_ticks": 0,
+  "required": true
+}

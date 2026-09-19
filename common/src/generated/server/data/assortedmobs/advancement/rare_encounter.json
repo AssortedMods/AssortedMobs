@@ -1,0 +1,36 @@
+{
+  "parent": "assortedmobs:root",
+  "criteria": {
+    "killed_ice_pixie": {
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "minecraft:entity_type": "assortedmobs:ice_pixie"
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:player_killed_entity"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.assortedmobs.rare_encounter.description"
+    },
+    "icon": {
+      "id": "assortedmobs:ice_pixie_spawn_egg"
+    },
+    "title": {
+      "translate": "advancements.assortedmobs.rare_encounter.title"
+    }
+  },
+  "requirements": [
+    [
+      "killed_ice_pixie"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

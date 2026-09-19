@@ -1,0 +1,44 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "assortedlib:part_enabled",
+      "part": "eight_bit"
+    }
+  ],
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_parabuzzy_shell": {
+      "conditions": {
+        "items": [
+          {
+            "items": "assortedmobs:parabuzzy_shell"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "assortedmobs:bobomb"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "fabric:load_conditions": [
+    {
+      "condition": "assortedlib:part_enabled",
+      "part": "eight_bit"
+    }
+  ],
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_parabuzzy_shell"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "assortedmobs:bobomb"
+    ]
+  }
+}

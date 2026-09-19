@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedmobs:every_item_and_creature_has_a_model_and_name",
+  "structure": "assortedmobs:test_box",
+  "max_ticks": 1,
+  "setup_ticks": 0,
+  "required": true
+}

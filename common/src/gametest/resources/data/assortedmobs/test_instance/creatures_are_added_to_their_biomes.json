@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedmobs:creatures_are_added_to_their_biomes",
+  "structure": "assortedmobs:test_box",
+  "max_ticks": 1,
+  "setup_ticks": 0,
+  "required": true
+}

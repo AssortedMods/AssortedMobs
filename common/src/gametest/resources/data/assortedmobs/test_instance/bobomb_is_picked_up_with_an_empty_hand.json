@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedmobs:bobomb_is_picked_up_with_an_empty_hand",
+  "structure": "assortedmobs:test_box",
+  "max_ticks": 20,
+  "setup_ticks": 0,
+  "required": true
+}

@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedmobs:sneaking_on_the_ground_puts_a_perched_mob_down",
+  "structure": "assortedmobs:test_box",
+  "max_ticks": 20,
+  "setup_ticks": 0,
+  "required": true
+}

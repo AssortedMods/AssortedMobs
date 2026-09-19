@@ -1,0 +1,26 @@
+{
+  "conditions": [
+    {
+      "type": "assortedlib:part_enabled",
+      "part": "treasure_mob"
+    }
+  ],
+  "pages": [
+    {
+      "type": "assortedlib:image",
+      "height": 96,
+      "id": "info",
+      "image": "assortedmobs:textures/gui/manual/treasure_mob.png",
+      "text": "manual.assortedmobs.chapter.treasure_mob.info",
+      "title": "manual.assortedmobs.chapter.treasure_mob.info.title",
+      "width": 104
+    },
+    {
+      "type": "assortedlib:text",
+      "id": "taming",
+      "text": "manual.assortedmobs.chapter.treasure_mob.taming",
+      "title": "manual.assortedmobs.chapter.treasure_mob.taming.title"
+    }
+  ],
+  "sort_order": 10
+}

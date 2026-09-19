@@ -1,0 +1,26 @@
+{
+	"entity.bobomb.ambient": {
+		"subtitle": "subtitles.assortedmobs.entity.bobomb.ambient",
+		"sounds": [
+			"assortedmobs:entity/bobomb/ambient"
+		]
+	},
+	"entity.parabuzzy.ambient": {
+		"subtitle": "subtitles.assortedmobs.entity.parabuzzy.ambient",
+		"sounds": [
+			"assortedmobs:entity/parabuzzy/ambient"
+		]
+	},
+	"entity.parabuzzy.hurt": {
+		"subtitle": "subtitles.assortedmobs.entity.parabuzzy.hurt",
+		"sounds": [
+			"assortedmobs:entity/parabuzzy/hurt"
+		]
+	},
+	"entity.parabuzzy.death": {
+		"subtitle": "subtitles.assortedmobs.entity.parabuzzy.death",
+		"sounds": [
+			"assortedmobs:entity/parabuzzy/death"
+		]
+	}
+}

@@ -1,0 +1,42 @@
+{
+  "links": [
+    {
+      "entities": [
+        "assortedmobs:ice_pixie"
+      ],
+      "items": [
+        "assortedmobs:ice_pixie_spawn_egg"
+      ],
+      "page": "assortedmobs:ice_pixie/info"
+    },
+    {
+      "entities": [
+        "assortedmobs:treasure_mob"
+      ],
+      "items": [
+        "assortedmobs:treasure_mob_spawn_egg"
+      ],
+      "page": "assortedmobs:treasure_mob/info"
+    },
+    {
+      "entities": [
+        "assortedmobs:parabuzzy"
+      ],
+      "items": [
+        "assortedmobs:parabuzzy_shell",
+        "assortedmobs:parabuzzy_spawn_egg"
+      ],
+      "page": "assortedmobs:eight_bit/parabuzzy"
+    },
+    {
+      "entities": [
+        "assortedmobs:bobomb"
+      ],
+      "items": [
+        "assortedmobs:bobomb",
+        "assortedmobs:bobomb_spawn_egg"
+      ],
+      "page": "assortedmobs:eight_bit/bobomb"
+    }
+  ]
+}

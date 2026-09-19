@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedmobs:mobs_perch_on_a_players_head",
+  "structure": "assortedmobs:test_box",
+  "max_ticks": 20,
+  "setup_ticks": 0,
+  "required": true
+}

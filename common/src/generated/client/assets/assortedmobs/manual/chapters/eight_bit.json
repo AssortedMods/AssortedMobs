@@ -1,0 +1,35 @@
+{
+  "conditions": [
+    {
+      "type": "assortedlib:part_enabled",
+      "part": "eight_bit"
+    }
+  ],
+  "pages": [
+    {
+      "type": "assortedlib:image",
+      "height": 100,
+      "id": "parabuzzy",
+      "image": "assortedmobs:textures/gui/manual/parabuzzy.png",
+      "text": "manual.assortedmobs.chapter.eight_bit.parabuzzy",
+      "title": "manual.assortedmobs.chapter.eight_bit.parabuzzy.title",
+      "width": 104
+    },
+    {
+      "type": "assortedlib:text",
+      "id": "perching",
+      "text": "manual.assortedmobs.chapter.eight_bit.perching",
+      "title": "manual.assortedmobs.chapter.eight_bit.perching.title"
+    },
+    {
+      "type": "assortedlib:recipe",
+      "id": "bobomb",
+      "recipes": [
+        "assortedmobs:bobomb"
+      ],
+      "text": "manual.assortedmobs.chapter.eight_bit.bobomb",
+      "title": "manual.assortedmobs.chapter.eight_bit.bobomb.title"
+    }
+  ],
+  "sort_order": 20
+}
