@@ -104,7 +104,7 @@ public class HaulOutGoal extends MoveToBlockGoal {
     @Override
     protected boolean isValidTarget(LevelReader level, BlockPos pos) {
         // Only where the world is loaded: asking after a block in a chunk that is not loads it, or makes it.
-        if (this.crossedOff.contains(pos) || !level.hasChunkAt(pos)) {
+        if (this.crossedOff.contains(pos) || !AmphibiousAnimal.isLoaded(level, pos)) {
             return false;
         }
 

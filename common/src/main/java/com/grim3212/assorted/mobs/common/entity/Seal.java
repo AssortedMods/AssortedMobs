@@ -80,7 +80,7 @@ public class Seal extends AmphibiousAnimal {
         for (int distance : WATER_WITHIN) {
             for (Direction8 direction : Direction8.values()) {
                 look.set(pos.getX() + direction.getStepX() * distance, pos.getY(), pos.getZ() + direction.getStepZ() * distance);
-                if (generating != null ? !generating.equals(ChunkPos.containing(look)) : !level.hasChunkAt(look)) {
+                if (generating != null ? !generating.equals(ChunkPos.containing(look)) : !AmphibiousAnimal.isLoaded(level, look)) {
                     continue;
                 }
                 for (int down = 1; down <= 2; down++) {

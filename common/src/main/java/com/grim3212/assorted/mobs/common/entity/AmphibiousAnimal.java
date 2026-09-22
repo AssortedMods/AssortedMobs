@@ -2,6 +2,7 @@ package com.grim3212.assorted.mobs.common.entity;
 
 import com.grim3212.assorted.mobs.common.entity.ai.AmphibiousMoveControl;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.SectionPos;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.valueproviders.UniformInt;
@@ -13,6 +14,7 @@ import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -129,12 +131,12 @@ public abstract class AmphibiousAnimal extends Animal {
             return;
         }
 
-        if (this.shore != null && this.level().hasChunkAt(this.shore) && !this.level().getFluidState(this.shore).is(FluidTags.WATER)) {
+        if (this.shore != null && this.level().isLoaded(this.shore) && !this.level().getFluidState(this.shore).is(FluidTags.WATER)) {
             this.shore = null;
         }
         if (this.shore == null && this.tickCount % SHORE_SEARCH_INTERVAL == 0) {
             // Only where the world is already loaded: asking after a block in a chunk that is not loads it, or makes it.
-            this.shore = BlockPos.findClosestMatch(this.blockPosition(), SHORE_RANGE, SHORE_SEARCH_HEIGHT, pos -> this.level().hasChunkAt(pos) && this.level().getFluidState(pos).is(FluidTags.WATER)).orElse(null);
+            this.shore = BlockPos.findClosestMatch(this.blockPosition(), SHORE_RANGE, SHORE_SEARCH_HEIGHT, pos -> this.level().isLoaded(pos) && this.level().getFluidState(pos).is(FluidTags.WATER)).orElse(null);
         }
         if (this.shore == null || this.isLeashed()) {
             return;
@@ -208,6 +210,14 @@ public abstract class AmphibiousAnimal extends Animal {
      * Not vanilla's, which refuses any spawn with water in its box: that is for land animals, and the otter is spawned
      * in the water, so it never spawned at all. What the water animals and the axolotl do instead.
      */
+    /**
+     * {@link Level#isLoaded} for what is only a LevelReader, as the goals and the spawn rules are handed: the chunk if
+     * it is in, never loading or making one. Every hasChunkAt on LevelReader is deprecated, and this is what they did.
+     */
+    public static boolean isLoaded(LevelReader level, BlockPos pos) {
+        return level.getChunk(SectionPos.blockToSectionCoord(pos.getX()), SectionPos.blockToSectionCoord(pos.getZ()), ChunkStatus.FULL, false) != null;
+    }
+
     @Override
     public boolean checkSpawnObstruction(LevelReader level) {
         return level.isUnobstructed(this);

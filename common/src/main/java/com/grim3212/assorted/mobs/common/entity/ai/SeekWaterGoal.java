@@ -50,6 +50,6 @@ public class SeekWaterGoal extends MoveToBlockGoal {
     @Override
     protected boolean isValidTarget(LevelReader level, BlockPos pos) {
         // Only where the world is loaded: asking after a block in a chunk that is not loads it, or makes it.
-        return level.hasChunkAt(pos) && level.getFluidState(pos).is(FluidTags.WATER) && level.getBlockState(pos.above()).getCollisionShape(level, pos.above()).isEmpty();
+        return AmphibiousAnimal.isLoaded(level, pos) && level.getFluidState(pos).is(FluidTags.WATER) && level.getBlockState(pos.above()).getCollisionShape(level, pos.above()).isEmpty();
     }
 }

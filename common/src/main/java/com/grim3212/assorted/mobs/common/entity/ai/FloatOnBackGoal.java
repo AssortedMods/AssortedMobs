@@ -67,7 +67,7 @@ public class FloatOnBackGoal extends Goal {
         Level level = this.otter.level();
         BlockPos surface = BlockPos.containing(this.otter.getX(), this.otter.getY() + FLOAT_DEPTH - 0.1D, this.otter.getZ());
         BlockPos target = surface.offset(this.otter.getRandom().nextInt(DRIFT_RANGE * 2 + 1) - DRIFT_RANGE, 0, this.otter.getRandom().nextInt(DRIFT_RANGE * 2 + 1) - DRIFT_RANGE);
-        if (level.hasChunkAt(target) && level.getFluidState(target).is(FluidTags.WATER) && level.getBlockState(target.above()).isAir()) {
+        if (level.isLoaded(target) && level.getFluidState(target).is(FluidTags.WATER) && level.getBlockState(target.above()).isAir()) {
             this.otter.getNavigation().moveTo(target.getX() + 0.5D, this.otter.getY(), target.getZ() + 0.5D, DRIFT_SPEED);
         }
     }
