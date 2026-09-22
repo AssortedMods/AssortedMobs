@@ -1,10 +1,6 @@
 package com.grim3212.assorted.mobs.gametest;
 
 import com.grim3212.assorted.mobs.common.entity.MobsEntities;
-import net.minecraft.world.item.Item;
-import net.minecraft.tags.TagKey;
-import net.minecraft.resources.Identifier;
-import net.minecraft.core.registries.Registries;
 import com.grim3212.assorted.mobs.common.entity.Narwhal;
 import com.grim3212.assorted.mobs.common.entity.Seal;
 import com.grim3212.assorted.mobs.common.entity.Walrus;
@@ -25,8 +21,6 @@ import static com.grim3212.assorted.mobs.gametest.MobsTestSupport.*;
 
 /** The sea creatures: the herd that stands together, what each eats and leaves, and the armour made of shells. */
 final class SeaCreatureTests {
-
-    private static final TagKey<Item> RAW_FISH = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("c", "foods/raw_fish"));
 
     private SeaCreatureTests() {
     }
@@ -90,18 +84,20 @@ final class SeaCreatureTests {
     }
 
     /**
-     * All four of them drop from the common raw fish tag, which is every raw fish there is and none of the cooked, and what two
-     * of them were already for is still there.
+     * Each drops the fish of its own waters, named one by one: cod from all four, salmon from all but the walrus, and never
+     * a pufferfish or a tropical fish, nor anything from the common raw fish tag, which has both. Cooked only if the
+     * creature was alight, so no cooked fish is ever named. What two of them were already for is still there.
      */
     private static void seaCreaturesAreFullOfFish(GameTestHelper helper) {
         for (String creature : new String[]{"seal", "walrus", "sea_otter", "narwhal"}) {
             String table = readJson(helper, "/data/assortedmobs/loot_table/entities/" + creature + ".json").toString();
-            helper.assertTrue(table.contains("\"c:foods/raw_fish\""), "a " + creature + " does not drop from the common raw fish tag");
+            helper.assertTrue(table.contains("\"minecraft:cod\""), "a " + creature + " does not drop cod");
+            helper.assertValueEqual(table.contains("\"minecraft:salmon\""), !creature.equals("walrus"), "whether a " + creature + " drops salmon");
+            for (String never : new String[]{"pufferfish", "tropical_fish", "c:foods/raw_fish", "cooked_"}) {
+                helper.assertFalse(table.contains(never), "a " + creature + " drops " + never);
+            }
+            helper.assertTrue(table.contains("minecraft:furnace_smelt"), "a " + creature + " set alight drops its fish raw");
         }
-        for (Item fish : new Item[]{Items.COD, Items.SALMON, Items.PUFFERFISH, Items.TROPICAL_FISH}) {
-            helper.assertTrue(new ItemStack(fish).is(RAW_FISH), fish + " is not a fish a sea creature drops");
-        }
-        helper.assertFalse(new ItemStack(Items.COOKED_COD).is(RAW_FISH), "a sea creature drops cooked cod without being set alight");
         helper.assertTrue(readJson(helper, "/data/assortedmobs/loot_table/entities/sea_otter.json").toString().contains("assortedmobs:sea_shell"), "a sea otter no longer drops sea shells");
         helper.assertTrue(readJson(helper, "/data/assortedmobs/loot_table/entities/narwhal.json").toString().contains("assortedmobs:narwhal_horn"), "a narwhal no longer drops its horn");
         helper.succeed();

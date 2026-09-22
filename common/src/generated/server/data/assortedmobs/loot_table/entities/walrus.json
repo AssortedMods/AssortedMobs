@@ -4,8 +4,7 @@
     {
       "entries": [
         {
-          "type": "minecraft:tag",
-          "expand": true,
+          "type": "minecraft:item",
           "functions": [
             {
               "count": {
@@ -61,7 +60,7 @@
               "function": "minecraft:enchanted_count_increase"
             }
           ],
-          "name": "c:foods/raw_fish"
+          "name": "minecraft:cod"
         }
       ],
       "rolls": 1.0

@@ -8,6 +8,7 @@ import com.grim3212.assorted.mobs.common.entity.ai.HaulOutGoal;
 import com.grim3212.assorted.mobs.common.entity.ai.SeekWaterGoal;
 import com.grim3212.assorted.mobs.common.item.MobsItems;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -34,6 +35,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
@@ -52,6 +54,8 @@ public class SeaOtter extends AmphibiousAnimal {
     private static final UniformInt SHELL_TIME = TimeUtil.rangeOfSeconds(300, 600);
     private static final float FLOAT_EASE = 0.08F;
     private static final int SPAWN_DEPTH = 6;
+    /** Vanilla's snow line. The frozen river and ocean are at 0; every other river and shallow sea, the cold ocean too, at 0.5. */
+    private static final float MIN_TEMPERATURE = 0.15F;
 
     private int shellTime;
 
@@ -68,9 +72,20 @@ public class SeaOtter extends AmphibiousAnimal {
         return Animal.createAnimalAttributes().add(Attributes.MAX_HEALTH, 8.0D).add(Attributes.MOVEMENT_SPEED, 0.2D).add(Attributes.STEP_HEIGHT, 1.0D);
     }
 
-    /** Near the top of the water, however little of it there is: a river is seldom three blocks deep. */
+    /**
+     * Near the top of the water, however little of it there is: a river is seldom three blocks deep. And not in a frozen
+     * one: the biome tag it spawns by has every river and shallow sea in it, the frozen ones too, and those are the seal's.
+     */
     public static boolean checkSeaOtterSpawnRules(EntityType<SeaOtter> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
-        return pos.getY() >= level.getSeaLevel() - SPAWN_DEPTH && pos.getY() <= level.getSeaLevel();
+        return pos.getY() >= level.getSeaLevel() - SPAWN_DEPTH && pos.getY() <= level.getSeaLevel() && isWarmEnough(level.getBiome(pos));
+    }
+
+    /**
+     * By the biome's own temperature, not the spot's: a frozen ocean's has noise in it that leaves the odd patch of it
+     * unfrozen, and an otter has no more business in one of those than on the ice around it.
+     */
+    public static boolean isWarmEnough(Holder<Biome> biome) {
+        return biome.value().getBaseTemperature() > MIN_TEMPERATURE;
     }
 
     @Override

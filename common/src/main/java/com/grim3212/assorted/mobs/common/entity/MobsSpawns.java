@@ -39,10 +39,11 @@ public class MobsSpawns {
         MobsCommonConfig config = MobsCommonMod.COMMON_CONFIG;
         Services.WORLD_GEN.addSpawnToBiomes((key, biome) -> biome.is(MobsTags.Biomes.SPAWNS_ICE_PIXIES) && config.icePixieEnabled.get() && config.icePixieWeight.get() > 0, MobsEntities.ICE_PIXIE, config.icePixieWeight::get, 1, 3);
         Services.WORLD_GEN.addSpawnToBiomes((key, biome) -> biome.is(MobsTags.Biomes.SPAWNS_PARABUZZIES) && config.eightBitMobsEnabled.get() && config.parabuzzyWeight.get() > 0, MobsEntities.PARABUZZY, config.parabuzzyWeight::get, 1, 4);
-        Services.WORLD_GEN.addSpawnToBiomes((key, biome) -> biome.is(MobsTags.Biomes.SPAWNS_SEALS) && config.seaCreaturesEnabled.get() && config.sealWeight.get() > 0, MobsEntities.SEAL, config.sealWeight::get, 1, 3);
-        Services.WORLD_GEN.addSpawnToBiomes((key, biome) -> biome.is(MobsTags.Biomes.SPAWNS_WALRUSES) && config.seaCreaturesEnabled.get() && config.walrusWeight.get() > 0, MobsEntities.WALRUS, config.walrusWeight::get, 1, 2);
+        // Pairs at most, and most spots passed over besides: see Seal#SPAWN_ODDS.
+        Services.WORLD_GEN.addSpawnToBiomes((key, biome) -> biome.is(MobsTags.Biomes.SPAWNS_SEALS) && config.seaCreaturesEnabled.get() && config.sealWeight.get() > 0, MobsEntities.SEAL, config.sealWeight::get, 2, 4);
+        Services.WORLD_GEN.addSpawnToBiomes((key, biome) -> biome.is(MobsTags.Biomes.SPAWNS_WALRUSES) && config.seaCreaturesEnabled.get() && config.walrusWeight.get() > 0, MobsEntities.WALRUS, config.walrusWeight::get, 2, 3);
         // Not twice over where a beach is one of its own biomes already, as the snowy beach is.
-        Services.WORLD_GEN.addSpawnToBiomes((key, biome) -> biome.is(MobsTags.Biomes.SPAWNS_WALRUSES_RARELY) && !biome.is(MobsTags.Biomes.SPAWNS_WALRUSES) && config.seaCreaturesEnabled.get() && config.walrusBeachWeight.get() > 0, MobsEntities.WALRUS, config.walrusBeachWeight::get, 1, 2);
+        Services.WORLD_GEN.addSpawnToBiomes((key, biome) -> biome.is(MobsTags.Biomes.SPAWNS_WALRUSES_RARELY) && !biome.is(MobsTags.Biomes.SPAWNS_WALRUSES) && config.seaCreaturesEnabled.get() && config.walrusBeachWeight.get() > 0, MobsEntities.WALRUS, config.walrusBeachWeight::get, 2, 3);
         Services.WORLD_GEN.addSpawnToBiomes((key, biome) -> biome.is(MobsTags.Biomes.SPAWNS_NARWHALS) && config.seaCreaturesEnabled.get() && config.narwhalWeight.get() > 0, MobsEntities.NARWHAL, config.narwhalWeight::get, 1, 2);
         Services.WORLD_GEN.addSpawnToBiomes((key, biome) -> biome.is(MobsTags.Biomes.SPAWNS_SEA_OTTERS) && config.seaCreaturesEnabled.get() && config.seaOtterWeight.get() > 0, MobsEntities.SEA_OTTER, config.seaOtterWeight::get, 2, 3);
         // Never on the surface: only inside mineshafts, strongholds and the like.

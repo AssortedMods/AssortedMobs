@@ -95,6 +95,8 @@ final class SpawnTests {
         assertSpawns(helper, Biomes.FROZEN_RIVER, MobsEntities.SEA_CATEGORY, MobsEntities.NARWHAL.get(), MobsCommonMod.COMMON_CONFIG.narwhalWeight.get());
         assertSpawns(helper, Biomes.WARM_OCEAN, MobsEntities.SEA_CATEGORY, MobsEntities.SEA_OTTER.get(), MobsCommonMod.COMMON_CONFIG.seaOtterWeight.get());
         helper.assertTrue(spawnEntry(helper, Biomes.DEEP_OCEAN, MobsEntities.SEA_CATEGORY, MobsEntities.SEA_OTTER.get()).isEmpty(), "sea otters spawn out in the deep ocean");
+        // The frozen ones are in the common tags too; sea_otters_keep_out_of_the_cold is what turns them down.
+        assertSpawns(helper, Biomes.FROZEN_RIVER, MobsEntities.SEA_CATEGORY, MobsEntities.SEA_OTTER.get(), MobsCommonMod.COMMON_CONFIG.seaOtterWeight.get());
 
         helper.assertTrue(spawnEntry(helper, Biomes.DESERT, MobCategory.MONSTER, MobsEntities.ICE_PIXIE.get()).isEmpty(), "ice pixies spawn in the desert");
         // Overworld, but in none of the tags spawns_parabuzzies names.

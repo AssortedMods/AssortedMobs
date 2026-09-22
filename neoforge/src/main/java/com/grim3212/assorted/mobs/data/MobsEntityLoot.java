@@ -17,6 +17,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
+import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
+import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
 import net.minecraft.world.level.storage.loot.entries.TagEntry;
 import net.minecraft.world.level.storage.loot.functions.EnchantedCountIncreaseFunction;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
@@ -35,8 +37,6 @@ import java.util.stream.Stream;
  */
 public class MobsEntityLoot extends EntityLootSubProvider {
 
-    /** Not #minecraft:fishes, which has the cooked ones in it. */
-    private static final TagKey<Item> RAW_FISH = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(LibCommonTags.COMMON_NAMESPACE, "foods/raw_fish"));
     private static final TagKey<Item> FROST_RODS = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(LibCommonTags.COMMON_NAMESPACE, "rods/frost"));
 
     public MobsEntityLoot(HolderLookup.Provider registries) {
@@ -56,16 +56,23 @@ public class MobsEntityLoot extends EntityLootSubProvider {
     }
 
     /**
-     * None to two of one kind of fish, more with looting, and cooked if what dropped it was on fire: what has nothing
-     * to cook into comes as it is. Whatever is in #c:foods/raw_fish, which is where every mod puts its raw fish and both
-     * loaders put vanilla's four: each as likely as the next, which is how a tag goes into a table.
+     * None to two of one kind of fish, more with looting, and cooked if what dropped it was on fire. The fish are named
+     * one by one, at the given weights, the way the polar bear's are: not by #c:foods/raw_fish, which has the pufferfish
+     * and the tropical fish in it, and no seal ever came up with one of those.
      */
-    private LootPool.Builder oceanFish() {
-        return LootPool.lootPool().setRolls(ConstantValue.exactly(1))
-                .add(TagEntry.expandTag(RAW_FISH)
-                        .apply(SetItemCountFunction.setCount(UniformGenerator.between(0, 2)))
-                        .apply(SmeltItemFunction.smelted().when(this.shouldSmeltLoot()))
-                        .apply(EnchantedCountIncreaseFunction.lootingMultiplier(this.registries, UniformGenerator.between(0, 1))));
+    private LootPool.Builder fishOf(LootPoolEntryContainer.Builder<?>... fish) {
+        LootPool.Builder pool = LootPool.lootPool().setRolls(ConstantValue.exactly(1));
+        for (LootPoolEntryContainer.Builder<?> entry : fish) {
+            pool.add(entry);
+        }
+        return pool;
+    }
+
+    private LootPoolSingletonContainer.Builder<?> fish(Item fish, int weight) {
+        return LootItem.lootTableItem(fish).setWeight(weight)
+                .apply(SetItemCountFunction.setCount(UniformGenerator.between(0, 2)))
+                .apply(SmeltItemFunction.smelted().when(this.shouldSmeltLoot()))
+                .apply(EnchantedCountIncreaseFunction.lootingMultiplier(this.registries, UniformGenerator.between(0, 1)));
     }
 
     @Override
@@ -88,14 +95,15 @@ public class MobsEntityLoot extends EntityLootSubProvider {
                         .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(this.registries, 0.05F, 0.02F))
                         .add(TagEntry.expandTag(FROST_RODS))));
 
-        // The sea creatures. Every one of them is full of fish: any raw fish there is, by the common tag, so other mods'
-        // fish turn up too. The otter's shells and the narwhal's horn, which are what those two are for, come on top of that.
-        this.add(MobsEntities.SEAL.get(), LootTable.lootTable().withPool(this.oceanFish()));
-        this.add(MobsEntities.WALRUS.get(), LootTable.lootTable().withPool(this.oceanFish()));
-        this.add(MobsEntities.SEA_OTTER.get(), this.upToTwo(MobsItems.SEA_SHELL.get()).withPool(this.oceanFish()));
+        // The sea creatures, each full of the fish of its own waters. The two of the ice mostly cod, as the polar bear
+        // is; the walrus, which lives off the sea floor, cod alone; the otter, which is in the rivers too, salmon first.
+        // The otter's shells and the narwhal's horn, which are what those two are for, come on top of that.
+        this.add(MobsEntities.SEAL.get(), LootTable.lootTable().withPool(this.fishOf(this.fish(Items.COD, 3), this.fish(Items.SALMON, 1))));
+        this.add(MobsEntities.WALRUS.get(), LootTable.lootTable().withPool(this.fishOf(this.fish(Items.COD, 1))));
+        this.add(MobsEntities.SEA_OTTER.get(), this.upToTwo(MobsItems.SEA_SHELL.get()).withPool(this.fishOf(this.fish(Items.SALMON, 2), this.fish(Items.COD, 1))));
         this.add(MobsEntities.NARWHAL.get(), LootTable.lootTable()
                 .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(LootItem.lootTableItem(MobsItems.NARWHAL_HORN.get())))
-                .withPool(this.oceanFish()));
+                .withPool(this.fishOf(this.fish(Items.COD, 3), this.fish(Items.SALMON, 1))));
 
         // The red ones drop nothing at all; see Parabuzzy#shouldDropLoot.
         this.add(MobsEntities.PARABUZZY.get(), LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1))

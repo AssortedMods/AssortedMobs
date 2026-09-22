@@ -6,6 +6,9 @@ import com.grim3212.assorted.mobs.common.entity.Narwhal;
 import com.grim3212.assorted.mobs.common.entity.SeaOtter;
 import com.grim3212.assorted.mobs.common.entity.Seal;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,6 +20,8 @@ import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 
@@ -43,6 +48,7 @@ final class AmphibiousTests {
         out.accept("seals_spawn_by_the_water", AmphibiousTests::sealsSpawnByTheWater);
         out.accept("seals_and_walruses_spawn_on_snow_and_ice", AmphibiousTests::sealsAndWalrusesSpawnOnSnowAndIce);
         out.accept("sea_otters_spawn_in_the_water", AmphibiousTests::seaOttersSpawnInTheWater);
+        out.accept("sea_otters_keep_out_of_the_cold", AmphibiousTests::seaOttersKeepOutOfTheCold);
         out.accept("narwhal_raises_its_tusk_at_the_surface", AmphibiousTests::narwhalRaisesItsTuskAtTheSurface);
     }
 
@@ -193,14 +199,37 @@ final class AmphibiousTests {
                 .thenSucceed();
     }
 
-    /** Snow with the sea six blocks off will do, and the rule is asked at the block above the snow. */
+    /**
+     * Snow with the sea six blocks off will do, and the rule is asked at the block above the snow. Not every time it is
+     * asked, though: most spots are passed over, which is what keeps the ice from being carpeted.
+     */
     private static void sealsSpawnByTheWater(GameTestHelper helper) {
         BlockPos snow = new BlockPos(1, 1, 4);
         helper.setBlock(snow, Blocks.SNOW_BLOCK);
         helper.setBlock(snow.east(6), Blocks.WATER);
-        helper.assertTrue(Seal.checkArcticSpawnRules(MobsEntities.SEAL.get(), helper.getLevel(), EntitySpawnReason.NATURAL, helper.absolutePos(snow.above()), helper.getLevel().getRandom()),
-                "a seal will not spawn on snow six blocks from the water");
+        int taken = 0;
+        for (int asked = 0; asked < SPAWN_ASKS; asked++) {
+            if (Seal.checkArcticSpawnRules(MobsEntities.SEAL.get(), helper.getLevel(), EntitySpawnReason.NATURAL, helper.absolutePos(snow.above()), helper.getLevel().getRandom())) {
+                taken++;
+            }
+        }
+        helper.assertTrue(taken > 0, "a seal will not spawn on snow six blocks from the water");
+        helper.assertTrue(taken < SPAWN_ASKS * 2 / Seal.SPAWN_ODDS, "seals took " + taken + " of " + SPAWN_ASKS + " spots, well over one in " + Seal.SPAWN_ODDS);
         helper.succeed();
+    }
+
+    /** Enough asks of a rule that passes one spot in {@link Seal#SPAWN_ODDS} for it to pass at least once, and not twice as often as it should. */
+    private static final int SPAWN_ASKS = 120;
+
+    /** Vanilla's two questions of a spot, as the spawner asks them, until the rule's own odds let one through. */
+    private static boolean everSpawnsAt(GameTestHelper helper, EntityType<?> type, BlockPos spot) {
+        for (int asked = 0; asked < SPAWN_ASKS; asked++) {
+            if (SpawnPlacements.isSpawnPositionOk(type, helper.getLevel(), helper.absolutePos(spot))
+                    && SpawnPlacements.checkSpawnRules(type, helper.getLevel(), EntitySpawnReason.NATURAL, helper.absolutePos(spot), helper.getLevel().getRandom())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -209,16 +238,14 @@ final class AmphibiousTests {
      * where the layer is what the spawner lands in. Not in powder snow, which is a hole.
      */
     private static void sealsAndWalrusesSpawnOnSnowAndIce(GameTestHelper helper) {
-        BlockPos water = new BlockPos(6, 1, 4);
-        helper.setBlock(water, Blocks.WATER);
         BlockPos spot = new BlockPos(2, 2, 4);
+        // Three east and one down, the nearest place the rule looks: not so far that a neighbouring test's pool is what it finds.
+        helper.setBlock(spot.east(3).below(), Blocks.WATER);
         for (EntityType<?> type : List.of(MobsEntities.SEAL.get(), MobsEntities.WALRUS.get())) {
             for (Block ground : List.of(Blocks.ICE, Blocks.PACKED_ICE, Blocks.SNOW_BLOCK, Blocks.GRASS_BLOCK)) {
                 helper.setBlock(spot.below(), ground);
                 helper.setBlock(spot, ground == Blocks.GRASS_BLOCK ? Blocks.SNOW : Blocks.AIR);
-                helper.assertTrue(SpawnPlacements.isSpawnPositionOk(type, helper.getLevel(), helper.absolutePos(spot))
-                        && SpawnPlacements.checkSpawnRules(type, helper.getLevel(), EntitySpawnReason.NATURAL, helper.absolutePos(spot), helper.getLevel().getRandom()),
-                        type.getDescriptionId() + " will not spawn on " + ground.getName().getString());
+                helper.assertTrue(everSpawnsAt(helper, type, spot), type.getDescriptionId() + " will not spawn on " + ground.getName().getString());
             }
             helper.setBlock(spot.below(), Blocks.POWDER_SNOW);
             helper.setBlock(spot, Blocks.AIR);
@@ -245,6 +272,22 @@ final class AmphibiousTests {
         otter.snapTo(top.getX() + 0.5D, top.getY(), top.getZ() + 0.5D, 0.0F, 0.0F);
         helper.assertTrue(otter.checkSpawnRules(level, EntitySpawnReason.NATURAL), "a new otter turns its own spawn down");
         helper.assertTrue(otter.checkSpawnObstruction(level), "a new otter takes the water it is spawned in for an obstruction");
+        helper.succeed();
+    }
+
+    /**
+     * The spawn rule's own question of a biome, asked of the biomes themselves: the frozen river and oceans are in the
+     * tags the otter spawns by, and this is what keeps it out of them. The cold ocean is as warm as any other.
+     */
+    private static void seaOttersKeepOutOfTheCold(GameTestHelper helper) {
+        HolderLookup.RegistryLookup<Biome> biomes = helper.getLevel().registryAccess().lookupOrThrow(Registries.BIOME);
+        for (ResourceKey<Biome> warm : List.of(Biomes.RIVER, Biomes.OCEAN, Biomes.COLD_OCEAN, Biomes.LUKEWARM_OCEAN, Biomes.WARM_OCEAN)) {
+            helper.assertTrue(SeaOtter.isWarmEnough(biomes.getOrThrow(warm)), "an otter turns down " + warm.identifier());
+        }
+        // Not the deep frozen ocean, which is as warm at heart as the cold one and only frozen at the top; it is no shallow sea, so it is not in the tag at all.
+        for (ResourceKey<Biome> cold : List.of(Biomes.FROZEN_RIVER, Biomes.FROZEN_OCEAN)) {
+            helper.assertFalse(SeaOtter.isWarmEnough(biomes.getOrThrow(cold)), "an otter spawns in " + cold.identifier());
+        }
         helper.succeed();
     }
 }

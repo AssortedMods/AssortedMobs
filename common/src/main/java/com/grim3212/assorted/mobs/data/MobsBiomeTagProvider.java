@@ -49,7 +49,8 @@ public class MobsBiomeTagProvider extends LibBiomeTagProvider {
         // Any shore, sand or rock. #c:is_beach has vanilla's beaches in it.
         tagger.apply(MobsTags.Biomes.SPAWNS_WALRUSES_RARELY).addTag(IS_BEACH).addTag(IS_STONY_SHORES);
         tagger.apply(MobsTags.Biomes.SPAWNS_NARWHALS).addTag(IS_AQUATIC_ICY).add(Biomes.COLD_OCEAN).add(Biomes.DEEP_COLD_OCEAN);
-        // The otter keeps to the coast: every river, and the shallow oceans, which are the ones that have one.
+        // The otter keeps to the coast: every river, and the shallow oceans, which are the ones that have one. The frozen
+        // ones are in both tags; the spawn rule turns those down by their temperature, see SeaOtter#isWarmEnough.
         tagger.apply(MobsTags.Biomes.SPAWNS_SEA_OTTERS).addTag(IS_RIVER).addTag(IS_SHALLOW_OCEAN);
     }
 
