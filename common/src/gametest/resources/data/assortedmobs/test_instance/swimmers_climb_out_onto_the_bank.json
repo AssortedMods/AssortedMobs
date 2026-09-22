@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedmobs:swimmers_climb_out_onto_the_bank",
+  "structure": "assortedmobs:test_box",
+  "max_ticks": 1200,
+  "setup_ticks": 0,
+  "required": true
+}

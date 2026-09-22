@@ -1,0 +1,44 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "assortedlib:part_enabled",
+      "part": "sea_creatures"
+    }
+  ],
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_narwhal_horn": {
+      "conditions": {
+        "items": [
+          {
+            "items": "assortedmobs:narwhal_horn"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "assortedmobs:narwhal_sword"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "fabric:load_conditions": [
+    {
+      "condition": "assortedlib:part_enabled",
+      "part": "sea_creatures"
+    }
+  ],
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_narwhal_horn"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "assortedmobs:narwhal_sword"
+    ]
+  }
+}

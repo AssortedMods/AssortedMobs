@@ -1,5 +1,6 @@
 package com.grim3212.assorted.mobs.gametest;
 
+import com.grim3212.assorted.lib.test.TestSupport;
 import com.grim3212.assorted.mobs.Constants;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -10,6 +11,7 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -21,6 +23,7 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
 import net.minecraft.world.level.storage.TagValueInput;
 import net.minecraft.world.level.storage.TagValueOutput;
+import net.minecraft.world.phys.Vec3;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,6 +41,14 @@ final class MobsTestSupport {
 
     /** Middle of the 9x9x9 box, one block above its floor - room on every side for a drop. */
     static final BlockPos CENTRE = new BlockPos(4, 1, 4);
+
+    /** A survival player on the floor of the box at {@code rel}, not moving. */
+    static ServerPlayer standingPlayer(GameTestHelper helper, BlockPos rel) {
+        ServerPlayer player = TestSupport.survivalPlayer(helper);
+        player.snapTo(helper.absoluteVec(Vec3.atBottomCenterOf(rel)));
+        player.setOnGround(true);
+        return player;
+    }
 
     /**
      * Writes an entity out and reads it into a fresh one of the same type, as a chunk save and load

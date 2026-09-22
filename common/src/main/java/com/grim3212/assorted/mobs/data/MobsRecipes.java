@@ -15,12 +15,17 @@ import net.minecraft.data.recipes.RecipeProvider;
 import net.minecraft.data.recipes.ShapedRecipeBuilder;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Recipe;
 
 import java.util.concurrent.CompletableFuture;
 
 public class MobsRecipes extends ConditionalRecipeProvider {
+
+    private static final TagKey<Item> SEEDS = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(LibCommonTags.COMMON_NAMESPACE, "seeds"));
 
     private final HolderGetter<Item> items;
 
@@ -32,6 +37,9 @@ public class MobsRecipes extends ConditionalRecipeProvider {
     @Override
     public void registerConditions() {
         this.addConditions(partEnabled(MobsParts.EIGHT_BIT), Identifier.fromNamespaceAndPath(Constants.MOD_ID, "bobomb"));
+        for (String recipe : new String[]{"narwhal_sword", "shell_helmet", "shell_chestplate", "shell_leggings", "shell_boots", "shell_shovel"}) {
+            this.addConditions(partEnabled(MobsParts.SEA_CREATURES), Identifier.fromNamespaceAndPath(Constants.MOD_ID, recipe));
+        }
     }
 
     @Override
@@ -43,6 +51,33 @@ public class MobsRecipes extends ConditionalRecipeProvider {
                 .define('X', LibCommonTags.Items.DUSTS_REDSTONE).define('#', LibCommonTags.Items.GUNPOWDER).define('@', MobsItems.PARABUZZY_SHELL.get())
                 .pattern("X").pattern("#").pattern("@")
                 .unlockedBy("has_parabuzzy_shell", has(MobsItems.PARABUZZY_SHELL.get())).save(this.output, key("bobomb"));
+
+        this.buildSeaCreatureRecipes();
+    }
+
+    private void buildSeaCreatureRecipes() {
+        ShapedRecipeBuilder.shaped(this.items, RecipeCategory.COMBAT, MobsItems.NARWHAL_SWORD.get())
+                .define('N', MobsItems.NARWHAL_HORN.get()).define('S', LibCommonTags.Items.RODS_WOODEN)
+                .pattern("N").pattern("N").pattern("S")
+                .unlockedBy("has_narwhal_horn", has(MobsItems.NARWHAL_HORN.get())).save(this.output, key("narwhal_sword"));
+
+        ShapedRecipeBuilder.shaped(this.items, RecipeCategory.TOOLS, MobsItems.SHELL_SHOVEL.get())
+                .define('S', MobsItems.SEA_SHELL.get()).define('T', LibCommonTags.Items.RODS_WOODEN)
+                .pattern("S").pattern("T").pattern("T")
+                .unlockedBy("has_sea_shell", has(MobsItems.SEA_SHELL.get())).save(this.output, key("shell_shovel"));
+
+        this.shellArmor(MobsItems.SHELL_HELMET.get(), "shell_helmet", "SSS", "S S");
+        this.shellArmor(MobsItems.SHELL_CHESTPLATE.get(), "shell_chestplate", "S S", "SSS", "SSS");
+        this.shellArmor(MobsItems.SHELL_LEGGINGS.get(), "shell_leggings", "SSS", "S S", "S S");
+        this.shellArmor(MobsItems.SHELL_BOOTS.get(), "shell_boots", "S S", "S S");
+    }
+
+    private void shellArmor(Item piece, String name, String... pattern) {
+        ShapedRecipeBuilder recipe = ShapedRecipeBuilder.shaped(this.items, RecipeCategory.COMBAT, piece).define('S', MobsItems.SEA_SHELL.get());
+        for (String row : pattern) {
+            recipe.pattern(row);
+        }
+        recipe.unlockedBy("has_sea_shell", has(MobsItems.SEA_SHELL.get())).save(this.output, key(name));
     }
 
     private static ResourceKey<Recipe<?>> key(String name) {

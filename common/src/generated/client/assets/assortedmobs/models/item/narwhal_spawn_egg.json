@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "assortedmobs:item/narwhal_spawn_egg"
+  }
+}

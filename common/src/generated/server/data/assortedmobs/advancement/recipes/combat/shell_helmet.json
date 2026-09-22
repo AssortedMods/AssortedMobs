@@ -1,0 +1,44 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "assortedlib:part_enabled",
+      "part": "sea_creatures"
+    }
+  ],
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_sea_shell": {
+      "conditions": {
+        "items": [
+          {
+            "items": "assortedmobs:sea_shell"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "assortedmobs:shell_helmet"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "fabric:load_conditions": [
+    {
+      "condition": "assortedlib:part_enabled",
+      "part": "sea_creatures"
+    }
+  ],
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_sea_shell"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "assortedmobs:shell_helmet"
+    ]
+  }
+}

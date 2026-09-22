@@ -1,6 +1,7 @@
 package com.grim3212.assorted.mobs.gametest;
 
 import com.grim3212.assorted.mobs.MobsCommonMod;
+import com.grim3212.assorted.mobs.common.entity.ArcticSpawnPlacement;
 import com.grim3212.assorted.mobs.common.entity.MobsEntities;
 import com.grim3212.assorted.mobs.common.entity.TreasureMob;
 import net.minecraft.core.BlockPos;
@@ -59,7 +60,9 @@ final class SpawnTests {
 
     /** A living type with no attributes cannot even be constructed. */
     private static void creaturesSpawnWithTheirAttributes(GameTestHelper helper) {
-        for (EntityType<? extends Mob> type : List.of(MobsEntities.ICE_PIXIE.get(), MobsEntities.TREASURE_MOB.get(), MobsEntities.BOBOMB.get(), MobsEntities.PARABUZZY.get())) {
+        for (EntityType<? extends Mob> type : List.of(MobsEntities.ICE_PIXIE.get(), MobsEntities.TREASURE_MOB.get(), MobsEntities.BOBOMB.get(), MobsEntities.PARABUZZY.get(),
+                MobsEntities.SEAL.get(), MobsEntities.WALRUS.get(),
+                MobsEntities.NARWHAL.get(), MobsEntities.SEA_OTTER.get())) {
             Mob mob = helper.spawn(type, CENTRE, EntitySpawnReason.SPAWN_ITEM_USE);
             helper.assertTrue(mob.isAlive() && mob.getHealth() > 0, type.getDescriptionId() + " did not spawn alive");
             mob.discard();
@@ -73,6 +76,24 @@ final class SpawnTests {
         assertSpawns(helper, Biomes.PLAINS, MobCategory.CREATURE, MobsEntities.PARABUZZY.get(), MobsCommonMod.COMMON_CONFIG.parabuzzyWeight.get());
         // Named by id: no biome tag fits a meadow without the peaks coming too.
         assertSpawns(helper, Biomes.MEADOW, MobCategory.CREATURE, MobsEntities.PARABUZZY.get(), MobsCommonMod.COMMON_CONFIG.parabuzzyWeight.get());
+
+        assertSpawns(helper, Biomes.SNOWY_PLAINS, MobCategory.CREATURE, MobsEntities.SEAL.get(), MobsCommonMod.COMMON_CONFIG.sealWeight.get());
+        assertSpawns(helper, Biomes.FROZEN_OCEAN, MobCategory.CREATURE, MobsEntities.WALRUS.get(), MobsCommonMod.COMMON_CONFIG.walrusWeight.get());
+        // On any beach or rocky shore, at a weight of its own; and once only on a snowy one, which was its biome already.
+        assertSpawns(helper, Biomes.BEACH, MobCategory.CREATURE, MobsEntities.WALRUS.get(), MobsCommonMod.COMMON_CONFIG.walrusBeachWeight.get());
+        assertSpawns(helper, Biomes.STONY_SHORE, MobCategory.CREATURE, MobsEntities.WALRUS.get(), MobsCommonMod.COMMON_CONFIG.walrusBeachWeight.get());
+        assertSpawns(helper, Biomes.SNOWY_BEACH, MobCategory.CREATURE, MobsEntities.WALRUS.get(), MobsCommonMod.COMMON_CONFIG.walrusWeight.get());
+        helper.assertValueEqual(spawnCount(helper, Biomes.SNOWY_BEACH, MobCategory.CREATURE, MobsEntities.WALRUS.get()), 1L, "walrus entries among a snowy beach's spawns");
+        helper.assertTrue(spawnEntry(helper, Biomes.DESERT, MobCategory.CREATURE, MobsEntities.WALRUS.get()).isEmpty(), "walruses spawn in the desert");
+        assertSpawns(helper, Biomes.DEEP_COLD_OCEAN, MobCategory.WATER_CREATURE, MobsEntities.NARWHAL.get(), MobsCommonMod.COMMON_CONFIG.narwhalWeight.get());
+        assertSpawns(helper, Biomes.RIVER, MobCategory.WATER_CREATURE, MobsEntities.SEA_OTTER.get(), MobsCommonMod.COMMON_CONFIG.seaOtterWeight.get());
+        helper.assertTrue(spawnEntry(helper, Biomes.WARM_OCEAN, MobCategory.WATER_CREATURE, MobsEntities.NARWHAL.get()).isEmpty(), "narwhals spawn in warm oceans");
+        helper.assertTrue(spawnEntry(helper, Biomes.DESERT, MobCategory.CREATURE, MobsEntities.SEAL.get()).isEmpty(), "seals spawn in the desert");
+        // By the common tags: a snowy taiga is snowy, a warm ocean is shallow, and a deep one is not coast.
+        assertSpawns(helper, Biomes.SNOWY_TAIGA, MobCategory.CREATURE, MobsEntities.SEAL.get(), MobsCommonMod.COMMON_CONFIG.sealWeight.get());
+        assertSpawns(helper, Biomes.FROZEN_RIVER, MobCategory.WATER_CREATURE, MobsEntities.NARWHAL.get(), MobsCommonMod.COMMON_CONFIG.narwhalWeight.get());
+        assertSpawns(helper, Biomes.WARM_OCEAN, MobCategory.WATER_CREATURE, MobsEntities.SEA_OTTER.get(), MobsCommonMod.COMMON_CONFIG.seaOtterWeight.get());
+        helper.assertTrue(spawnEntry(helper, Biomes.DEEP_OCEAN, MobCategory.WATER_CREATURE, MobsEntities.SEA_OTTER.get()).isEmpty(), "sea otters spawn out in the deep ocean");
 
         helper.assertTrue(spawnEntry(helper, Biomes.DESERT, MobCategory.MONSTER, MobsEntities.ICE_PIXIE.get()).isEmpty(), "ice pixies spawn in the desert");
         // Overworld, but in none of the tags spawns_parabuzzies names.
@@ -201,6 +222,13 @@ final class SpawnTests {
             helper.assertTrue(SpawnPlacements.getPlacementType(type) == SpawnPlacementTypes.ON_GROUND,
                     type.getDescriptionId() + " has no spawn placement, so it would spawn in mid air or in water");
         }
+        // On the ground too, by a placement of the mod's own that lets them onto plain ice; see AmphibiousTests for what it allows.
+        for (EntityType<?> type : List.of(MobsEntities.SEAL.get(), MobsEntities.WALRUS.get())) {
+            helper.assertTrue(SpawnPlacements.getPlacementType(type) == ArcticSpawnPlacement.INSTANCE, type.getDescriptionId() + " does not use the arctic spawn placement");
+        }
+        for (EntityType<?> type : List.of(MobsEntities.NARWHAL.get(), MobsEntities.SEA_OTTER.get())) {
+            helper.assertTrue(SpawnPlacements.getPlacementType(type) == SpawnPlacementTypes.IN_WATER, type.getDescriptionId() + " is not placed in water, so it would spawn on the beach");
+        }
         helper.succeed();
     }
 
@@ -213,5 +241,10 @@ final class SpawnTests {
     private static Optional<Weighted<MobSpawnSettings.SpawnerData>> spawnEntry(GameTestHelper helper, ResourceKey<Biome> biome, MobCategory category, EntityType<?> type) {
         Holder<Biome> holder = helper.getLevel().registryAccess().lookupOrThrow(Registries.BIOME).getOrThrow(biome);
         return holder.value().getMobSettings().getMobs(category).unwrap().stream().filter(weighted -> weighted.value().type() == type).findFirst();
+    }
+
+    private static long spawnCount(GameTestHelper helper, ResourceKey<Biome> biome, MobCategory category, EntityType<?> type) {
+        Holder<Biome> holder = helper.getLevel().registryAccess().lookupOrThrow(Registries.BIOME).getOrThrow(biome);
+        return holder.value().getMobSettings().getMobs(category).unwrap().stream().filter(weighted -> weighted.value().type() == type).count();
     }
 }

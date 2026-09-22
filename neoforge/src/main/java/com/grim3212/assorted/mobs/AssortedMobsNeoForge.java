@@ -3,6 +3,7 @@ package com.grim3212.assorted.mobs;
 import com.grim3212.assorted.lib.data.ForgeBiomeTagProvider;
 import com.grim3212.assorted.lib.data.ForgeBlockTagProvider;
 import com.grim3212.assorted.lib.data.ForgeItemTagProvider;
+import com.grim3212.assorted.mobs.client.data.MobsEquipmentAssetProvider;
 import com.grim3212.assorted.mobs.client.data.MobsItemModelProvider;
 import com.grim3212.assorted.mobs.client.data.MobsLanguageProvider;
 import com.grim3212.assorted.mobs.client.data.MobsManualProvider;
@@ -61,6 +62,7 @@ public class AssortedMobsNeoForge {
         PackOutput packOutput = event.getGenerator().getPackOutput();
 
         event.addProvider(new MobsItemModelProvider(packOutput));
+        event.addProvider(new MobsEquipmentAssetProvider(packOutput));
         event.addProvider(new MobsLanguageProvider(packOutput));
         event.addProvider(new MobsManualProvider(packOutput));
     }

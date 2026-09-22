@@ -15,6 +15,10 @@ public class MobsSounds {
     public static final IRegistryObject<SoundEvent> PARABUZZY_AMBIENT = registerSound("entity.parabuzzy.ambient");
     public static final IRegistryObject<SoundEvent> PARABUZZY_HURT = registerSound("entity.parabuzzy.hurt");
     public static final IRegistryObject<SoundEvent> PARABUZZY_DEATH = registerSound("entity.parabuzzy.death");
+    public static final IRegistryObject<SoundEvent> SEAL_AMBIENT = registerSound("entity.seal.ambient");
+    public static final IRegistryObject<SoundEvent> SEAL_HURT = registerSound("entity.seal.hurt");
+    public static final IRegistryObject<SoundEvent> WALRUS_AMBIENT = registerSound("entity.walrus.ambient");
+    public static final IRegistryObject<SoundEvent> WALRUS_HURT = registerSound("entity.walrus.hurt");
 
     private static IRegistryObject<SoundEvent> registerSound(String name) {
         Identifier loc = Identifier.fromNamespaceAndPath(Constants.MOD_ID, name);

@@ -28,6 +28,18 @@ public class MobsEntities {
     public static final IRegistryObject<EntityType<Bobomb>> BOBOMB = register("bobomb", EntityType.Builder.of(Bobomb::new, MobCategory.MISC).noLootTable().fireImmune().sized(0.3F, 0.5F).clientTrackingRange(10));
     public static final IRegistryObject<EntityType<Parabuzzy>> PARABUZZY = register("parabuzzy", EntityType.Builder.of(Parabuzzy::new, MobCategory.CREATURE).sized(0.5F, 0.6F).clientTrackingRange(10));
 
+
+
+
+    // The sea creatures
+    public static final IRegistryObject<EntityType<Seal>> SEAL = register("seal", EntityType.Builder.of(Seal::new, MobCategory.CREATURE).sized(0.8F, 0.6F).eyeHeight(0.45F).clientTrackingRange(10));
+    // Under a block across, though it is broader than that to look at: at a block or over, the pathfinder takes it for two
+    // across, and will not plot a step from the water onto any shore whose edge it would overhang, which is all of them.
+    public static final IRegistryObject<EntityType<Walrus>> WALRUS = register("walrus", EntityType.Builder.of(Walrus::new, MobCategory.CREATURE).sized(0.98F, 1.1F).eyeHeight(0.9F).clientTrackingRange(10));
+    public static final IRegistryObject<EntityType<Narwhal>> NARWHAL = register("narwhal", EntityType.Builder.of(Narwhal::new, MobCategory.WATER_CREATURE).sized(1.3F, 0.85F).eyeHeight(0.45F).clientTrackingRange(10));
+    // Spawns with the squid, in the water; see SeaOtter#removeWhenFarAway.
+    public static final IRegistryObject<EntityType<SeaOtter>> SEA_OTTER = register("sea_otter", EntityType.Builder.of(SeaOtter::new, MobCategory.WATER_CREATURE).sized(0.6F, 0.45F).eyeHeight(0.3F).clientTrackingRange(8));
+
     private static <T extends Entity> IRegistryObject<EntityType<T>> register(final String name, final EntityType.Builder<T> builder) {
         final ResourceKey<EntityType<?>> key = ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Constants.MOD_ID, name));
         return ENTITIES.register(name, () -> builder.build(key));

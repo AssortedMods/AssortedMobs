@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedmobs:narwhal_raises_its_tusk_at_the_surface",
+  "structure": "assortedmobs:test_box",
+  "max_ticks": 400,
+  "setup_ticks": 0,
+  "required": true
+}

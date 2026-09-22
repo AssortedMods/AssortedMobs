@@ -1,0 +1,28 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "assortedlib:part_enabled",
+      "part": "sea_creatures"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "fabric:load_conditions": [
+    {
+      "condition": "assortedlib:part_enabled",
+      "part": "sea_creatures"
+    }
+  ],
+  "key": {
+    "S": "assortedmobs:sea_shell",
+    "T": "#c:rods/wooden"
+  },
+  "pattern": [
+    "S",
+    "T",
+    "T"
+  ],
+  "result": {
+    "id": "assortedmobs:shell_shovel"
+  }
+}

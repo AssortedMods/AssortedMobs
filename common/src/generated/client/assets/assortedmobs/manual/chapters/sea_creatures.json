@@ -1,0 +1,39 @@
+{
+  "conditions": [
+    {
+      "type": "assortedlib:part_enabled",
+      "part": "sea_creatures"
+    }
+  ],
+  "pages": [
+    {
+      "type": "assortedlib:text",
+      "id": "seal",
+      "text": "manual.assortedmobs.chapter.sea_creatures.seal",
+      "title": "manual.assortedmobs.chapter.sea_creatures.seal.title"
+    },
+    {
+      "type": "assortedlib:recipe",
+      "id": "narwhal",
+      "recipes": [
+        "assortedmobs:narwhal_sword"
+      ],
+      "text": "manual.assortedmobs.chapter.sea_creatures.narwhal",
+      "title": "manual.assortedmobs.chapter.sea_creatures.narwhal.title"
+    },
+    {
+      "type": "assortedlib:recipe",
+      "id": "sea_otter",
+      "recipes": [
+        "assortedmobs:shell_helmet",
+        "assortedmobs:shell_chestplate",
+        "assortedmobs:shell_leggings",
+        "assortedmobs:shell_boots",
+        "assortedmobs:shell_shovel"
+      ],
+      "text": "manual.assortedmobs.chapter.sea_creatures.sea_otter",
+      "title": "manual.assortedmobs.chapter.sea_creatures.sea_otter.title"
+    }
+  ],
+  "sort_order": 30
+}

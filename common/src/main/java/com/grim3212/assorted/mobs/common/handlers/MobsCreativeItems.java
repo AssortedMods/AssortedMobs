@@ -41,6 +41,16 @@ public class MobsCreativeItems {
             items.add(MobsItems.BOBOMB.get());
             items.add(MobsItems.PARABUZZY_SHELL.get());
         }
+        if (config.seaCreaturesEnabled.get()) {
+            items.add(MobsItems.NARWHAL_HORN.get());
+            items.add(MobsItems.NARWHAL_SWORD.get());
+            items.add(MobsItems.SEA_SHELL.get());
+            items.add(MobsItems.SHELL_HELMET.get());
+            items.add(MobsItems.SHELL_CHESTPLATE.get());
+            items.add(MobsItems.SHELL_LEGGINGS.get());
+            items.add(MobsItems.SHELL_BOOTS.get());
+            items.add(MobsItems.SHELL_SHOVEL.get());
+        }
         getSpawnEggs().forEach(items::add);
 
         return items.getItems();
@@ -59,6 +69,12 @@ public class MobsCreativeItems {
         if (config.eightBitMobsEnabled.get()) {
             items.add(MobsItems.BOBOMB_SPAWN_EGG.get());
             items.add(MobsItems.PARABUZZY_SPAWN_EGG.get());
+        }
+        if (config.seaCreaturesEnabled.get()) {
+            items.add(MobsItems.SEAL_SPAWN_EGG.get());
+            items.add(MobsItems.WALRUS_SPAWN_EGG.get());
+            items.add(MobsItems.NARWHAL_SPAWN_EGG.get());
+            items.add(MobsItems.SEA_OTTER_SPAWN_EGG.get());
         }
 
         return items.getItems();

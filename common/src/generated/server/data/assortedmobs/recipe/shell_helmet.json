@@ -1,0 +1,26 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "assortedlib:part_enabled",
+      "part": "sea_creatures"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "fabric:load_conditions": [
+    {
+      "condition": "assortedlib:part_enabled",
+      "part": "sea_creatures"
+    }
+  ],
+  "key": {
+    "S": "assortedmobs:sea_shell"
+  },
+  "pattern": [
+    "SSS",
+    "S S"
+  ],
+  "result": {
+    "id": "assortedmobs:shell_helmet"
+  }
+}

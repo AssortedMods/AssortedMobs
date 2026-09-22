@@ -7,6 +7,7 @@ import com.grim3212.assorted.mobs.common.entity.MobsEntities;
 import com.grim3212.assorted.mobs.common.item.MobsItems;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Items;
 
 /**
  * This mod's section of the instruction manual. Each chapter hangs off the part it documents, so a
@@ -38,6 +39,14 @@ public class MobsManualProvider extends LibManualProvider {
         eightBit.text("perching");
         eightBit.recipes("bobomb", MobsItems.BOBOMB.get())
                 .opens(MobsEntities.BOBOMB.get()).opens(MobsItems.BOBOMB.get(), MobsItems.BOBOMB_SPAWN_EGG.get());
+
+        ChapterBuilder seaCreatures = this.chapter("sea_creatures").whenPartEnabled(MobsParts.SEA_CREATURES);
+        seaCreatures.text("seal").opens(MobsEntities.SEAL.get(), MobsEntities.WALRUS.get()).opens(MobsItems.SEAL_SPAWN_EGG.get(), MobsItems.WALRUS_SPAWN_EGG.get());
+        seaCreatures.recipes("narwhal", MobsItems.NARWHAL_SWORD.get())
+                .opens(MobsEntities.NARWHAL.get()).opens(MobsItems.NARWHAL_HORN.get(), MobsItems.NARWHAL_SWORD.get(), MobsItems.NARWHAL_SPAWN_EGG.get());
+        seaCreatures.recipes("sea_otter", MobsItems.SHELL_HELMET.get(), MobsItems.SHELL_CHESTPLATE.get(), MobsItems.SHELL_LEGGINGS.get(), MobsItems.SHELL_BOOTS.get(), MobsItems.SHELL_SHOVEL.get())
+                .opens(MobsEntities.SEA_OTTER.get()).opens(MobsItems.SEA_SHELL.get(), MobsItems.SHELL_HELMET.get(), MobsItems.SHELL_CHESTPLATE.get(), MobsItems.SHELL_LEGGINGS.get(),
+                        MobsItems.SHELL_BOOTS.get(), MobsItems.SHELL_SHOVEL.get(), MobsItems.SEA_OTTER_SPAWN_EGG.get());
     }
 
     /** The Grim Pack screenshots under {@code textures/gui/manual}, cropped and sized to leave room for the text. */

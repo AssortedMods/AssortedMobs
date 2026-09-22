@@ -22,5 +22,31 @@
 		"sounds": [
 			"assortedmobs:entity/parabuzzy/death"
 		]
+	},
+	"entity.seal.ambient": {
+		"subtitle": "subtitles.assortedmobs.entity.seal.ambient",
+		"sounds": [
+			"assortedmobs:entity/seal/ambient"
+		]
+	},
+	"entity.seal.hurt": {
+		"subtitle": "subtitles.assortedmobs.entity.seal.hurt",
+		"sounds": [
+			"assortedmobs:entity/seal/hurt"
+		]
+	},
+	"entity.walrus.ambient": {
+		"subtitle": "subtitles.assortedmobs.entity.walrus.ambient",
+		"sounds": [
+			"assortedmobs:entity/walrus/ambient1",
+			"assortedmobs:entity/walrus/ambient2"
+		]
+	},
+	"entity.walrus.hurt": {
+		"subtitle": "subtitles.assortedmobs.entity.walrus.hurt",
+		"sounds": [
+			"assortedmobs:entity/walrus/hurt1",
+			"assortedmobs:entity/walrus/hurt2"
+		]
 	}
 }

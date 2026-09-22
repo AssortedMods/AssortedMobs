@@ -1,8 +1,9 @@
 # Assorted Mobs
 
-Adds ice pixies, treasure mimics, Bob-ombs and parabuzzies. These are the creatures of the Grim
-World part of the old [Grim Pack](https://github.com/grim3212/grim-pack), brought forward from 1.12
-and rebuilt on the modern APIs.
+Adds ice pixies, treasure mimics, Bob-ombs, parabuzzies, and four sea creatures: seals, walruses,
+narwhals and sea otters. The first four are the creatures of the Grim World part of the old
+[Grim Pack](https://github.com/grim3212/grim-pack), brought forward from 1.12. All of it is rebuilt on the
+modern APIs.
 
 Requires [Assorted Lib](https://github.com/AssortedMods/AssortedLib). Branches are per Minecraft version; `26.2`
 is the current one.

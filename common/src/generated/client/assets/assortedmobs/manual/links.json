@@ -37,6 +37,43 @@
         "assortedmobs:bobomb_spawn_egg"
       ],
       "page": "assortedmobs:eight_bit/bobomb"
+    },
+    {
+      "entities": [
+        "assortedmobs:seal",
+        "assortedmobs:walrus"
+      ],
+      "items": [
+        "assortedmobs:seal_spawn_egg",
+        "assortedmobs:walrus_spawn_egg"
+      ],
+      "page": "assortedmobs:sea_creatures/seal"
+    },
+    {
+      "entities": [
+        "assortedmobs:narwhal"
+      ],
+      "items": [
+        "assortedmobs:narwhal_horn",
+        "assortedmobs:narwhal_sword",
+        "assortedmobs:narwhal_spawn_egg"
+      ],
+      "page": "assortedmobs:sea_creatures/narwhal"
+    },
+    {
+      "entities": [
+        "assortedmobs:sea_otter"
+      ],
+      "items": [
+        "assortedmobs:sea_shell",
+        "assortedmobs:shell_helmet",
+        "assortedmobs:shell_chestplate",
+        "assortedmobs:shell_leggings",
+        "assortedmobs:shell_boots",
+        "assortedmobs:shell_shovel",
+        "assortedmobs:sea_otter_spawn_egg"
+      ],
+      "page": "assortedmobs:sea_creatures/sea_otter"
     }
   ]
 }

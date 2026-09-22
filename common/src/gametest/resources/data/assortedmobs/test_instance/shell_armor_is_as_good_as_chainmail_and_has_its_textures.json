@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedmobs:shell_armor_is_as_good_as_chainmail_and_has_its_textures",
+  "structure": "assortedmobs:test_box",
+  "max_ticks": 20,
+  "setup_ticks": 0,
+  "required": true
+}

@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedmobs:walrus_left_alone_leaves_players_alone",
+  "structure": "assortedmobs:test_box",
+  "max_ticks": 100,
+  "setup_ticks": 0,
+  "required": true
+}

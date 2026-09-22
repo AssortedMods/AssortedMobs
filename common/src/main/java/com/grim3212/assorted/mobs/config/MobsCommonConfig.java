@@ -17,10 +17,17 @@ public class MobsCommonConfig {
     public final Supplier<Boolean> icePixieEnabled;
     public final Supplier<Boolean> treasureMobEnabled;
     public final Supplier<Boolean> eightBitMobsEnabled;
+    public final Supplier<Boolean> seaCreaturesEnabled;
 
     public final Supplier<Integer> icePixieWeight;
     public final Supplier<Integer> treasureMobWeight;
     public final Supplier<Integer> parabuzzyWeight;
+    public final Supplier<Integer> sealWeight;
+    public final Supplier<Integer> walrusWeight;
+    public final Supplier<Integer> walrusBeachWeight;
+    public final Supplier<Integer> narwhalWeight;
+    public final Supplier<Integer> seaOtterWeight;
+
 
     public MobsCommonConfig() {
         final IConfigurationBuilder builder = Services.CONFIG.createBuilder(ConfigurationType.NOT_SYNCED, Constants.MOD_ID + "-common");
@@ -29,9 +36,17 @@ public class MobsCommonConfig {
         treasureMobEnabled = builder.defineBoolean("parts.treasureMobEnabled", true, "Set this to true if you would like treasure mobs to spawn and be found in the creative tab.");
         eightBitMobsEnabled = builder.defineBoolean("parts.eightBitMobsEnabled", true, "Set this to true if you would like parabuzzies to spawn, Bob-ombs to be craftable and both to be found in the creative tab.");
 
+        seaCreaturesEnabled = builder.defineBoolean("parts.seaCreaturesEnabled", true, "Set this to true if you would like seals, walruses, narwhals and sea otters to spawn, what is made from them to be craftable, and all of it to be found in the creative tab.");
+
         icePixieWeight = builder.defineInteger("spawning.icePixieWeight", 39, 0, 1000, "How often ice pixies spawn in snowy biomes, against the other monsters there. Those add up to 515, so 39 is 7% of monsters. Set to 0 to stop them spawning.");
         treasureMobWeight = builder.defineInteger("spawning.treasureMobWeight", 5, 0, 1000, "How often treasure mobs spawn inside the structures in the assortedmobs:spawns_treasure_mobs structure tag. Set to 0 to stop them spawning.");
         parabuzzyWeight = builder.defineInteger("spawning.parabuzzyWeight", 8, 0, 1000, "How often parabuzzies spawn in the overworld, against the other animals there. A higher weight is more common. Set to 0 to stop them spawning.");
+        sealWeight = builder.defineInteger("spawning.sealWeight", 8, 0, 1000, "How often seals spawn on the ice and snow, against the other animals there. A higher weight is more common. Set to 0 to stop them spawning.");
+        walrusWeight = builder.defineInteger("spawning.walrusWeight", 5, 0, 1000, "How often walruses spawn on the ice and snow, against the other animals there. Set to 0 to stop them spawning.");
+        walrusBeachWeight = builder.defineInteger("spawning.walrusBeachWeight", 5, 0, 1000, "How often walruses spawn on beaches and rocky shores away from the ice, in the biomes of the assortedmobs:spawns_walruses_rarely biome tag, against the other animals there. Set to 0 to keep walruses to the ice and snow.");
+        narwhalWeight = builder.defineInteger("spawning.narwhalWeight", 3, 0, 1000, "How often narwhals spawn in cold and frozen oceans, against the squid and the dolphins. Set to 0 to stop them spawning.");
+        seaOtterWeight = builder.defineInteger("spawning.seaOtterWeight", 8, 0, 1000, "How often sea otters spawn in rivers and the milder oceans, against the squid and the dolphins. Set to 0 to stop them spawning.");
+
 
         builder.setup();
     }

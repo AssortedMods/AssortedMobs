@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "assortedmobs:shell"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "assortedmobs:shell"
+      }
+    ]
+  }
+}

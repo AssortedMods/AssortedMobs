@@ -1,6 +1,8 @@
 package com.grim3212.assorted.mobs.data;
 
+import com.grim3212.assorted.mobs.common.entity.MobsEntities;
 import com.grim3212.assorted.mobs.common.entity.TreasureMob;
+import com.grim3212.assorted.mobs.common.item.MobsItems;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.loot.LootTableSubProvider;
@@ -75,6 +77,10 @@ public class MobsChestLoot implements LootTableSubProvider {
         assortedWorld(output, "fountain", "chests/fountain");
         assortedWorld(output, "pyramid", "chests/pyramid");
         assortedWorld(output, "water_dome", "chests/water_dome/cobblestone", "chests/water_dome/iron", "chests/water_dome/glowstone", "chests/water_dome/obsidian");
+    }
+
+    private static LootPool.Builder one(Item item) {
+        return LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(LootItem.lootTableItem(item));
     }
 
     /** One of {@code chests}, picked evenly, as if the mob had wandered off with one of them. */

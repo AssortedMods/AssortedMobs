@@ -9,6 +9,7 @@ import net.minecraft.locale.Language;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 
 import java.util.ArrayList;
@@ -42,7 +43,8 @@ final class AssetTests {
             if (!resourceExists("/assets/" + id.getNamespace() + "/items/" + id.getPath() + ".json")) {
                 missing.add("items/" + id.getPath() + ".json");
             }
-            if (!resourceExists("/assets/" + id.getNamespace() + "/textures/item/" + id.getPath() + ".png")) {
+            // A block's item is drawn from its block model, which has no sprite of its own.
+            if (!(entry.getValue() instanceof BlockItem) && !resourceExists("/assets/" + id.getNamespace() + "/textures/item/" + id.getPath() + ".png")) {
                 missing.add("textures/item/" + id.getPath() + ".png");
             }
             if (!lang.has(entry.getValue().getDescriptionId())) {

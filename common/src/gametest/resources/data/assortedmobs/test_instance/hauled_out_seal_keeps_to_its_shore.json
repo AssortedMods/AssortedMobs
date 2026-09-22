@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedmobs:hauled_out_seal_keeps_to_its_shore",
+  "structure": "assortedmobs:test_box",
+  "max_ticks": 1200,
+  "setup_ticks": 0,
+  "required": true
+}

@@ -223,12 +223,4 @@ final class EightBitTests {
             helper.assertItemEntityNotPresent(MobsItems.PARABUZZY_SHELL.get(), redPos, 2.0D);
         });
     }
-
-    /** A survival player on the floor of the box at {@code rel}, not moving. */
-    private static ServerPlayer standingPlayer(GameTestHelper helper, BlockPos rel) {
-        ServerPlayer player = survivalPlayer(helper);
-        player.snapTo(helper.absoluteVec(Vec3.atBottomCenterOf(rel)));
-        player.setOnGround(true);
-        return player;
-    }
 }

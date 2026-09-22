@@ -59,12 +59,20 @@ public class MobsAdvancements implements AdvancementSubProvider {
         task("bobomb", root, MobsItems.BOBOMB.get())
                 .addCriterion("has_bobomb", InventoryChangeTrigger.TriggerInstance.hasItems(MobsItems.BOBOMB.get()))
                 .save(out, id("bobomb"));
+
+
     }
 
     private static Advancement.Builder task(String name, AdvancementHolder parent, ItemLike icon) {
         return Advancement.Builder.advancement()
                 .parent(parent)
                 .display(icon, title(name), description(name), null, AdvancementType.TASK, true, true, false);
+    }
+
+    private static Advancement.Builder goal(String name, AdvancementHolder parent, ItemLike icon) {
+        return Advancement.Builder.advancement()
+                .parent(parent)
+                .display(icon, title(name), description(name), null, AdvancementType.GOAL, true, true, false);
     }
 
     private static Component title(String name) {
