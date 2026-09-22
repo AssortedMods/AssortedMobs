@@ -31,10 +31,17 @@ public class MobsLanguageProvider extends LibLanguageProvider {
         this.add("subtitles.assortedmobs.entity.parabuzzy.ambient", "Parabuzzy buzzes");
         this.add("subtitles.assortedmobs.entity.parabuzzy.hurt", "Parabuzzy hurts");
         this.add("subtitles.assortedmobs.entity.parabuzzy.death", "Parabuzzy dies");
+        this.add("subtitles.assortedmobs.entity.seal.ambient", "Seal barks");
+        this.add("subtitles.assortedmobs.entity.seal.hurt", "Seal hurts");
+        this.add("subtitles.assortedmobs.entity.walrus.ambient", "Walrus bellows");
+        this.add("subtitles.assortedmobs.entity.walrus.hurt", "Walrus hurts");
 
         this.add("tag.item.assortedmobs.ice_pixie_weapons", "Ice Pixie Weapons");
         this.add("tag.item.assortedmobs.treasure_mob_tempt_items", "Treasure Mob Lures");
         this.add("tag.item.assortedmobs.parabuzzy_tame_items", "Parabuzzy Treats");
+        this.add("tag.item.assortedmobs.seal_food", "Seal Food");
+        this.add("tag.item.assortedmobs.repairs_shell_armor", "Repairs Shell Armor");
+
 
         this.advancement("root", "Assorted Mobs", "Meet one of the creatures Assorted Mobs adds");
         this.advancement("rare_encounter", "Rare Encounter", "Kill an ice pixie");
@@ -48,7 +55,7 @@ public class MobsLanguageProvider extends LibLanguageProvider {
     /** The chapters in {@code assets/assortedmobs/manual} name these keys. */
     private void addManual() {
         this.add("manual.assortedmobs.title", "Assorted Mobs");
-        this.add("manual.assortedmobs.description", "The ice pixie, the treasure mob, and the two 8-bit creatures.");
+        this.add("manual.assortedmobs.description", "The ice pixie, the treasure mob, the two 8-bit creatures, and the sea creatures.");
 
         this.add("manual.assortedmobs.chapter.ice_pixie", "Ice Pixie");
         this.add("manual.assortedmobs.chapter.ice_pixie.info.title", "Ice Pixie");
@@ -80,6 +87,16 @@ public class MobsLanguageProvider extends LibLanguageProvider {
         this.add("manual.assortedmobs.chapter.eight_bit.bobomb",
                 "A Bob-omb you put down follows you, and when a monster hurts you it will walk up to it and light its fuse. Be careful when hitting one yourself as its fuse will light." + BREAK
                         + "One will ride on your head too. Sneak and use one with an empty hand to pick it back up.");
+
+        this.add("manual.assortedmobs.chapter.sea_creatures", "Sea Creatures");
+        this.add("manual.assortedmobs.chapter.sea_creatures.seal.title", "Seal and Walrus");
+        this.add("manual.assortedmobs.chapter.sea_creatures.seal",
+                "Both out on the ice and snow, never far from the water, and slip into it if they get a chance. Both follow a fish and breed for one. A seal harms nothing, and bolts for the sea if it is hit." + BREAK
+                        + "A walrus is as peaceful until one is hit. Then every walrus in earshot charges.");
+        this.add("manual.assortedmobs.chapter.sea_creatures.narwhal.title", "Narwhal");
+        this.add("manual.assortedmobs.chapter.sea_creatures.narwhal", "Found in cold and frozen seas, where now and then one comes up and stands its tusk out of the water.");
+        this.add("manual.assortedmobs.chapter.sea_creatures.sea_otter.title", "Sea Otter");
+        this.add("manual.assortedmobs.chapter.sea_creatures.sea_otter", "Floats on its back in rivers and along milder coasts, dives to get about. Afloat it cracks open sea shells and leaves one behind every so often. I hear they like fish.");
     }
 
     private void advancement(String name, String title, String description) {

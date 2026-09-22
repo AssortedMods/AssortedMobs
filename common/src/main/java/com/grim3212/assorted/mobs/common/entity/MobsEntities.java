@@ -22,6 +22,11 @@ public class MobsEntities {
      * Added by each loader's enum extension: META-INF/enumextensions.json, fabric MobCategoryMixin.
      */
     public static final MobCategory TREASURE_CATEGORY = MobCategory.valueOf("ASSORTEDMOBS_TREASURE");
+    /**
+     * A category of the sea creatures' own, cap 2 per 289 loaded chunks, which is 3 or 4 about a player, as every cap is scaled: the water creature cap is 5, across the whole loaded area, and
+     * the squid have it full. In the same enum extensions as the treasure mob's. They still despawn far off, as squid do.
+     */
+    public static final MobCategory SEA_CATEGORY = MobCategory.valueOf("ASSORTEDMOBS_SEA");
 
     public static final IRegistryObject<EntityType<TreasureMob>> TREASURE_MOB = register("treasure_mob", EntityType.Builder.of(TreasureMob::new, TREASURE_CATEGORY).noLootTable().sized(0.85F, 0.8F).clientTrackingRange(10));
     // Only ever made from its item, so it never takes up a spawning category's room.
@@ -36,9 +41,8 @@ public class MobsEntities {
     // Under a block across, though it is broader than that to look at: at a block or over, the pathfinder takes it for two
     // across, and will not plot a step from the water onto any shore whose edge it would overhang, which is all of them.
     public static final IRegistryObject<EntityType<Walrus>> WALRUS = register("walrus", EntityType.Builder.of(Walrus::new, MobCategory.CREATURE).sized(0.98F, 1.1F).eyeHeight(0.9F).clientTrackingRange(10));
-    public static final IRegistryObject<EntityType<Narwhal>> NARWHAL = register("narwhal", EntityType.Builder.of(Narwhal::new, MobCategory.WATER_CREATURE).sized(1.3F, 0.85F).eyeHeight(0.45F).clientTrackingRange(10));
-    // Spawns with the squid, in the water; see SeaOtter#removeWhenFarAway.
-    public static final IRegistryObject<EntityType<SeaOtter>> SEA_OTTER = register("sea_otter", EntityType.Builder.of(SeaOtter::new, MobCategory.WATER_CREATURE).sized(0.6F, 0.45F).eyeHeight(0.3F).clientTrackingRange(8));
+    public static final IRegistryObject<EntityType<Narwhal>> NARWHAL = register("narwhal", EntityType.Builder.of(Narwhal::new, SEA_CATEGORY).sized(1.3F, 0.85F).eyeHeight(0.45F).clientTrackingRange(10));
+    public static final IRegistryObject<EntityType<SeaOtter>> SEA_OTTER = register("sea_otter", EntityType.Builder.of(SeaOtter::new, SEA_CATEGORY).sized(0.6F, 0.45F).eyeHeight(0.3F).clientTrackingRange(8));
 
     private static <T extends Entity> IRegistryObject<EntityType<T>> register(final String name, final EntityType.Builder<T> builder) {
         final ResourceKey<EntityType<?>> key = ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Constants.MOD_ID, name));

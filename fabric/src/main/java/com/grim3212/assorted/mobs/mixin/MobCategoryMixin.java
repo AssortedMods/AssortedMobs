@@ -6,11 +6,12 @@ import org.spongepowered.asm.mixin.Shadow;
 
 /**
  * Fabric enum extension (extend-enum in assortedmobs_fabric.accesswidener). Keep the values equal to
- * NeoForge's META-INF/enumextensions.json; treasure_mobs_have_their_own_category checks them.
+ * NeoForge's META-INF/enumextensions.json; treasure_mobs_have_their_own_category and sea_creatures_have_their_own_category check them.
  */
 @Mixin(MobCategory.class)
 enum MobCategoryMixin {
-    ASSORTEDMOBS_TREASURE("assortedmobs:treasure", "ATM", 4, true, false, 128);
+    ASSORTEDMOBS_TREASURE("assortedmobs:treasure", "ATM", 4, true, false, 128),
+    ASSORTEDMOBS_SEA("assortedmobs:sea", "ASC", 2, true, false, 128);
 
     @Shadow
     MobCategoryMixin(String name, String debugAbbreviation, int max, boolean isFriendly, boolean isPersistent, int despawnDistance) {

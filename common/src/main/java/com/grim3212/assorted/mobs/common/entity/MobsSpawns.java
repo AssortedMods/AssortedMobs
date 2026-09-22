@@ -44,7 +44,7 @@ public class MobsSpawns {
         // Not twice over where a beach is one of its own biomes already, as the snowy beach is.
         Services.WORLD_GEN.addSpawnToBiomes((key, biome) -> biome.is(MobsTags.Biomes.SPAWNS_WALRUSES_RARELY) && !biome.is(MobsTags.Biomes.SPAWNS_WALRUSES) && config.seaCreaturesEnabled.get() && config.walrusBeachWeight.get() > 0, MobsEntities.WALRUS, config.walrusBeachWeight::get, 1, 2);
         Services.WORLD_GEN.addSpawnToBiomes((key, biome) -> biome.is(MobsTags.Biomes.SPAWNS_NARWHALS) && config.seaCreaturesEnabled.get() && config.narwhalWeight.get() > 0, MobsEntities.NARWHAL, config.narwhalWeight::get, 1, 2);
-        Services.WORLD_GEN.addSpawnToBiomes((key, biome) -> biome.is(MobsTags.Biomes.SPAWNS_SEA_OTTERS) && config.seaCreaturesEnabled.get() && config.seaOtterWeight.get() > 0, MobsEntities.SEA_OTTER, config.seaOtterWeight::get, 3, 5);
+        Services.WORLD_GEN.addSpawnToBiomes((key, biome) -> biome.is(MobsTags.Biomes.SPAWNS_SEA_OTTERS) && config.seaCreaturesEnabled.get() && config.seaOtterWeight.get() > 0, MobsEntities.SEA_OTTER, config.seaOtterWeight::get, 2, 3);
         // Never on the surface: only inside mineshafts, strongholds and the like.
         Services.WORLD_GEN.addSpawnToStructures(MobsTags.Structures.SPAWNS_TREASURE_MOBS, MobsEntities.TREASURE_MOB, () -> config.treasureMobEnabled.get() ? config.treasureMobWeight.get() : 0, 1, 1);
     }

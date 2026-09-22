@@ -53,6 +53,7 @@ final class SpawnTests {
         out.accept("treasure_mobs_spawn_only_in_their_structures",SpawnTests::treasureMobsSpawnOnlyInTheirStructures);
         out.accept("treasure_mobs_spawn_in_the_dark", SpawnTests::treasureMobsSpawnInTheDark);
         out.accept("treasure_mobs_have_their_own_category", SpawnTests::treasureMobsHaveTheirOwnCategory);
+        out.accept("sea_creatures_have_their_own_category", SpawnTests::seaCreaturesHaveTheirOwnCategory);
         out.accept("treasure_mobs_spawn_apart", SpawnTests::treasureMobsSpawnApart);
         out.accept("vanilla_spawns_a_treasure_mob_in_a_structure", SpawnTests::vanillaSpawnsATreasureMobInAStructure);
         out.accept("creatures_have_spawn_placements", SpawnTests::creaturesHaveSpawnPlacements);
@@ -85,15 +86,15 @@ final class SpawnTests {
         assertSpawns(helper, Biomes.SNOWY_BEACH, MobCategory.CREATURE, MobsEntities.WALRUS.get(), MobsCommonMod.COMMON_CONFIG.walrusWeight.get());
         helper.assertValueEqual(spawnCount(helper, Biomes.SNOWY_BEACH, MobCategory.CREATURE, MobsEntities.WALRUS.get()), 1L, "walrus entries among a snowy beach's spawns");
         helper.assertTrue(spawnEntry(helper, Biomes.DESERT, MobCategory.CREATURE, MobsEntities.WALRUS.get()).isEmpty(), "walruses spawn in the desert");
-        assertSpawns(helper, Biomes.DEEP_COLD_OCEAN, MobCategory.WATER_CREATURE, MobsEntities.NARWHAL.get(), MobsCommonMod.COMMON_CONFIG.narwhalWeight.get());
-        assertSpawns(helper, Biomes.RIVER, MobCategory.WATER_CREATURE, MobsEntities.SEA_OTTER.get(), MobsCommonMod.COMMON_CONFIG.seaOtterWeight.get());
-        helper.assertTrue(spawnEntry(helper, Biomes.WARM_OCEAN, MobCategory.WATER_CREATURE, MobsEntities.NARWHAL.get()).isEmpty(), "narwhals spawn in warm oceans");
+        assertSpawns(helper, Biomes.DEEP_COLD_OCEAN, MobsEntities.SEA_CATEGORY, MobsEntities.NARWHAL.get(), MobsCommonMod.COMMON_CONFIG.narwhalWeight.get());
+        assertSpawns(helper, Biomes.RIVER, MobsEntities.SEA_CATEGORY, MobsEntities.SEA_OTTER.get(), MobsCommonMod.COMMON_CONFIG.seaOtterWeight.get());
+        helper.assertTrue(spawnEntry(helper, Biomes.WARM_OCEAN, MobsEntities.SEA_CATEGORY, MobsEntities.NARWHAL.get()).isEmpty(), "narwhals spawn in warm oceans");
         helper.assertTrue(spawnEntry(helper, Biomes.DESERT, MobCategory.CREATURE, MobsEntities.SEAL.get()).isEmpty(), "seals spawn in the desert");
         // By the common tags: a snowy taiga is snowy, a warm ocean is shallow, and a deep one is not coast.
         assertSpawns(helper, Biomes.SNOWY_TAIGA, MobCategory.CREATURE, MobsEntities.SEAL.get(), MobsCommonMod.COMMON_CONFIG.sealWeight.get());
-        assertSpawns(helper, Biomes.FROZEN_RIVER, MobCategory.WATER_CREATURE, MobsEntities.NARWHAL.get(), MobsCommonMod.COMMON_CONFIG.narwhalWeight.get());
-        assertSpawns(helper, Biomes.WARM_OCEAN, MobCategory.WATER_CREATURE, MobsEntities.SEA_OTTER.get(), MobsCommonMod.COMMON_CONFIG.seaOtterWeight.get());
-        helper.assertTrue(spawnEntry(helper, Biomes.DEEP_OCEAN, MobCategory.WATER_CREATURE, MobsEntities.SEA_OTTER.get()).isEmpty(), "sea otters spawn out in the deep ocean");
+        assertSpawns(helper, Biomes.FROZEN_RIVER, MobsEntities.SEA_CATEGORY, MobsEntities.NARWHAL.get(), MobsCommonMod.COMMON_CONFIG.narwhalWeight.get());
+        assertSpawns(helper, Biomes.WARM_OCEAN, MobsEntities.SEA_CATEGORY, MobsEntities.SEA_OTTER.get(), MobsCommonMod.COMMON_CONFIG.seaOtterWeight.get());
+        helper.assertTrue(spawnEntry(helper, Biomes.DEEP_OCEAN, MobsEntities.SEA_CATEGORY, MobsEntities.SEA_OTTER.get()).isEmpty(), "sea otters spawn out in the deep ocean");
 
         helper.assertTrue(spawnEntry(helper, Biomes.DESERT, MobCategory.MONSTER, MobsEntities.ICE_PIXIE.get()).isEmpty(), "ice pixies spawn in the desert");
         // Overworld, but in none of the tags spawns_parabuzzies names.
@@ -119,6 +120,20 @@ final class SpawnTests {
         helper.assertTrue(entry.isPresent(), "treasure mobs are not among the creatures inside a desert pyramid");
         helper.assertValueEqual(entry.get().weight(), MobsCommonMod.COMMON_CONFIG.treasureMobWeight.get(), "treasure mob spawn weight inside a desert pyramid");
         helper.assertTrue(treasureMobAmong(mobsAt(helper, level, pyramid.above())).isEmpty(), "treasure mobs are among the creatures above a desert pyramid");
+        helper.succeed();
+    }
+
+    /** The narwhal and the otter, and no vanilla creature, in a category with the values each loader's enum extension gives it. */
+    private static void seaCreaturesHaveTheirOwnCategory(GameTestHelper helper) {
+        MobCategory category = MobsEntities.SEA_CATEGORY;
+        helper.assertValueEqual(MobsEntities.NARWHAL.get().getCategory(), category, "narwhal category");
+        helper.assertValueEqual(MobsEntities.SEA_OTTER.get().getCategory(), category, "sea otter category");
+        helper.assertValueEqual(category.getName(), "assortedmobs:sea", "category name");
+        helper.assertValueEqual(category.getMaxInstancesPerChunk(), 2, "category cap");
+        helper.assertTrue(category.isFriendly(), "the category does not spawn on peaceful");
+        helper.assertFalse(category.isPersistent(), "the category only gets a spawn pass every 400 ticks");
+        helper.assertValueEqual(category.getDespawnDistance(), 128, "category despawn distance");
+        helper.assertTrue(spawnEntry(helper, Biomes.RIVER, MobCategory.WATER_CREATURE, MobsEntities.SEA_OTTER.get()).isEmpty(), "sea otters still compete with the squid");
         helper.succeed();
     }
 
