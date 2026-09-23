@@ -84,8 +84,14 @@ public class MobsLanguageProvider extends LibLanguageProvider {
                         + "Sneak on the ground to put it down.");
         this.add("manual.assortedmobs.chapter.eight_bit.bobomb.title", "Bob-omb");
         this.add("manual.assortedmobs.chapter.eight_bit.bobomb",
-                "A Bob-omb you put down follows you, and when a monster hurts you it will walk up to it and light its fuse. Be careful when hitting one yourself as its fuse will light." + BREAK
+                "A Bob-omb you put down follows you, and when a monster hurts you it will walk up to it and light its fuse.");
+        this.add("manual.assortedmobs.chapter.eight_bit.carrying.title", "Carrying One");
+        this.add("manual.assortedmobs.chapter.eight_bit.carrying",
+                "Be careful when hitting one yourself as its fuse will light." + BREAK
                         + "One will ride on your head too. Sneak and use one with an empty hand to pick it back up.");
+        this.add("manual.assortedmobs.chapter.eight_bit.crafting.title", "Making One");
+        this.add("manual.assortedmobs.chapter.eight_bit.crafting",
+                "A parabuzzy's shell under gunpowder and redstone makes a Bob-omb of your own.");
 
         this.add("manual.assortedmobs.chapter.sea_creatures", "Sea Creatures");
         this.add("manual.assortedmobs.chapter.sea_creatures.seal.title", "Seal and Walrus");

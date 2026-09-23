@@ -22,13 +22,28 @@
       "title": "manual.assortedmobs.chapter.eight_bit.perching.title"
     },
     {
-      "type": "assortedlib:recipe",
+      "type": "assortedlib:image",
+      "height": 86,
       "id": "bobomb",
+      "image": "assortedmobs:textures/gui/manual/bobomb.png",
+      "text": "manual.assortedmobs.chapter.eight_bit.bobomb",
+      "title": "manual.assortedmobs.chapter.eight_bit.bobomb.title",
+      "width": 152
+    },
+    {
+      "type": "assortedlib:text",
+      "id": "carrying",
+      "text": "manual.assortedmobs.chapter.eight_bit.carrying",
+      "title": "manual.assortedmobs.chapter.eight_bit.carrying.title"
+    },
+    {
+      "type": "assortedlib:recipe",
+      "id": "crafting",
       "recipes": [
         "assortedmobs:bobomb"
       ],
-      "text": "manual.assortedmobs.chapter.eight_bit.bobomb",
-      "title": "manual.assortedmobs.chapter.eight_bit.bobomb.title"
+      "text": "manual.assortedmobs.chapter.eight_bit.crafting",
+      "title": "manual.assortedmobs.chapter.eight_bit.crafting.title"
     }
   ],
   "sort_order": 20
