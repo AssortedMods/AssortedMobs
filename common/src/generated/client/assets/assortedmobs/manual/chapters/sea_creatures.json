@@ -7,23 +7,50 @@
   ],
   "pages": [
     {
-      "type": "assortedlib:text",
+      "type": "assortedlib:image",
+      "height": 86,
       "id": "seal",
+      "image": "assortedmobs:textures/gui/manual/seal.png",
       "text": "manual.assortedmobs.chapter.sea_creatures.seal",
-      "title": "manual.assortedmobs.chapter.sea_creatures.seal.title"
+      "title": "manual.assortedmobs.chapter.sea_creatures.seal.title",
+      "width": 152
+    },
+    {
+      "type": "assortedlib:text",
+      "id": "temper",
+      "text": "manual.assortedmobs.chapter.sea_creatures.temper",
+      "title": "manual.assortedmobs.chapter.sea_creatures.temper.title"
+    },
+    {
+      "type": "assortedlib:image",
+      "height": 86,
+      "id": "narwhal",
+      "image": "assortedmobs:textures/gui/manual/narwhal.png",
+      "text": "manual.assortedmobs.chapter.sea_creatures.narwhal",
+      "title": "manual.assortedmobs.chapter.sea_creatures.narwhal.title",
+      "width": 152
     },
     {
       "type": "assortedlib:recipe",
-      "id": "narwhal",
+      "id": "narwhal_sword",
       "recipes": [
         "assortedmobs:narwhal_sword"
       ],
-      "text": "manual.assortedmobs.chapter.sea_creatures.narwhal",
-      "title": "manual.assortedmobs.chapter.sea_creatures.narwhal.title"
+      "text": "manual.assortedmobs.chapter.sea_creatures.narwhal_sword",
+      "title": "manual.assortedmobs.chapter.sea_creatures.narwhal_sword.title"
+    },
+    {
+      "type": "assortedlib:image",
+      "height": 86,
+      "id": "sea_otter",
+      "image": "assortedmobs:textures/gui/manual/sea_otter.png",
+      "text": "manual.assortedmobs.chapter.sea_creatures.sea_otter",
+      "title": "manual.assortedmobs.chapter.sea_creatures.sea_otter.title",
+      "width": 152
     },
     {
       "type": "assortedlib:recipe",
-      "id": "sea_otter",
+      "id": "shell_gear",
       "recipes": [
         "assortedmobs:shell_helmet",
         "assortedmobs:shell_chestplate",
@@ -31,8 +58,8 @@
         "assortedmobs:shell_boots",
         "assortedmobs:shell_shovel"
       ],
-      "text": "manual.assortedmobs.chapter.sea_creatures.sea_otter",
-      "title": "manual.assortedmobs.chapter.sea_creatures.sea_otter.title"
+      "text": "manual.assortedmobs.chapter.sea_creatures.shell_gear",
+      "title": "manual.assortedmobs.chapter.sea_creatures.shell_gear.title"
     }
   ],
   "sort_order": 30

@@ -15,6 +15,10 @@ import net.minecraft.world.item.Items;
  */
 public class MobsManualProvider extends LibManualProvider {
 
+    /** Every picture is the page's full width, 16:9, so the text under it keeps the rest of the page. */
+    private static final int PICTURE_WIDTH = 152;
+    private static final int PICTURE_HEIGHT = 86;
+
     public MobsManualProvider(PackOutput output) {
         super(output, Constants.MOD_ID);
     }
@@ -24,7 +28,7 @@ public class MobsManualProvider extends LibManualProvider {
         this.section(70, MobsItems.BOBOMB.get());
 
         ChapterBuilder icePixie = this.chapter("ice_pixie").whenPartEnabled(MobsParts.ICE_PIXIE);
-        icePixie.image("info", picture("ice_pixie"), 104, 104)
+        icePixie.image("info", picture("ice_pixie"), PICTURE_WIDTH, PICTURE_HEIGHT)
                 .opens(MobsEntities.ICE_PIXIE.get()).opens(MobsItems.ICE_PIXIE_SPAWN_EGG.get());
         icePixie.text("fire");
 
@@ -34,22 +38,28 @@ public class MobsManualProvider extends LibManualProvider {
         treasureMob.text("taming");
 
         ChapterBuilder eightBit = this.chapter("eight_bit").whenPartEnabled(MobsParts.EIGHT_BIT);
-        eightBit.image("parabuzzy", picture("parabuzzy"), 104, 100)
+        eightBit.image("parabuzzy", picture("parabuzzy"), PICTURE_WIDTH, PICTURE_HEIGHT)
                 .opens(MobsEntities.PARABUZZY.get()).opens(MobsItems.PARABUZZY_SHELL.get(), MobsItems.PARABUZZY_SPAWN_EGG.get());
         eightBit.text("perching");
         eightBit.recipes("bobomb", MobsItems.BOBOMB.get())
                 .opens(MobsEntities.BOBOMB.get()).opens(MobsItems.BOBOMB.get());
 
         ChapterBuilder seaCreatures = this.chapter("sea_creatures").whenPartEnabled(MobsParts.SEA_CREATURES);
-        seaCreatures.text("seal").opens(MobsEntities.SEAL.get(), MobsEntities.WALRUS.get()).opens(MobsItems.SEAL_SPAWN_EGG.get(), MobsItems.WALRUS_SPAWN_EGG.get());
-        seaCreatures.recipes("narwhal", MobsItems.NARWHAL_SWORD.get())
-                .opens(MobsEntities.NARWHAL.get()).opens(MobsItems.NARWHAL_HORN.get(), MobsItems.NARWHAL_SWORD.get(), MobsItems.NARWHAL_SPAWN_EGG.get());
-        seaCreatures.recipes("sea_otter", MobsItems.SHELL_HELMET.get(), MobsItems.SHELL_CHESTPLATE.get(), MobsItems.SHELL_LEGGINGS.get(), MobsItems.SHELL_BOOTS.get(), MobsItems.SHELL_SHOVEL.get())
-                .opens(MobsEntities.SEA_OTTER.get()).opens(MobsItems.SEA_SHELL.get(), MobsItems.SHELL_HELMET.get(), MobsItems.SHELL_CHESTPLATE.get(), MobsItems.SHELL_LEGGINGS.get(),
-                        MobsItems.SHELL_BOOTS.get(), MobsItems.SHELL_SHOVEL.get(), MobsItems.SEA_OTTER_SPAWN_EGG.get());
+        seaCreatures.image("seal", picture("seal"), PICTURE_WIDTH, PICTURE_HEIGHT)
+                .opens(MobsEntities.SEAL.get(), MobsEntities.WALRUS.get()).opens(MobsItems.SEAL_SPAWN_EGG.get(), MobsItems.WALRUS_SPAWN_EGG.get());
+        seaCreatures.text("temper");
+        seaCreatures.image("narwhal", picture("narwhal"), PICTURE_WIDTH, PICTURE_HEIGHT)
+                .opens(MobsEntities.NARWHAL.get()).opens(MobsItems.NARWHAL_SPAWN_EGG.get());
+        seaCreatures.recipes("narwhal_sword", MobsItems.NARWHAL_SWORD.get())
+                .opens(MobsItems.NARWHAL_HORN.get(), MobsItems.NARWHAL_SWORD.get());
+        seaCreatures.image("sea_otter", picture("sea_otter"), PICTURE_WIDTH, PICTURE_HEIGHT)
+                .opens(MobsEntities.SEA_OTTER.get()).opens(MobsItems.SEA_OTTER_SPAWN_EGG.get());
+        seaCreatures.recipes("shell_gear", MobsItems.SHELL_HELMET.get(), MobsItems.SHELL_CHESTPLATE.get(), MobsItems.SHELL_LEGGINGS.get(), MobsItems.SHELL_BOOTS.get(), MobsItems.SHELL_SHOVEL.get())
+                .opens(MobsItems.SEA_SHELL.get(), MobsItems.SHELL_HELMET.get(), MobsItems.SHELL_CHESTPLATE.get(), MobsItems.SHELL_LEGGINGS.get(),
+                        MobsItems.SHELL_BOOTS.get(), MobsItems.SHELL_SHOVEL.get());
     }
 
-    /** The Grim Pack screenshots under {@code textures/gui/manual}, cropped and sized to leave room for the text. */
+    /** In-game screenshots of each creature where it lives, under {@code textures/gui/manual}. */
     private static Identifier picture(String name) {
         return Identifier.fromNamespaceAndPath(Constants.MOD_ID, "textures/gui/manual/" + name + ".png");
     }

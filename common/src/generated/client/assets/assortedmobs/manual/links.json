@@ -53,26 +53,36 @@
         "assortedmobs:narwhal"
       ],
       "items": [
-        "assortedmobs:narwhal_horn",
-        "assortedmobs:narwhal_sword",
         "assortedmobs:narwhal_spawn_egg"
       ],
       "page": "assortedmobs:sea_creatures/narwhal"
+    },
+    {
+      "items": [
+        "assortedmobs:narwhal_horn",
+        "assortedmobs:narwhal_sword"
+      ],
+      "page": "assortedmobs:sea_creatures/narwhal_sword"
     },
     {
       "entities": [
         "assortedmobs:sea_otter"
       ],
       "items": [
+        "assortedmobs:sea_otter_spawn_egg"
+      ],
+      "page": "assortedmobs:sea_creatures/sea_otter"
+    },
+    {
+      "items": [
         "assortedmobs:sea_shell",
         "assortedmobs:shell_helmet",
         "assortedmobs:shell_chestplate",
         "assortedmobs:shell_leggings",
         "assortedmobs:shell_boots",
-        "assortedmobs:shell_shovel",
-        "assortedmobs:sea_otter_spawn_egg"
+        "assortedmobs:shell_shovel"
       ],
-      "page": "assortedmobs:sea_creatures/sea_otter"
+      "page": "assortedmobs:sea_creatures/shell_gear"
     }
   ]
 }

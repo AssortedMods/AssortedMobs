@@ -90,12 +90,19 @@ public class MobsLanguageProvider extends LibLanguageProvider {
         this.add("manual.assortedmobs.chapter.sea_creatures", "Sea Creatures");
         this.add("manual.assortedmobs.chapter.sea_creatures.seal.title", "Seal and Walrus");
         this.add("manual.assortedmobs.chapter.sea_creatures.seal",
-                "Both out on the ice and snow, never far from the water, and slip into it if they get a chance. Both follow a fish and breed for one. A seal harms nothing, and bolts for the sea if it is hit." + BREAK
+                "Both out on the ice and snow, never far from the water, and slip into it if they get a chance. Both follow a fish and breed for one.");
+        this.add("manual.assortedmobs.chapter.sea_creatures.temper.title", "Temper");
+        this.add("manual.assortedmobs.chapter.sea_creatures.temper",
+                "A seal harms nothing, and bolts for the sea if it is hit." + BREAK
                         + "A walrus is as peaceful until one is hit. Then every walrus in earshot charges.");
         this.add("manual.assortedmobs.chapter.sea_creatures.narwhal.title", "Narwhal");
         this.add("manual.assortedmobs.chapter.sea_creatures.narwhal", "Found in cold and frozen seas, where now and then one comes up and stands its tusk out of the water.");
+        this.add("manual.assortedmobs.chapter.sea_creatures.narwhal_sword.title", "Narwhal Sword");
+        this.add("manual.assortedmobs.chapter.sea_creatures.narwhal_sword", "A narwhal drops its horn, and two horns on a stick make a sword.");
         this.add("manual.assortedmobs.chapter.sea_creatures.sea_otter.title", "Sea Otter");
         this.add("manual.assortedmobs.chapter.sea_creatures.sea_otter", "Floats on its back in rivers and along milder coasts, dives to get about. Afloat it cracks open sea shells and leaves one behind every so often. I hear they like fish.");
+        this.add("manual.assortedmobs.chapter.sea_creatures.shell_gear.title", "Shell Gear");
+        this.add("manual.assortedmobs.chapter.sea_creatures.shell_gear", "Sea shells make a set of armor and a shovel.");
     }
 
     private void advancement(String name, String title, String description) {

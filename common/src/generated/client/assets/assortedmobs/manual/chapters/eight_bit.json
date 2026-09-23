@@ -8,12 +8,12 @@
   "pages": [
     {
       "type": "assortedlib:image",
-      "height": 100,
+      "height": 86,
       "id": "parabuzzy",
       "image": "assortedmobs:textures/gui/manual/parabuzzy.png",
       "text": "manual.assortedmobs.chapter.eight_bit.parabuzzy",
       "title": "manual.assortedmobs.chapter.eight_bit.parabuzzy.title",
-      "width": 104
+      "width": 152
     },
     {
       "type": "assortedlib:text",

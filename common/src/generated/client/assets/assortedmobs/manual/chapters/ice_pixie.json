@@ -8,12 +8,12 @@
   "pages": [
     {
       "type": "assortedlib:image",
-      "height": 104,
+      "height": 86,
       "id": "info",
       "image": "assortedmobs:textures/gui/manual/ice_pixie.png",
       "text": "manual.assortedmobs.chapter.ice_pixie.info",
       "title": "manual.assortedmobs.chapter.ice_pixie.info.title",
-      "width": 104
+      "width": 152
     },
     {
       "type": "assortedlib:text",
