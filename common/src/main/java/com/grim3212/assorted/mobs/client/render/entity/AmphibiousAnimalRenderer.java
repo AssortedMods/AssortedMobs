@@ -16,9 +16,6 @@ import net.minecraft.util.Mth;
  */
 public class AmphibiousAnimalRenderer<T extends AmphibiousAnimal, M extends EntityModel<AmphibiousRenderState>> extends MobRenderer<T, AmphibiousRenderState, M> {
 
-    /** A little over the half its hitbox shrinks to, or a pup looks lost beside its mother. */
-    private static final float BABY_SCALE = 0.6F;
-
     private final Identifier texture;
     private final Identifier babyTexture;
 
@@ -42,11 +39,10 @@ public class AmphibiousAnimalRenderer<T extends AmphibiousAnimal, M extends Enti
         state.attackAnim = entity.getAttackAnim(partialTicks);
     }
 
+    /** The same half LivingEntity#getAgeScale shrinks a pup's hitbox to, so what you see is what it collides with. 1 for an adult. */
     @Override
     protected void scale(AmphibiousRenderState state, PoseStack poseStack) {
-        if (state.isBaby) {
-            poseStack.scale(BABY_SCALE, BABY_SCALE, BABY_SCALE);
-        }
+        poseStack.scale(state.ageScale, state.ageScale, state.ageScale);
     }
 
     @Override

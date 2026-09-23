@@ -25,5 +25,6 @@ public final class MobsGameTests {
         FollowOwnerTests.register(out);
         AmphibiousTests.register(out);
         SeaCreatureTests.register(out);
+        SpawnerTests.register(out);
     }
 }

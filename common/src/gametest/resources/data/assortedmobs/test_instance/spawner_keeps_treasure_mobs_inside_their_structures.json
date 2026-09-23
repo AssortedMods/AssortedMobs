@@ -1,9 +1,9 @@
 {
   "type": "minecraft:function",
   "environment": "minecraft:default",
-  "function": "assortedmobs:sea_creatures_have_their_own_category",
+  "function": "assortedmobs:spawner_keeps_treasure_mobs_inside_their_structures",
   "structure": "assortedmobs:test_box",
-  "max_ticks": 100,
+  "max_ticks": 200,
   "setup_ticks": 0,
   "required": true
 }

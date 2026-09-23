@@ -1,9 +1,9 @@
 {
   "type": "minecraft:function",
   "environment": "minecraft:default",
-  "function": "assortedmobs:vanilla_spawns_a_treasure_mob_in_a_structure",
+  "function": "assortedmobs:ice_pixie_burns_near_anything_hot",
   "structure": "assortedmobs:test_box",
-  "max_ticks": 1,
+  "max_ticks": 60,
   "setup_ticks": 0,
   "required": true
 }

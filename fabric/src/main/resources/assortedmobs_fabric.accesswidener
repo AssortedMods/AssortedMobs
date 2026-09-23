@@ -1,5 +1,2 @@
 classTweaker	v2	official
 # AssortedBuild only picks this file up under the .accesswidener name; it is a class tweaker.
-# Values come from MobCategoryMixin. NeoForge's copy is META-INF/enumextensions.json.
-extend-enum	net/minecraft/world/entity/MobCategory	ASSORTEDMOBS_TREASURE
-extend-enum	net/minecraft/world/entity/MobCategory	ASSORTEDMOBS_SEA

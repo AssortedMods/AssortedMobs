@@ -53,19 +53,13 @@ public class Seal extends AmphibiousAnimal {
 
     /** How far off the water may be for one to spawn: well inside what it keeps to ashore. */
     private static final int[] WATER_WITHIN = {3, 6, 9, 12};
-    /**
-     * One spot in this many is taken, the rest passed over, as the ocelot's are. A weight only says how a pack is shared
-     * out against the other animals, and on the frozen ocean there is only the polar bear to share with, while every
-     * block of ice has the sea just under it: without this the ice was carpeted.
-     */
-    public static final int SPAWN_ODDS = 10;
 
     /**
-     * On snow, ice or whatever other animals will spawn on, in daylight, by the water, and only now and then. Shared
-     * with the walrus: in 1.2.5 both wanted snow underfoot and nothing else, which put them far inland.
+     * On snow, ice or whatever other animals will spawn on, in daylight, and by the water. Shared with the walrus: in
+     * 1.2.5 both wanted snow underfoot and nothing else, which put them far inland. Pacing is its spawn habit json.
      */
     public static boolean checkArcticSpawnRules(EntityType<? extends Animal> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
-        return random.nextInt(SPAWN_ODDS) == 0 && level.getBlockState(pos.below()).is(MobsTags.Blocks.SEALS_SPAWNABLE_ON) && isBrightEnoughToSpawn(level, pos) && isByTheWater(level, pos);
+        return level.getBlockState(pos.below()).is(MobsTags.Blocks.SEALS_SPAWNABLE_ON) && isBrightEnoughToSpawn(level, pos) && isByTheWater(level, pos);
     }
 
     /**

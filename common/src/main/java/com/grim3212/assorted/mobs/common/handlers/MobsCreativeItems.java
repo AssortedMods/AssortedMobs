@@ -67,7 +67,6 @@ public class MobsCreativeItems {
             items.add(MobsItems.TREASURE_MOB_SPAWN_EGG.get());
         }
         if (config.eightBitMobsEnabled.get()) {
-            items.add(MobsItems.BOBOMB_SPAWN_EGG.get());
             items.add(MobsItems.PARABUZZY_SPAWN_EGG.get());
         }
         if (config.seaCreaturesEnabled.get()) {

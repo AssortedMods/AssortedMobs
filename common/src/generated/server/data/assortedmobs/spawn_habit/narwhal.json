@@ -1,0 +1,24 @@
+{
+  "biomes": "#assortedmobs:spawns_narwhals",
+  "cap": {
+    "max": 3
+  },
+  "chance": 0.15,
+  "entity": "assortedmobs:narwhal",
+  "group": {
+    "max": 2,
+    "min": 1
+  },
+  "interval": 400,
+  "part": "sea_creatures",
+  "seed": 0.02,
+  "site": {
+    "type": "assortedlib:water",
+    "depth": {
+      "max": 6,
+      "min": 1
+    },
+    "under_ice": true
+  },
+  "tries": 6
+}

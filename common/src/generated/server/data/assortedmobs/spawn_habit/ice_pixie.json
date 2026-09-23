@@ -1,0 +1,17 @@
+{
+  "biomes": "#assortedmobs:spawns_ice_pixies",
+  "cap": {
+    "max": 6,
+    "range": 128
+  },
+  "chance": 0.35,
+  "entity": "assortedmobs:ice_pixie",
+  "group": {
+    "max": 3,
+    "min": 1
+  },
+  "interval": 400,
+  "part": "ice_pixie",
+  "seed": 0.03,
+  "tries": 6
+}

@@ -1,0 +1,20 @@
+{
+  "cap": {
+    "max": 2,
+    "range": 128,
+    "skip_persistent": true
+  },
+  "chance": 0.5,
+  "distance": {
+    "max": 96,
+    "min": 24
+  },
+  "entity": "assortedmobs:treasure_mob",
+  "interval": 80,
+  "part": "treasure_mob",
+  "site": {
+    "type": "assortedlib:structure",
+    "structures": "#assortedmobs:spawns_treasure_mobs"
+  },
+  "tries": 24
+}

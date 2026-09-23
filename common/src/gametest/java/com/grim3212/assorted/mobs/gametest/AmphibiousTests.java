@@ -41,7 +41,7 @@ final class AmphibiousTests {
 
     static void register(BiConsumer<String, Consumer<GameTestHelper>> out) {
         out.accept("sea_otter_floats_on_its_back", AmphibiousTests::seaOtterFloatsOnItsBack);
-        out.accept("fed_sea_otter_stays", AmphibiousTests::fedSeaOtterStays);
+        out.accept("sea_creatures_stay_like_farm_animals", AmphibiousTests::seaCreaturesStayLikeFarmAnimals);
         out.accept("struck_seal_bolts_for_the_water", AmphibiousTests::struckSealBoltsForTheWater);
         out.accept("swimmers_climb_out_onto_the_bank", AmphibiousTests::swimmersClimbOutOntoTheBank);
         out.accept("hauled_out_seal_keeps_to_its_shore", AmphibiousTests::hauledOutSealKeepsToItsShore);
@@ -50,6 +50,7 @@ final class AmphibiousTests {
         out.accept("sea_otters_spawn_in_the_water", AmphibiousTests::seaOttersSpawnInTheWater);
         out.accept("sea_otters_keep_out_of_the_cold", AmphibiousTests::seaOttersKeepOutOfTheCold);
         out.accept("narwhal_raises_its_tusk_at_the_surface", AmphibiousTests::narwhalRaisesItsTuskAtTheSurface);
+        out.accept("sea_creatures_take_to_unlit_water", AmphibiousTests::seaCreaturesTakeToUnlitWater);
     }
 
     /** Glass from {@code x} to the far wall, one block in from the rest, filled {@code depth} deep with water. */
@@ -71,20 +72,18 @@ final class AmphibiousTests {
         });
     }
 
-    /** It despawns with the squid unless someone has taken an interest in it. */
-    private static void fedSeaOtterStays(GameTestHelper helper) {
-        ServerPlayer player = standingPlayer(helper, CENTRE.north(2));
-        // Not helper.spawn, which makes whatever it spawns persistent itself.
-        SeaOtter otter = MobsEntities.SEA_OTTER.get().create(helper.getLevel(), EntitySpawnReason.NATURAL);
-        otter.snapTo(helper.absoluteVec(Vec3.atBottomCenterOf(CENTRE)));
-        otter.setNoAi(true);
-        helper.getLevel().addFreshEntity(otter);
-        helper.assertTrue(otter.removeWhenFarAway(0.0D) && !otter.isPersistenceRequired(), "a wild otter never despawns");
-        helper.assertTrue(otter.isFood(new ItemStack(Items.COD)), "an otter turns down fish");
-
-        player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.COD));
-        otter.mobInteract(player, InteractionHand.MAIN_HAND);
-        helper.assertTrue(otter.isPersistenceRequired(), "an otter that was fed may still despawn");
+    /** Animal#removeWhenFarAway is false, so one led home to a shell farm stays there, as a cow does. The narwhal is a WaterAnimal and still goes. */
+    private static void seaCreaturesStayLikeFarmAnimals(GameTestHelper helper) {
+        ServerLevel level = helper.getLevel();
+        for (EntityType<? extends AmphibiousAnimal> type : List.of(MobsEntities.SEA_OTTER.get(), MobsEntities.SEAL.get(), MobsEntities.WALRUS.get())) {
+            AmphibiousAnimal mob = type.create(level, EntitySpawnReason.NATURAL);
+            helper.assertTrue(mob != null, type.getDescriptionId() + " could not be created");
+            helper.assertFalse(mob.removeWhenFarAway(10000.0D), type.getDescriptionId() + " despawns once a player walks off");
+            mob.discard();
+        }
+        Narwhal narwhal = MobsEntities.NARWHAL.get().create(level, EntitySpawnReason.NATURAL);
+        helper.assertTrue(narwhal != null && narwhal.removeWhenFarAway(10000.0D), "a narwhal never despawns, so the cold seas fill with them");
+        narwhal.discard();
         helper.succeed();
     }
 
@@ -199,37 +198,48 @@ final class AmphibiousTests {
                 .thenSucceed();
     }
 
-    /**
-     * Snow with the sea six blocks off will do, and the rule is asked at the block above the snow. Not every time it is
-     * asked, though: most spots are passed over, which is what keeps the ice from being carpeted.
-     */
+    /** Animal's walk target value goes negative below light 12, and PathfinderMob#checkSpawnRules reads it: an otter could not be set down in shade. */
+    private static void seaCreaturesTakeToUnlitWater(GameTestHelper helper) {
+        for (BlockPos pos : BlockPos.betweenClosed(1, 1, 1, 5, 5, 5)) {
+            helper.setBlock(pos, Blocks.STONE);
+        }
+        for (BlockPos pos : BlockPos.betweenClosed(2, 2, 2, 4, 4, 4)) {
+            helper.setBlock(pos, Blocks.WATER);
+        }
+        ServerLevel level = helper.getLevel();
+        BlockPos deep = helper.absolutePos(new BlockPos(3, 3, 3));
+
+        helper.succeedWhen(() -> {
+            helper.assertValueEqual(level.getMaxLocalRawBrightness(deep), 0, "light in the sealed pool");
+            // The narwhal is a WaterAnimal, so it had PathfinderMob's neutral value already; these three are Animals.
+            for (EntityType<? extends AmphibiousAnimal> type : List.of(MobsEntities.SEA_OTTER.get(), MobsEntities.SEAL.get(), MobsEntities.WALRUS.get())) {
+                AmphibiousAnimal mob = type.create(level, EntitySpawnReason.NATURAL);
+                helper.assertTrue(mob != null, type.getDescriptionId() + " could not be created");
+                mob.snapTo(deep.getX() + 0.5D, deep.getY(), deep.getZ() + 0.5D, 0.0F, 0.0F);
+                helper.assertTrue(mob.getWalkTargetValue(deep, level) >= 0.0F, type.getDescriptionId() + " will not path into unlit water");
+                helper.assertTrue(mob.checkSpawnRules(level, EntitySpawnReason.NATURAL), type.getDescriptionId() + " turns down unlit water");
+                // Wanting no water, the sea is worth no more than the ice, so wandering ashore stays put.
+                helper.assertValueEqual(mob.wantsWater(), false, type.getDescriptionId() + " in the water wants water");
+                helper.assertValueEqual(mob.getWalkTargetValue(deep.above(4), level), mob.getWalkTargetValue(deep, level), type.getDescriptionId() + " prefers water while it is not after any");
+                mob.discard();
+            }
+        });
+    }
+
+    /** Snow with the sea six blocks off will do, and the rule is asked at the block above the snow. */
     private static void sealsSpawnByTheWater(GameTestHelper helper) {
         BlockPos snow = new BlockPos(1, 1, 4);
         helper.setBlock(snow, Blocks.SNOW_BLOCK);
         helper.setBlock(snow.east(6), Blocks.WATER);
-        int taken = 0;
-        for (int asked = 0; asked < SPAWN_ASKS; asked++) {
-            if (Seal.checkArcticSpawnRules(MobsEntities.SEAL.get(), helper.getLevel(), EntitySpawnReason.NATURAL, helper.absolutePos(snow.above()), helper.getLevel().getRandom())) {
-                taken++;
-            }
-        }
-        helper.assertTrue(taken > 0, "a seal will not spawn on snow six blocks from the water");
-        helper.assertTrue(taken < SPAWN_ASKS * 2 / Seal.SPAWN_ODDS, "seals took " + taken + " of " + SPAWN_ASKS + " spots, well over one in " + Seal.SPAWN_ODDS);
+        helper.assertTrue(Seal.checkArcticSpawnRules(MobsEntities.SEAL.get(), helper.getLevel(), EntitySpawnReason.NATURAL, helper.absolutePos(snow.above()), helper.getLevel().getRandom()),
+                "a seal will not spawn on snow six blocks from the water");
         helper.succeed();
     }
 
-    /** Enough asks of a rule that passes one spot in {@link Seal#SPAWN_ODDS} for it to pass at least once, and not twice as often as it should. */
-    private static final int SPAWN_ASKS = 120;
-
-    /** Vanilla's two questions of a spot, as the spawner asks them, until the rule's own odds let one through. */
-    private static boolean everSpawnsAt(GameTestHelper helper, EntityType<?> type, BlockPos spot) {
-        for (int asked = 0; asked < SPAWN_ASKS; asked++) {
-            if (SpawnPlacements.isSpawnPositionOk(type, helper.getLevel(), helper.absolutePos(spot))
-                    && SpawnPlacements.checkSpawnRules(type, helper.getLevel(), EntitySpawnReason.NATURAL, helper.absolutePos(spot), helper.getLevel().getRandom())) {
-                return true;
-            }
-        }
-        return false;
+    /** Vanilla's two questions of a spot, as both spawners ask them. */
+    private static boolean spawnsAt(GameTestHelper helper, EntityType<?> type, BlockPos spot) {
+        return SpawnPlacements.isSpawnPositionOk(type, helper.getLevel(), helper.absolutePos(spot))
+                && SpawnPlacements.checkSpawnRules(type, helper.getLevel(), EntitySpawnReason.NATURAL, helper.absolutePos(spot), helper.getLevel().getRandom());
     }
 
     /**
@@ -245,7 +255,7 @@ final class AmphibiousTests {
             for (Block ground : List.of(Blocks.ICE, Blocks.PACKED_ICE, Blocks.SNOW_BLOCK, Blocks.GRASS_BLOCK)) {
                 helper.setBlock(spot.below(), ground);
                 helper.setBlock(spot, ground == Blocks.GRASS_BLOCK ? Blocks.SNOW : Blocks.AIR);
-                helper.assertTrue(everSpawnsAt(helper, type, spot), type.getDescriptionId() + " will not spawn on " + ground.getName().getString());
+                helper.assertTrue(spawnsAt(helper, type, spot), type.getDescriptionId() + " will not spawn on " + ground.getName().getString());
             }
             helper.setBlock(spot.below(), Blocks.POWDER_SNOW);
             helper.setBlock(spot, Blocks.AIR);
@@ -270,9 +280,12 @@ final class AmphibiousTests {
         helper.assertTrue(SpawnPlacements.checkSpawnRules(type, level, EntitySpawnReason.NATURAL, atSeaLevel, level.getRandom()), "an otter will not spawn just under sea level");
         SeaOtter otter = type.create(level, EntitySpawnReason.NATURAL);
         otter.snapTo(top.getX() + 0.5D, top.getY(), top.getZ() + 0.5D, 0.0F, 0.0F);
-        helper.assertTrue(otter.checkSpawnRules(level, EntitySpawnReason.NATURAL), "a new otter turns its own spawn down");
-        helper.assertTrue(otter.checkSpawnObstruction(level), "a new otter takes the water it is spawned in for an obstruction");
-        helper.succeed();
+        // Daylight test environment: PathfinderMob#checkSpawnRules is the light-based walk value, and the Fabric runner's
+        // world may be at night. succeedWhen, because the light engine lags the blocks just placed.
+        helper.succeedWhen(() -> {
+            helper.assertTrue(otter.checkSpawnRules(level, EntitySpawnReason.NATURAL), "a new otter turns its own spawn down");
+            helper.assertTrue(otter.checkSpawnObstruction(level), "a new otter takes the water it is spawned in for an obstruction");
+        });
     }
 
     /**

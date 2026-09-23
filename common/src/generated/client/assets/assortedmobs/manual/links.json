@@ -33,8 +33,7 @@
         "assortedmobs:bobomb"
       ],
       "items": [
-        "assortedmobs:bobomb",
-        "assortedmobs:bobomb_spawn_egg"
+        "assortedmobs:bobomb"
       ],
       "page": "assortedmobs:eight_bit/bobomb"
     },

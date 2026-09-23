@@ -1,9 +1,10 @@
 {
   "type": "minecraft:function",
   "environment": "assortedmobs:daylight",
-  "function": "assortedmobs:sea_otters_spawn_in_the_water",
+  "function": "assortedmobs:spawner_sets_down_a_whole_herd_of_seals",
   "structure": "assortedmobs:test_box",
   "max_ticks": 100,
   "setup_ticks": 0,
+  "sky_access": true,
   "required": true
 }

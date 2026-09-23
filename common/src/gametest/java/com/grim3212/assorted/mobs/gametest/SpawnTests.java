@@ -1,6 +1,9 @@
 package com.grim3212.assorted.mobs.gametest;
 
-import com.grim3212.assorted.mobs.MobsCommonMod;
+import com.grim3212.assorted.lib.spawn.SpawnHabit;
+import com.grim3212.assorted.lib.spawn.SpawnHabits;
+import com.grim3212.assorted.lib.spawn.SpawnSites;
+import com.grim3212.assorted.mobs.Constants;
 import com.grim3212.assorted.mobs.common.entity.ArcticSpawnPlacement;
 import com.grim3212.assorted.mobs.common.entity.MobsEntities;
 import com.grim3212.assorted.mobs.common.entity.TreasureMob;
@@ -8,15 +11,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.random.Weighted;
-import net.minecraft.util.random.WeightedList;
-import net.minecraft.world.level.NaturalSpawner;
-import net.minecraft.world.level.StructureManager;
-import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.structure.BuiltinStructures;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -27,35 +24,35 @@ import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.world.level.LightLayer;
+import net.minecraft.world.entity.monster.Monster;
+import net.minecraft.server.level.ServerLevel;
 
-import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import static com.grim3212.assorted.lib.test.TestSupport.survivalPlayer;
 import static com.grim3212.assorted.mobs.gametest.MobsTestSupport.*;
 
-/**
- * That each creature can exist at all, and that the loaders were told where it lives. All three
- * go through AssortedLib, which does them differently on each loader.
- */
+/** That each creature can exist at all, and that every one lives as a spawn habit and on no biome list. All of it goes through AssortedLib. */
 final class SpawnTests {
 
     private SpawnTests() {
     }
 
+    /** Every habit the datagen writes, by name, with the entity each sets down. */
+    private static final Map<String, EntityType<?>> HABITS = Map.of(
+            "parabuzzy", MobsEntities.PARABUZZY.get(), "ice_pixie", MobsEntities.ICE_PIXIE.get(), "seal", MobsEntities.SEAL.get(), "walrus", MobsEntities.WALRUS.get(), "walrus_ashore", MobsEntities.WALRUS.get(),
+            "sea_otter", MobsEntities.SEA_OTTER.get(), "narwhal", MobsEntities.NARWHAL.get(), "treasure_mob", MobsEntities.TREASURE_MOB.get());
+
     static void register(BiConsumer<String, Consumer<GameTestHelper>> out) {
         out.accept("creatures_spawn_with_their_attributes", SpawnTests::creaturesSpawnWithTheirAttributes);
         out.accept("creatures_are_added_to_their_biomes", SpawnTests::creaturesAreAddedToTheirBiomes);
-        out.accept("treasure_mobs_spawn_only_in_their_structures",SpawnTests::treasureMobsSpawnOnlyInTheirStructures);
-        out.accept("treasure_mobs_spawn_in_the_dark", SpawnTests::treasureMobsSpawnInTheDark);
-        out.accept("treasure_mobs_have_their_own_category", SpawnTests::treasureMobsHaveTheirOwnCategory);
-        out.accept("sea_creatures_have_their_own_category", SpawnTests::seaCreaturesHaveTheirOwnCategory);
+        out.accept("creatures_have_spawn_habits", SpawnTests::creaturesHaveSpawnHabits);
         out.accept("treasure_mobs_spawn_apart", SpawnTests::treasureMobsSpawnApart);
-        out.accept("vanilla_spawns_a_treasure_mob_in_a_structure", SpawnTests::vanillaSpawnsATreasureMobInAStructure);
+        out.accept("treasure_mobs_spawn_in_the_dark", SpawnTests::treasureMobsSpawnInTheDark);
         out.accept("creatures_have_spawn_placements", SpawnTests::creaturesHaveSpawnPlacements);
     }
 
@@ -71,119 +68,41 @@ final class SpawnTests {
         helper.succeed();
     }
 
-    /** At the configured weight, which the config only knows once it has loaded. */
+    /** Nothing of ours on any biome's spawn list: the habits are what set them down. */
     private static void creaturesAreAddedToTheirBiomes(GameTestHelper helper) {
-        assertSpawns(helper, Biomes.SNOWY_PLAINS, MobCategory.MONSTER, MobsEntities.ICE_PIXIE.get(), MobsCommonMod.COMMON_CONFIG.icePixieWeight.get());
-        assertSpawns(helper, Biomes.PLAINS, MobCategory.CREATURE, MobsEntities.PARABUZZY.get(), MobsCommonMod.COMMON_CONFIG.parabuzzyWeight.get());
-        // Named by id: no biome tag fits a meadow without the peaks coming too.
-        assertSpawns(helper, Biomes.MEADOW, MobCategory.CREATURE, MobsEntities.PARABUZZY.get(), MobsCommonMod.COMMON_CONFIG.parabuzzyWeight.get());
-
-        assertSpawns(helper, Biomes.SNOWY_PLAINS, MobCategory.CREATURE, MobsEntities.SEAL.get(), MobsCommonMod.COMMON_CONFIG.sealWeight.get());
-        assertSpawns(helper, Biomes.FROZEN_OCEAN, MobCategory.CREATURE, MobsEntities.WALRUS.get(), MobsCommonMod.COMMON_CONFIG.walrusWeight.get());
-        // On any beach or rocky shore, at a weight of its own; and once only on a snowy one, which was its biome already.
-        assertSpawns(helper, Biomes.BEACH, MobCategory.CREATURE, MobsEntities.WALRUS.get(), MobsCommonMod.COMMON_CONFIG.walrusBeachWeight.get());
-        assertSpawns(helper, Biomes.STONY_SHORE, MobCategory.CREATURE, MobsEntities.WALRUS.get(), MobsCommonMod.COMMON_CONFIG.walrusBeachWeight.get());
-        assertSpawns(helper, Biomes.SNOWY_BEACH, MobCategory.CREATURE, MobsEntities.WALRUS.get(), MobsCommonMod.COMMON_CONFIG.walrusWeight.get());
-        helper.assertValueEqual(spawnCount(helper, Biomes.SNOWY_BEACH, MobCategory.CREATURE, MobsEntities.WALRUS.get()), 1L, "walrus entries among a snowy beach's spawns");
-        helper.assertTrue(spawnEntry(helper, Biomes.DESERT, MobCategory.CREATURE, MobsEntities.WALRUS.get()).isEmpty(), "walruses spawn in the desert");
-        assertSpawns(helper, Biomes.DEEP_COLD_OCEAN, MobsEntities.SEA_CATEGORY, MobsEntities.NARWHAL.get(), MobsCommonMod.COMMON_CONFIG.narwhalWeight.get());
-        assertSpawns(helper, Biomes.RIVER, MobsEntities.SEA_CATEGORY, MobsEntities.SEA_OTTER.get(), MobsCommonMod.COMMON_CONFIG.seaOtterWeight.get());
-        helper.assertTrue(spawnEntry(helper, Biomes.WARM_OCEAN, MobsEntities.SEA_CATEGORY, MobsEntities.NARWHAL.get()).isEmpty(), "narwhals spawn in warm oceans");
-        helper.assertTrue(spawnEntry(helper, Biomes.DESERT, MobCategory.CREATURE, MobsEntities.SEAL.get()).isEmpty(), "seals spawn in the desert");
-        // By the common tags: a snowy taiga is snowy, a warm ocean is shallow, and a deep one is not coast.
-        assertSpawns(helper, Biomes.SNOWY_TAIGA, MobCategory.CREATURE, MobsEntities.SEAL.get(), MobsCommonMod.COMMON_CONFIG.sealWeight.get());
-        assertSpawns(helper, Biomes.FROZEN_RIVER, MobsEntities.SEA_CATEGORY, MobsEntities.NARWHAL.get(), MobsCommonMod.COMMON_CONFIG.narwhalWeight.get());
-        assertSpawns(helper, Biomes.WARM_OCEAN, MobsEntities.SEA_CATEGORY, MobsEntities.SEA_OTTER.get(), MobsCommonMod.COMMON_CONFIG.seaOtterWeight.get());
-        helper.assertTrue(spawnEntry(helper, Biomes.DEEP_OCEAN, MobsEntities.SEA_CATEGORY, MobsEntities.SEA_OTTER.get()).isEmpty(), "sea otters spawn out in the deep ocean");
-        // The frozen ones are in the common tags too; sea_otters_keep_out_of_the_cold is what turns them down.
-        assertSpawns(helper, Biomes.FROZEN_RIVER, MobsEntities.SEA_CATEGORY, MobsEntities.SEA_OTTER.get(), MobsCommonMod.COMMON_CONFIG.seaOtterWeight.get());
-
-        helper.assertTrue(spawnEntry(helper, Biomes.DESERT, MobCategory.MONSTER, MobsEntities.ICE_PIXIE.get()).isEmpty(), "ice pixies spawn in the desert");
-        // Overworld, but in none of the tags spawns_parabuzzies names.
-        helper.assertTrue(spawnEntry(helper, Biomes.SNOWY_PLAINS, MobCategory.CREATURE, MobsEntities.PARABUZZY.get()).isEmpty(), "parabuzzies spawn in snowy plains");
-        // Farm animals live here, but taiga is the one such tag left out.
-        helper.assertTrue(spawnEntry(helper, Biomes.TAIGA, MobCategory.CREATURE, MobsEntities.PARABUZZY.get()).isEmpty(), "parabuzzies spawn in taiga");
-        helper.assertTrue(spawnEntry(helper, Biomes.NETHER_WASTES, MobCategory.CREATURE, MobsEntities.PARABUZZY.get()).isEmpty(), "parabuzzies spawn in the nether");
-        helper.getLevel().registryAccess().lookupOrThrow(Registries.BIOME).listElementIds().forEach(biome ->
-                helper.assertTrue(spawnEntry(helper, biome, MobsEntities.TREASURE_MOB.get().getCategory(), MobsEntities.TREASURE_MOB.get()).isEmpty(), "treasure mobs spawn anywhere in " + biome.identifier()));
-        helper.succeed();
-    }
-
-    /**
-     * Through vanilla's own lookup of what may spawn at a position, {@code NaturalSpawner#mobsAt},
-     * which each loader extends differently through AssortedLib: inside a desert pyramid the treasure
-     * mob is among the creatures, at its configured weight, and just above the pyramid it is not.
-     */
-    private static void treasureMobsSpawnOnlyInTheirStructures(GameTestHelper helper) {
-        ServerLevel level = helper.getLevel();
-        LaidOut pyramid = layOutStructure(helper, BuiltinStructures.DESERT_PYRAMID);
-
-        Optional<Weighted<MobSpawnSettings.SpawnerData>> entry = treasureMobAmong(mobsAt(helper, level, pyramid.inside()));
-        helper.assertTrue(entry.isPresent(), "treasure mobs are not among the creatures inside a desert pyramid");
-        helper.assertValueEqual(entry.get().weight(), MobsCommonMod.COMMON_CONFIG.treasureMobWeight.get(), "treasure mob spawn weight inside a desert pyramid");
-        helper.assertTrue(treasureMobAmong(mobsAt(helper, level, pyramid.above())).isEmpty(), "treasure mobs are among the creatures above a desert pyramid");
-        helper.succeed();
-    }
-
-    /** The narwhal and the otter, and no vanilla creature, in a category with the values each loader's enum extension gives it. */
-    private static void seaCreaturesHaveTheirOwnCategory(GameTestHelper helper) {
-        MobCategory category = MobsEntities.SEA_CATEGORY;
-        helper.assertValueEqual(MobsEntities.NARWHAL.get().getCategory(), category, "narwhal category");
-        helper.assertValueEqual(MobsEntities.SEA_OTTER.get().getCategory(), category, "sea otter category");
-        helper.assertValueEqual(category.getName(), "assortedmobs:sea", "category name");
-        helper.assertValueEqual(category.getMaxInstancesPerChunk(), 2, "category cap");
-        helper.assertTrue(category.isFriendly(), "the category does not spawn on peaceful");
-        helper.assertFalse(category.isPersistent(), "the category only gets a spawn pass every 400 ticks");
-        helper.assertValueEqual(category.getDespawnDistance(), 128, "category despawn distance");
-        helper.assertTrue(spawnEntry(helper, Biomes.RIVER, MobCategory.WATER_CREATURE, MobsEntities.SEA_OTTER.get()).isEmpty(), "sea otters still compete with the squid");
-        helper.succeed();
-    }
-
-    /** The values each loader's enum extension gives the category; they are written out twice. */
-    private static void treasureMobsHaveTheirOwnCategory(GameTestHelper helper) {
-        MobCategory category = MobsEntities.TREASURE_MOB.get().getCategory();
-        helper.assertValueEqual(category.name(), "ASSORTEDMOBS_TREASURE", "treasure mob category");
-        helper.assertValueEqual(category.getName(), "assortedmobs:treasure", "category name");
-        helper.assertValueEqual(category.getMaxInstancesPerChunk(), 4, "category cap");
-        helper.assertTrue(category.isFriendly(), "the category does not spawn on peaceful");
-        helper.assertFalse(category.isPersistent(), "the category only gets a spawn pass every 400 ticks");
-        helper.assertValueEqual(category.getDespawnDistance(), 128, "category despawn distance");
-
-        // Only wild ones count toward the cap.
-        TreasureMob mob = helper.spawnWithNoFreeWill(MobsEntities.TREASURE_MOB.get(), CENTRE);
-        helper.assertFalse(mob.requiresCustomPersistence(), "a wild treasure mob is left out of the category count");
-        mob.setTame(true, false);
-        helper.assertTrue(mob.requiresCustomPersistence(), "a tame treasure mob counts toward the category cap");
-        mob.discard();
-        helper.succeed();
-    }
-
-    /**
-     * NaturalSpawner's own routine for one position, everything but the category caps: a desert
-     * pyramid laid out in the sky with a floor in it, and a player 40 blocks off.
-     */
-    private static void vanillaSpawnsATreasureMobInAStructure(GameTestHelper helper) {
-        ServerLevel level = helper.getLevel();
-        LaidOut pyramid = layOutStructure(helper, BuiltinStructures.DESERT_PYRAMID, 220);
-        // Absolute: this far outside the box, the helper's relative positions do not map back reliably.
-        BlockPos floor = pyramid.inside().below();
-        BlockPos.betweenClosed(floor.offset(-7, 0, -7), floor.offset(7, 0, 7)).forEach(pos -> level.setBlockAndUpdate(pos, Blocks.STONE.defaultBlockState()));
-
-        ServerPlayer player = survivalPlayer(helper);
-        player.snapTo(pyramid.inside().getX() + 40.5D, pyramid.inside().getY(), pyramid.inside().getZ() + 0.5D);
-        player.setNoGravity(true);
-        player.setInvulnerable(true);
-
-        AABB around = new AABB(pyramid.inside()).inflate(32.0D);
-        for (int attempt = 0; attempt < 200 && level.getEntitiesOfClass(TreasureMob.class, around).isEmpty(); attempt++) {
-            NaturalSpawner.spawnCategoryForPosition(MobsEntities.TREASURE_CATEGORY, level, pyramid.inside());
+        for (EntityType<?> type : HABITS.values()) {
+            for (MobCategory category : MobCategory.values()) {
+                helper.getLevel().registryAccess().lookupOrThrow(Registries.BIOME).listElementIds().forEach(biome ->
+                        helper.assertTrue(spawnEntry(helper, biome, category, type).isEmpty(), type.getDescriptionId() + " is on the biome spawn list of " + biome.identifier() + " as well as a habit"));
+            }
         }
+        helper.succeed();
+    }
 
-        List<TreasureMob> spawned = level.getEntitiesOfClass(TreasureMob.class, around);
-        BlockPos.betweenClosed(floor.offset(-7, 0, -7), floor.offset(7, 0, 7)).forEach(pos -> level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState()));
-        helper.assertValueEqual(spawned.size(), 1, "treasure mobs vanilla spawned inside a desert pyramid");
-        helper.assertFalse(spawned.getFirst().getChest().isEmpty(), "the spawned treasure mob has an empty chest");
-        spawned.getFirst().discard();
+    /**
+     * Each habit loaded from data/assortedmobs/spawn_habit with its part, and every habit-spawned creature in MISC, which
+     * vanilla's spawner neither spawns nor counts against a cap; the pixie a MONSTER still, so it reads as hostile.
+     */
+    private static void creaturesHaveSpawnHabits(GameTestHelper helper) {
+        HABITS.forEach((name, type) -> {
+            SpawnHabit habit = SpawnHabits.get(Identifier.fromNamespaceAndPath(Constants.MOD_ID, name));
+            helper.assertTrue(habit != null, "no spawn habit " + name + " loaded; loaded: " + SpawnHabits.all().keySet());
+            helper.assertValueEqual(habit.entity(), type, "the creature of habit " + name);
+            helper.assertTrue(habit.part().isPresent(), "habit " + name + " has no part switch");
+            helper.assertTrue(habit.isEnabled(), "habit " + name + " is off with every part on");
+            helper.assertTrue(habit.cap().isPresent(), "habit " + name + " has no cap");
+            helper.assertTrue(habit.seed() > 0.0D || !habit.site().seedsAtGeneration(), "habit " + name + " never seeds new terrain");
+        });
+        helper.assertValueEqual(SpawnHabits.get(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "treasure_mob")).site().type(), SpawnSites.STRUCTURE, "treasure mob site");
+        helper.assertValueEqual(SpawnHabits.get(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "sea_otter")).site().type(), SpawnSites.WATER, "sea otter site");
+        helper.assertTrue(SpawnHabits.get(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "seal")).cap().get().counted().isPresent(), "the seal cap counts only seals");
+        for (EntityType<?> type : List.of(MobsEntities.SEAL.get(), MobsEntities.WALRUS.get(), MobsEntities.NARWHAL.get(), MobsEntities.SEA_OTTER.get(), MobsEntities.TREASURE_MOB.get())) {
+            helper.assertValueEqual(type.getCategory(), MobCategory.MISC, type.getDescriptionId() + " category");
+        }
+        helper.assertValueEqual(MobsEntities.ICE_PIXIE.get().getCategory(), MobCategory.MONSTER, "ice pixie category");
+        // A farm animal among farm animals: it counts toward the animal cap and waits for it.
+        helper.assertValueEqual(MobsEntities.PARABUZZY.get().getCategory(), MobCategory.CREATURE, "parabuzzy category");
+        helper.assertTrue(SpawnHabits.get(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "parabuzzy")).mobCap(), "the parabuzzy habit ignores the animal cap");
         helper.succeed();
     }
 
@@ -195,45 +114,47 @@ final class SpawnTests {
         TreasureMob tame = helper.spawnWithNoFreeWill(MobsEntities.TREASURE_MOB.get(), aloft.east(2));
         tame.setTame(true, false);
         helper.assertFalse(TreasureMob.hasWildOneNear(helper.getLevel(), pos), "a tame treasure mob kept a wild one from spawning");
+        helper.assertTrue(tame.requiresCustomPersistence(), "a tame treasure mob may despawn");
         helper.spawnWithNoFreeWill(MobsEntities.TREASURE_MOB.get(), aloft.west(2));
         helper.assertTrue(TreasureMob.hasWildOneNear(helper.getLevel(), pos), "a wild treasure mob next door did not keep another from spawning");
         helper.succeed();
     }
 
-    /** A sealed stone cell; waits for the light engine to darken it before asking. */
-    private static void treasureMobsSpawnInTheDark(GameTestHelper helper) {
+    /** Sealed stone, glowstone for a roof when it should be lit. */
+    private static void sealedCell(GameTestHelper helper, BlockPos middle, boolean lit) {
         for (int x = -1; x <= 1; x++) {
             for (int z = -1; z <= 1; z++) {
                 for (int y = -1; y <= 2; y++) {
-                    helper.setBlock(CENTRE.offset(x, y, z), x == 0 && z == 0 && (y == 0 || y == 1) ? Blocks.AIR : Blocks.STONE);
+                    boolean inside = x == 0 && z == 0 && (y == 0 || y == 1);
+                    helper.setBlock(middle.offset(x, y, z), inside ? Blocks.AIR : lit && y == 2 ? Blocks.GLOWSTONE : Blocks.STONE);
                 }
             }
         }
+    }
+
+    /** A dark cell and a lit one, so a retry asks the same thing again; waits for the light engine to settle before asking. */
+    private static void treasureMobsSpawnInTheDark(GameTestHelper helper) {
+        BlockPos glowing = new BlockPos(1, 1, 1);
+        sealedCell(helper, CENTRE, false);
+        sealedCell(helper, glowing, true);
         TreasureMob mob = helper.spawnWithNoFreeWill(MobsEntities.TREASURE_MOB.get(), CENTRE);
+        ServerLevel level = helper.getLevel();
+        BlockPos dark = helper.absolutePos(CENTRE);
+        BlockPos lit = helper.absolutePos(glowing);
 
         helper.succeedWhen(() -> {
-            helper.assertValueEqual(helper.getLevel().getMaxLocalRawBrightness(mob.blockPosition()), 0, "light in the sealed cell");
-            helper.assertTrue(mob.checkSpawnRules(helper.getLevel(), EntitySpawnReason.NATURAL), "a treasure mob cannot spawn in the dark");
+            helper.assertValueEqual(level.getMaxLocalRawBrightness(mob.blockPosition()), 0, "light in the sealed cell");
+            helper.assertTrue(mob.checkSpawnRules(level, EntitySpawnReason.NATURAL), "a treasure mob cannot spawn in the dark");
+            // Its placement rule is the monsters' light check now, so a lit cell turns it down where a dark one does not.
+            helper.assertTrue(Monster.isDarkEnoughToSpawn(level, dark, level.getRandom()), "the sealed cell is not dark enough for a monster");
+            helper.assertTrue(level.getBrightness(LightLayer.BLOCK, lit) > 0, "the glowstone cell has no block light");
+            helper.assertFalse(SpawnPlacements.checkSpawnRules(MobsEntities.TREASURE_MOB.get(), level, EntitySpawnReason.NATURAL, lit, level.getRandom()),
+                    "a treasure mob spawns in a lit room");
             mob.discard();
         });
     }
 
-    private static Optional<Weighted<MobSpawnSettings.SpawnerData>> treasureMobAmong(WeightedList<MobSpawnSettings.SpawnerData> spawns) {
-        return spawns.unwrap().stream().filter(weighted -> weighted.value().type() == MobsEntities.TREASURE_MOB.get()).findFirst();
-    }
-
-    /** Private NaturalSpawner#mobsAt, which both loaders extend through AssortedLib. */
-    @SuppressWarnings("unchecked")
-    private static WeightedList<MobSpawnSettings.SpawnerData> mobsAt(GameTestHelper helper, ServerLevel level, BlockPos pos) {
-        try {
-            Method mobsAt = NaturalSpawner.class.getDeclaredMethod("mobsAt", ServerLevel.class, StructureManager.class, ChunkGenerator.class, MobCategory.class, BlockPos.class, Holder.class);
-            mobsAt.setAccessible(true);
-            return (WeightedList<MobSpawnSettings.SpawnerData>) mobsAt.invoke(null, level, level.structureManager(), level.getChunkSource().getGenerator(), MobsEntities.TREASURE_MOB.get().getCategory(), pos, null);
-        } catch (ReflectiveOperationException e) {
-            throw helper.assertionException("could not ask NaturalSpawner#mobsAt: " + e);
-        }
-    }
-
+    /** A habit asks these placements of every spot, so a habit's creature needs one as much as a biome list's. */
     private static void creaturesHaveSpawnPlacements(GameTestHelper helper) {
         for (EntityType<?> type : List.of(MobsEntities.ICE_PIXIE.get(), MobsEntities.TREASURE_MOB.get(), MobsEntities.PARABUZZY.get())) {
             helper.assertTrue(SpawnPlacements.getPlacementType(type) == SpawnPlacementTypes.ON_GROUND,
@@ -249,19 +170,8 @@ final class SpawnTests {
         helper.succeed();
     }
 
-    private static void assertSpawns(GameTestHelper helper, ResourceKey<Biome> biome, MobCategory category, EntityType<?> type, int weight) {
-        Optional<Weighted<MobSpawnSettings.SpawnerData>> entry = spawnEntry(helper, biome, category, type);
-        helper.assertTrue(entry.isPresent(), type.getDescriptionId() + " is not among the " + category.getName() + " spawns of " + biome.identifier());
-        helper.assertValueEqual(entry.get().weight(), weight, type.getDescriptionId() + " spawn weight in " + biome.identifier());
-    }
-
     private static Optional<Weighted<MobSpawnSettings.SpawnerData>> spawnEntry(GameTestHelper helper, ResourceKey<Biome> biome, MobCategory category, EntityType<?> type) {
         Holder<Biome> holder = helper.getLevel().registryAccess().lookupOrThrow(Registries.BIOME).getOrThrow(biome);
         return holder.value().getMobSettings().getMobs(category).unwrap().stream().filter(weighted -> weighted.value().type() == type).findFirst();
-    }
-
-    private static long spawnCount(GameTestHelper helper, ResourceKey<Biome> biome, MobCategory category, EntityType<?> type) {
-        Holder<Biome> holder = helper.getLevel().registryAccess().lookupOrThrow(Registries.BIOME).getOrThrow(biome);
-        return holder.value().getMobSettings().getMobs(category).unwrap().stream().filter(weighted -> weighted.value().type() == type).count();
     }
 }

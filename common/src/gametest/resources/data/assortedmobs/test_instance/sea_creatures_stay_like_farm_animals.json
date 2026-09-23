@@ -1,9 +1,9 @@
 {
   "type": "minecraft:function",
   "environment": "minecraft:default",
-  "function": "assortedmobs:treasure_mobs_have_their_own_category",
+  "function": "assortedmobs:sea_creatures_stay_like_farm_animals",
   "structure": "assortedmobs:test_box",
-  "max_ticks": 1,
+  "max_ticks": 100,
   "setup_ticks": 0,
   "required": true
 }

@@ -21,6 +21,9 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
+import com.grim3212.assorted.lib.data.ForgeEntityTagProvider;
+import com.grim3212.assorted.mobs.data.MobsEntityTagProvider;
+import com.grim3212.assorted.mobs.data.MobsSpawnHabitProvider;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -51,6 +54,8 @@ public class AssortedMobsNeoForge {
         event.addProvider(new ForgeItemTagProvider(packOutput, lookupProvider, blockTagProvider.contentsGetter(), Constants.MOD_ID, new MobsItemTagProvider(packOutput, lookupProvider, blockTagProvider.contentsGetter())));
         event.addProvider(new ForgeBiomeTagProvider(packOutput, lookupProvider, Constants.MOD_ID, new MobsBiomeTagProvider(packOutput, lookupProvider)));
         event.addProvider(new MobsStructureTagProvider(packOutput, lookupProvider));
+        event.addProvider(new ForgeEntityTagProvider(packOutput, lookupProvider, Constants.MOD_ID, new MobsEntityTagProvider(packOutput, lookupProvider)));
+        event.addProvider(new MobsSpawnHabitProvider(packOutput));
         // Recipe providers are not data providers any more - the Runner owns the output.
         event.addProvider(new MobsRecipes.Runner(packOutput, lookupProvider));
         event.addProvider(new MobsLootTableProvider(packOutput, lookupProvider));

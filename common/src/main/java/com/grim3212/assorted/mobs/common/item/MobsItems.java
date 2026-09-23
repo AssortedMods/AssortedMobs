@@ -48,7 +48,6 @@ public class MobsItems {
 
     public static final IRegistryObject<Item> ICE_PIXIE_SPAWN_EGG = spawnEgg("ice_pixie_spawn_egg", MobsEntities.ICE_PIXIE::get);
     public static final IRegistryObject<Item> TREASURE_MOB_SPAWN_EGG = spawnEgg("treasure_mob_spawn_egg", MobsEntities.TREASURE_MOB::get);
-    public static final IRegistryObject<Item> BOBOMB_SPAWN_EGG = spawnEgg("bobomb_spawn_egg", MobsEntities.BOBOMB::get);
     public static final IRegistryObject<Item> PARABUZZY_SPAWN_EGG = spawnEgg("parabuzzy_spawn_egg", MobsEntities.PARABUZZY::get);
     public static final IRegistryObject<Item> SEAL_SPAWN_EGG = spawnEgg("seal_spawn_egg", MobsEntities.SEAL::get);
     public static final IRegistryObject<Item> WALRUS_SPAWN_EGG = spawnEgg("walrus_spawn_egg", MobsEntities.WALRUS::get);

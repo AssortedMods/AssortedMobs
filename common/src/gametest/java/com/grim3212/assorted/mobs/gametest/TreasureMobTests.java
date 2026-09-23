@@ -44,8 +44,8 @@ final class TreasureMobTests {
         out.accept("treasure_mob_is_tamed_with_gold_nuggets", TreasureMobTests::treasureMobIsTamedWithGoldNuggets);
         out.accept("treasure_mob_stands_still_while_open", TreasureMobTests::treasureMobStandsStillWhileOpen);
         out.accept("treasure_mob_carries_what_its_structure_holds", TreasureMobTests::treasureMobCarriesWhatItsStructureHolds);
-        out.accept("tame_treasure_mob_never_despawns", TreasureMobTests::tameTreasureMobNeverDespawns);
         out.accept("treasure_structures_have_their_own_loot", TreasureMobTests::treasureStructuresHaveTheirOwnLoot);
+        out.accept("treasure_mobs_never_despawn", TreasureMobTests::treasureMobsNeverDespawn);
     }
 
     private static void treasureMobArrivesWithLoot(GameTestHelper helper) {
@@ -136,6 +136,28 @@ final class TreasureMobTests {
      * Every structure treasure mobs spawn in has a table of its own, but the snowball, which has no
      * chests. Assorted World's tables load only with it, so without it they are absent too.
      */
+    /**
+     * Through vanilla's own checkDespawn, 300 blocks up, past the 128-block instant despawn from every test's players.
+     * Animal#removeWhenFarAway is false for a treasure mob wild or tame, so one found deep in a mansion is still there
+     * when you come back for it. Spawned without the persistence gametests hand every mob they place.
+     */
+    private static void treasureMobsNeverDespawn(GameTestHelper helper) {
+        survivalPlayer(helper);
+        TreasureMob wild = helper.spawnEntity(MobsEntities.TREASURE_MOB.get(), CENTRE.above(300)).requirePersistence(false).spawn();
+        TreasureMob tame = helper.spawnEntity(MobsEntities.TREASURE_MOB.get(), CENTRE.above(300).east(2)).requirePersistence(false).spawn();
+        tame.setTame(true, false);
+        wild.tickCount = tame.tickCount = 100000;
+
+        wild.checkDespawn();
+        tame.checkDespawn();
+        helper.assertFalse(wild.isRemoved(), "a wild treasure mob 300 blocks from any player despawned");
+        helper.assertFalse(tame.isRemoved(), "a tame treasure mob despawned out of range");
+        helper.assertTrue(tame.requiresCustomPersistence(), "a tame treasure mob is counted by the habit cap that leaves persistent ones out");
+        wild.discard();
+        tame.discard();
+        helper.succeed();
+    }
+
     private static void treasureStructuresHaveTheirOwnLoot(GameTestHelper helper) {
         ReloadableServerRegistries.Holder loot = helper.getLevel().getServer().reloadableRegistries();
         HolderSet.Named<Structure> structures = helper.getLevel().registryAccess().lookupOrThrow(Registries.STRUCTURE).getOrThrow(MobsTags.Structures.SPAWNS_TREASURE_MOBS);
@@ -149,25 +171,6 @@ final class TreasureMobTests {
         boolean assortedWorld = Services.PLATFORM.isModLoaded("assortedworld");
         ResourceKey<Structure> fountain = ResourceKey.create(Registries.STRUCTURE, Identifier.fromNamespaceAndPath("assortedworld", "fountain"));
         helper.assertValueEqual(loot.getLootTable(TreasureMob.chestLootFor(fountain)) != LootTable.EMPTY, assortedWorld, "treasure mob loot for Assorted World's fountain loaded");
-        helper.succeed();
-    }
-
-    /**
-     * 300 blocks up, past the 128-block instant despawn from every test's players; the wild one is the
-     * control. Spawned without the persistence gametests give every mob by default.
-     */
-    private static void tameTreasureMobNeverDespawns(GameTestHelper helper) {
-        survivalPlayer(helper);
-        TreasureMob tame = helper.spawnEntity(MobsEntities.TREASURE_MOB.get(), CENTRE.above(300)).requirePersistence(false).spawn();
-        tame.setTame(true, false);
-        TreasureMob wild = helper.spawnEntity(MobsEntities.TREASURE_MOB.get(), CENTRE.above(300).east(2)).requirePersistence(false).spawn();
-        tame.tickCount = wild.tickCount = 100000;
-
-        tame.checkDespawn();
-        wild.checkDespawn();
-        helper.assertTrue(wild.isRemoved(), "the wild control did not despawn, so nothing was tested");
-        helper.assertFalse(tame.isRemoved(), "a tame treasure mob despawned out of range");
-        tame.discard();
         helper.succeed();
     }
 

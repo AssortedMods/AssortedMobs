@@ -23,8 +23,9 @@ public class MobsBlockTagProvider extends LibBlockTagProvider {
 
     @Override
     public void addCommonTags(Function<TagKey<Block>, TagAppender<Block>> appender) {
-        // Every flame on a stick, standing or on a wall. A redstone torch is not a fire.
-        TagAppender<Block> repellents = appender.apply(MobsTags.Blocks.ICE_PIXIE_REPELLENTS);
+        // Anything hot. A redstone torch is not a fire; a lantern is light, not heat.
+        TagAppender<Block> repellents = appender.apply(MobsTags.Blocks.ICE_PIXIE_REPELLENTS).addTag(BlockTags.FIRE).addTag(BlockTags.CAMPFIRES)
+                .add(key(Blocks.LAVA)).add(key(Blocks.MAGMA_BLOCK));
         for (Block torch : new Block[]{Blocks.TORCH, Blocks.WALL_TORCH, Blocks.SOUL_TORCH, Blocks.SOUL_WALL_TORCH, Blocks.COPPER_TORCH, Blocks.COPPER_WALL_TORCH}) {
             repellents.add(key(torch));
         }

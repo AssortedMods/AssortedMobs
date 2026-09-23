@@ -1,0 +1,17 @@
+{
+  "biomes": "#assortedmobs:spawns_walruses",
+  "cap": {
+    "counted": "#assortedmobs:ice_herd",
+    "max": 6
+  },
+  "chance": 0.12,
+  "entity": "assortedmobs:walrus",
+  "group": {
+    "max": 3,
+    "min": 2
+  },
+  "interval": 400,
+  "part": "sea_creatures",
+  "seed": 0.015,
+  "tries": 6
+}

@@ -4,6 +4,7 @@ import com.grim3212.assorted.mobs.Constants;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
@@ -35,6 +36,15 @@ public class MobsTags {
 
         private static TagKey<Item> create(String name) {
             return TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Constants.MOD_ID, name));
+        }
+    }
+
+    public static class EntityTypes {
+        /** Seals, walruses and polar bears: the spawn habits count these together, so many of any on the ice at once. */
+        public static final TagKey<EntityType<?>> ICE_HERD = create("ice_herd");
+
+        private static TagKey<EntityType<?>> create(String name) {
+            return TagKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Constants.MOD_ID, name));
         }
     }
 

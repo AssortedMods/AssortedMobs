@@ -12,7 +12,6 @@ authors = "${mod_author}"
 description = '''
 ${mod_description}
 '''
-enumExtensions = "META-INF/enumextensions.json"
 
 [[dependencies.${mod_id}]]
 modId = "neoforge"

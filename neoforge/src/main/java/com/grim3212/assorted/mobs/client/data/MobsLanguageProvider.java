@@ -24,7 +24,6 @@ public class MobsLanguageProvider extends LibLanguageProvider {
 
         this.add("entity.assortedmobs.bobomb", "Bob-omb");
         this.add("item.assortedmobs.bobomb", "Bob-omb");
-        this.add("item.assortedmobs.bobomb_spawn_egg", "Bob-omb Spawn Egg");
         this.add("item.assortedmobs.parabuzzy_shell", "Parabuzzy's Shell");
 
         this.add("subtitles.assortedmobs.entity.bobomb.ambient", "Bob-omb ticks");
@@ -64,7 +63,7 @@ public class MobsLanguageProvider extends LibLanguageProvider {
         this.add("manual.assortedmobs.chapter.ice_pixie.fire.title", "Only Fire");
         this.add("manual.assortedmobs.chapter.ice_pixie.fire",
                 "Nothing hurts an ice pixie unless you are holding a torch or flint and steel when you hit it." + BREAK
-                        + "Torches placed nearby burn it too.");
+                        + "Anything hot nearby burns will burn them too.");
 
         this.add("manual.assortedmobs.chapter.treasure_mob", "Treasure Mob");
         this.add("manual.assortedmobs.chapter.treasure_mob.info.title", "Treasure Mob");

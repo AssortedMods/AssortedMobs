@@ -1,7 +1,7 @@
 {
   "type": "minecraft:function",
   "environment": "minecraft:default",
-  "function": "assortedmobs:treasure_mobs_spawn_only_in_their_structures",
+  "function": "assortedmobs:creatures_have_spawn_habits",
   "structure": "assortedmobs:test_box",
   "max_ticks": 1,
   "setup_ticks": 0,

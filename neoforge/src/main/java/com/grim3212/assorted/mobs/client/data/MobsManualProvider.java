@@ -38,7 +38,7 @@ public class MobsManualProvider extends LibManualProvider {
                 .opens(MobsEntities.PARABUZZY.get()).opens(MobsItems.PARABUZZY_SHELL.get(), MobsItems.PARABUZZY_SPAWN_EGG.get());
         eightBit.text("perching");
         eightBit.recipes("bobomb", MobsItems.BOBOMB.get())
-                .opens(MobsEntities.BOBOMB.get()).opens(MobsItems.BOBOMB.get(), MobsItems.BOBOMB_SPAWN_EGG.get());
+                .opens(MobsEntities.BOBOMB.get()).opens(MobsItems.BOBOMB.get());
 
         ChapterBuilder seaCreatures = this.chapter("sea_creatures").whenPartEnabled(MobsParts.SEA_CREATURES);
         seaCreatures.text("seal").opens(MobsEntities.SEAL.get(), MobsEntities.WALRUS.get()).opens(MobsItems.SEAL_SPAWN_EGG.get(), MobsItems.WALRUS_SPAWN_EGG.get());

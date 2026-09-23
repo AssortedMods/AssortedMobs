@@ -1,11 +1,13 @@
 package com.grim3212.assorted.mobs.gametest;
 
+import com.grim3212.assorted.mobs.api.MobsTags;
 import com.grim3212.assorted.mobs.common.entity.IcePixie;
 import com.grim3212.assorted.mobs.common.entity.MobsEntities;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 
 import java.util.function.BiConsumer;
@@ -24,6 +26,7 @@ final class IcePixieTests {
         out.accept("ice_pixie_shrugs_off_bare_hands", IcePixieTests::icePixieShrugsOffBareHands);
         out.accept("ice_pixie_is_hurt_by_a_torch_bearer", IcePixieTests::icePixieIsHurtByATorchBearer);
         out.accept("ice_pixie_burns_near_torches", IcePixieTests::icePixieBurnsNearTorches);
+        out.accept("ice_pixie_burns_near_anything_hot", IcePixieTests::icePixieBurnsNearAnythingHot);
         out.accept("ice_pixie_drops_snow_and_ice", IcePixieTests::icePixieDropsSnowAndIce);
     }
 
@@ -73,5 +76,17 @@ final class IcePixieTests {
         helper.setBlock(CENTRE.west(2), Blocks.SOUL_TORCH);
 
         helper.succeedWhen(() -> helper.assertTrue(pixie.getHealth() < pixie.getMaxHealth(), "the ice pixie has not been burnt by the torches beside it"));
+    }
+
+    /** Not only torches: fire, a campfire, magma and lava each count, by the tag. Lava counts as the block its fluid is. */
+    private static void icePixieBurnsNearAnythingHot(GameTestHelper helper) {
+        for (Block hot : new Block[]{Blocks.FIRE, Blocks.SOUL_FIRE, Blocks.CAMPFIRE, Blocks.SOUL_CAMPFIRE, Blocks.MAGMA_BLOCK, Blocks.LAVA}) {
+            helper.assertTrue(hot.defaultBlockState().is(MobsTags.Blocks.ICE_PIXIE_REPELLENTS), hot.getName().getString() + " does not burn an ice pixie");
+        }
+        helper.assertFalse(Blocks.REDSTONE_TORCH.defaultBlockState().is(MobsTags.Blocks.ICE_PIXIE_REPELLENTS), "a redstone torch burns an ice pixie");
+        // Magma under it, alone: where a torch is a flame, this is heat with no flame at all.
+        helper.setBlock(CENTRE.below(), Blocks.MAGMA_BLOCK);
+        IcePixie pixie = helper.spawnWithNoFreeWill(MobsEntities.ICE_PIXIE.get(), CENTRE);
+        helper.succeedWhen(() -> helper.assertTrue(pixie.getHealth() < pixie.getMaxHealth(), "the ice pixie has not been burnt by the magma under it"));
     }
 }

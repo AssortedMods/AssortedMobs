@@ -1,0 +1,18 @@
+{
+  "biomes": "#assortedmobs:spawns_parabuzzies",
+  "cap": {
+    "max": 5,
+    "range": 128
+  },
+  "chance": 0.1,
+  "entity": "assortedmobs:parabuzzy",
+  "group": {
+    "max": 3,
+    "min": 1
+  },
+  "interval": 400,
+  "mob_cap": true,
+  "part": "eight_bit",
+  "seed": 0.01,
+  "tries": 6
+}

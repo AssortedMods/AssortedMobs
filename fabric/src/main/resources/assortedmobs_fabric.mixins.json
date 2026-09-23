@@ -4,7 +4,6 @@
   "compatibilityLevel": "JAVA_21",
   "package": "com.grim3212.assorted.mobs.mixin",
   "mixins": [
-    "MobCategoryMixin"
   ],
   "injectors": {
     "defaultRequire": 1

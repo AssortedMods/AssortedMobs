@@ -18,8 +18,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.TimeUtil;
 import net.minecraft.util.valueproviders.UniformInt;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
@@ -140,22 +138,6 @@ public class SeaOtter extends AmphibiousAnimal {
         }
     }
 
-    /** It spawns and despawns with the squid, so one a player has fed is one they get to keep. */
-    @Override
-    public InteractionResult mobInteract(Player player, InteractionHand hand) {
-        boolean fed = this.isFood(player.getItemInHand(hand));
-        InteractionResult result = super.mobInteract(player, hand);
-        if (fed && result.consumesAction()) {
-            this.setPersistenceRequired();
-        }
-        return result;
-    }
-
-    @Override
-    public boolean removeWhenFarAway(double distSqr) {
-        return !this.hasCustomName();
-    }
-
     @Override
     public boolean isFood(ItemStack stack) {
         return stack.is(MobsTags.Items.SEAL_FOOD);
@@ -163,11 +145,7 @@ public class SeaOtter extends AmphibiousAnimal {
 
     @Override
     public @Nullable AgeableMob getBreedOffspring(ServerLevel level, AgeableMob partner) {
-        SeaOtter pup = MobsEntities.SEA_OTTER.get().create(level, EntitySpawnReason.BREEDING);
-        if (pup != null) {
-            pup.setPersistenceRequired();
-        }
-        return pup;
+        return MobsEntities.SEA_OTTER.get().create(level, EntitySpawnReason.BREEDING);
     }
 
     @Override

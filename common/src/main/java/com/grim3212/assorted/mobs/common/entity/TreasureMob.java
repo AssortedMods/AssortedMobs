@@ -36,7 +36,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
@@ -66,8 +68,6 @@ public class TreasureMob extends TamableAnimal {
 
     private static final double WILD_HEALTH = 8.0D;
     private static final double TAME_HEALTH = 16.0D;
-    /** Five minutes, the longest an untamed one lingers once no player is near. */
-    private static final int WILD_LIFETIME = 2400;
 
     private final TreasureChest chest = new TreasureChest(this);
     @Nullable
@@ -84,8 +84,9 @@ public class TreasureMob extends TamableAnimal {
 
     public static final double SPAWN_SPACING = 32.0D;
 
-    public static boolean checkTreasureMobSpawnRules(EntityType<TreasureMob> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
-        return Mob.checkMobSpawnRules(type, level, spawnReason, pos, random) && !hasWildOneNear(level, pos);
+    /** A mimic lurks in the dark: the monsters' own light check, plus room to stand and no other wild one close by. */
+    public static boolean checkTreasureMobSpawnRules(EntityType<TreasureMob> type, ServerLevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
+        return Monster.checkMonsterSpawnRules(type, level, spawnReason, pos, random) && !hasWildOneNear(level, pos);
     }
 
     /** Tame ones don't count. */
@@ -93,7 +94,7 @@ public class TreasureMob extends TamableAnimal {
         return !level.getEntitiesOfClass(TreasureMob.class, new AABB(pos).inflate(SPAWN_SPACING), mob -> !mob.isTame()).isEmpty();
     }
 
-    /** NaturalSpawner leaves these out of the category count, so only wild ones fill the cap of 4. */
+    /** Not for despawning, which Animal rules out for all of them, but so its habit's cap counts only the wild ones. */
     @Override
     public boolean requiresCustomPersistence() {
         return this.isTame();
@@ -222,11 +223,6 @@ public class TreasureMob extends TamableAnimal {
     protected void dropEquipment(ServerLevel level) {
         super.dropEquipment(level);
         Containers.dropContents(level, this, this.chest);
-    }
-
-    @Override
-    public boolean removeWhenFarAway(double distSqr) {
-        return !this.isTame() && this.tickCount > WILD_LIFETIME;
     }
 
     @Override

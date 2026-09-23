@@ -223,6 +223,15 @@ public abstract class AmphibiousAnimal extends Animal {
         return level.isUnobstructed(this);
     }
 
+    /**
+     * Never negative, unlike Animal's, which PathfinderMob#checkSpawnRules reads as no spawn below light 12. Water only
+     * while it wants water, as Turtle does with goingHome, or RandomPos would pull a hauled out one back to the sea.
+     */
+    @Override
+    public float getWalkTargetValue(BlockPos pos, LevelReader level) {
+        return this.wantsWater() && level.getFluidState(pos).is(FluidTags.WATER) ? 10.0F : 0.0F;
+    }
+
     @Override
     public boolean canBreatheUnderwater() {
         return true;
