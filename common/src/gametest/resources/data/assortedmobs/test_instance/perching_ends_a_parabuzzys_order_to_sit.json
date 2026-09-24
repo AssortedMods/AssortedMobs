@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedmobs:perching_ends_a_parabuzzys_order_to_sit",
+  "structure": "assortedmobs:test_box",
+  "max_ticks": 200,
+  "setup_ticks": 0,
+  "required": true
+}

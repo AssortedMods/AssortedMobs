@@ -58,7 +58,7 @@ import java.util.OptionalInt;
 
 /**
  * A winged shell that hovers rather than falls and hunts monsters. Wild ones turn on whatever hurts
- * them; fish tames one, food heals a tame one, and a tame one sits on a player's head, where it
+ * them; fish tames one, food heals a tame one, and a tame one sits on its owner's head, where it
  * heals itself and slows the player's falls to its own drift. The rarer colours are tougher and hit harder.
  */
 public class Parabuzzy extends TamableAnimal implements PerchingMob {
@@ -96,7 +96,7 @@ public class Parabuzzy extends TamableAnimal implements PerchingMob {
 
         this.targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
-        this.targetSelector.addGoal(3, new HurtByTargetGoal(this));
+        this.targetSelector.addGoal(3, new HurtByTargetGoal(this).setAlertOthers());
         this.targetSelector.addGoal(4, new NonTameRandomTargetGoal<>(this, Mob.class, true, (target, level) -> Bobomb.isEnemy(target)));
     }
 
@@ -119,10 +119,14 @@ public class Parabuzzy extends TamableAnimal implements PerchingMob {
 
     /** Sets the colour, with the health and bite that come with it, and heals it to the new full. */
     public void setVariant(Variant variant) {
+        this.applyVariant(variant);
+        this.setHealth(this.getMaxHealth());
+    }
+
+    private void applyVariant(Variant variant) {
         this.entityData.set(DATA_VARIANT, variant.ordinal());
         this.getAttribute(Attributes.MAX_HEALTH).setBaseValue(variant.health);
         this.getAttribute(Attributes.ATTACK_DAMAGE).setBaseValue(variant.damage);
-        this.setHealth(this.getMaxHealth());
     }
 
     public boolean isAngry() {
@@ -150,8 +154,8 @@ public class Parabuzzy extends TamableAnimal implements PerchingMob {
     @Override
     protected void readAdditionalSaveData(ValueInput input) {
         super.readAdditionalSaveData(input);
-        // The attributes the variant set are saved with the rest, so only the colour is restored.
-        input.read("variant", Variant.CODEC).ifPresent(variant -> this.entityData.set(DATA_VARIANT, variant.ordinal()));
+        // Over the saved attributes, so retuned stats reach old parabuzzies; a lower max clamps health, it never heals.
+        input.read("variant", Variant.CODEC).ifPresent(this::applyVariant);
     }
 
     /** Only the blue ones shed a shell, and a shell is all there is to drop. */
@@ -241,21 +245,29 @@ public class Parabuzzy extends TamableAnimal implements PerchingMob {
                 return InteractionResult.PASS;
             }
 
-            if (server && !player.isSecondaryUseActive() && this.perch.perchOn(player)) {
-                return InteractionResult.SUCCESS_SERVER;
+            // Success on the client too, or it retries with the off hand and the server toggles twice.
+            if (this.isOwnedBy(player)) {
+                if (!server) {
+                    return InteractionResult.SUCCESS;
+                }
+                if (!player.isSecondaryUseActive() && this.perch.perchOn(player)) {
+                    // No goal ticks while perched to stand it back up, and a sit order would outlast the ride.
+                    this.setOrderedToSit(false);
+                    this.setInSittingPose(false);
+                } else {
+                    this.setOrderedToSit(!this.isOrderedToSit());
+                    this.jumping = false;
+                    this.navigation.stop();
+                    this.setTarget(null);
+                }
+                return InteractionResult.SUCCESS;
             }
-
-            if (server && this.isOwnedBy(player)) {
-                this.setOrderedToSit(!this.isOrderedToSit());
-                this.jumping = false;
-                this.navigation.stop();
-                this.setTarget(null);
-                return InteractionResult.SUCCESS_SERVER;
+        } else if (stack.is(MobsTags.Items.PARABUZZY_TAME_ITEMS) && !this.isAngry()) {
+            if (server) {
+                stack.consume(1, player);
+                this.tryToTame(player);
             }
-        } else if (server && stack.is(MobsTags.Items.PARABUZZY_TAME_ITEMS) && !this.isAngry()) {
-            stack.consume(1, player);
-            this.tryToTame(player);
-            return InteractionResult.SUCCESS_SERVER;
+            return InteractionResult.SUCCESS;
         }
 
         return super.mobInteract(player, hand);
@@ -356,10 +368,10 @@ public class Parabuzzy extends TamableAnimal implements PerchingMob {
 
     public enum Variant implements StringRepresentable {
         // A spiked one hits twice as hard as its plain colour.
-        BLUE("blue", 30.0D, 2.0D, true),
-        RED("red", 35.0D, 3.0D, false),
-        BLUE_SPIKED("blue_spiked", 45.0D, BLUE.damage * 2.0D, true),
-        RED_SPIKED("red_spiked", 50.0D, RED.damage * 2.0D, false);
+        BLUE("blue", 20.0D, 2.0D, true),
+        RED("red", 24.0D, 3.0D, false),
+        BLUE_SPIKED("blue_spiked", 30.0D, BLUE.damage * 2.0D, true),
+        RED_SPIKED("red_spiked", 34.0D, RED.damage * 2.0D, false);
 
         public static final Codec<Variant> CODEC = StringRepresentable.fromEnum(Variant::values);
         private static final Variant[] VALUES = values();

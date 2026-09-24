@@ -12,11 +12,17 @@ import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.util.Mth;
 
 /**
- * A shell on four legs with a pair of wings that beat without stopping and fold away while it sits.
+ * A shell on four legs with a pair of wings that beat without stopping. Sitting drops the shell to
+ * the ground on splayed legs and lets the wings hang still, so a sit order reads from across a field.
  * The spikes are always there; the plain colours' textures leave them clear. The textures are twice
  * the resolution these UVs are laid out for.
  */
 public class ParabuzzyModel extends EntityModel<ParabuzzyRenderer.State> {
+
+    /** Enough to put the belly on the ground, the legs no longer holding it up. */
+    private static final float SIT_DROP = 4.0F;
+    /** As far as the wings hang before their tips reach the ground. */
+    private static final float SIT_WING_DROOP = 0.85F;
 
     private final ModelPart head;
     private final ModelPart rightWing;
@@ -67,8 +73,21 @@ public class ParabuzzyModel extends EntityModel<ParabuzzyRenderer.State> {
         this.head.xRot = state.xRot / 100.0F;
         this.head.yRot = state.yRot / 650.0F;
 
-        this.leftWing.visible = !state.isSitting;
-        this.rightWing.visible = !state.isSitting;
+        if (state.isSitting) {
+            this.root().y = SIT_DROP;
+            this.leftWing.zRot = SIT_WING_DROOP;
+            this.rightWing.zRot = -SIT_WING_DROOP;
+            this.frontLeftLeg.xRot = -0.5F;
+            this.frontRightLeg.xRot = -0.5F;
+            this.backLeftLeg.xRot = 0.5F;
+            this.backRightLeg.xRot = 0.5F;
+            this.frontLeftLeg.zRot = -1.3F;
+            this.frontRightLeg.zRot = 1.3F;
+            this.backLeftLeg.zRot = -1.3F;
+            this.backRightLeg.zRot = 1.3F;
+            return;
+        }
+
         this.leftWing.zRot = Mth.cos(state.ageInTicks + Mth.PI);
         this.rightWing.zRot = Mth.cos(state.ageInTicks);
 

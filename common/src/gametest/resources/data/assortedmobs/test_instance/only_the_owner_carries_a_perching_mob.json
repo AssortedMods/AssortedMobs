@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedmobs:only_the_owner_carries_a_perching_mob",
+  "structure": "assortedmobs:test_box",
+  "max_ticks": 200,
+  "setup_ticks": 0,
+  "required": true
+}

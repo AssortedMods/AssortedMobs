@@ -80,7 +80,7 @@ public class MobsLanguageProvider extends LibLanguageProvider {
                 "Parabuzzies hover more than they fall. A fish may tame one.");
         this.add("manual.assortedmobs.chapter.eight_bit.perching.title", "On Your Head");
         this.add("manual.assortedmobs.chapter.eight_bit.perching",
-                "Use a tamed parabuzzy and it climbs onto your head. There it can slowly heal, and you will drift down as gently as it does and take no fall damage." + BREAK
+                "Use a parabuzzy you tamed and it climbs onto your head. There it can slowly heal, and you will drift down as gently as it does and take no fall damage." + BREAK
                         + "Sneak on the ground to put it down.");
         this.add("manual.assortedmobs.chapter.eight_bit.bobomb.title", "Bob-omb");
         this.add("manual.assortedmobs.chapter.eight_bit.bobomb",
@@ -88,7 +88,7 @@ public class MobsLanguageProvider extends LibLanguageProvider {
         this.add("manual.assortedmobs.chapter.eight_bit.carrying.title", "Carrying One");
         this.add("manual.assortedmobs.chapter.eight_bit.carrying",
                 "Be careful when hitting one yourself as its fuse will light." + BREAK
-                        + "One will ride on your head too. Sneak and use one with an empty hand to pick it back up.");
+                        + "One will ride on your head too. Sneak and use one you put down with an empty hand to pick it back up.");
         this.add("manual.assortedmobs.chapter.eight_bit.crafting.title", "Making One");
         this.add("manual.assortedmobs.chapter.eight_bit.crafting",
                 "A parabuzzy's shell under gunpowder and redstone makes a Bob-omb of your own.");

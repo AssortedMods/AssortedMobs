@@ -40,7 +40,8 @@ public class ParabuzzyRenderer extends MobRenderer<Parabuzzy, ParabuzzyRenderer.
         super.extractRenderState(entity, state, partialTicks);
         state.variant = entity.getVariant();
         state.isAngry = entity.isAngry();
-        state.isSitting = entity.isInSittingPose();
+        // Anything off the ground is drifting on its wings, sit order or not.
+        state.isSitting = entity.isInSittingPose() && entity.onGround() && !entity.perch().isPerched();
         PerchRendering.extract(entity, state, partialTicks);
     }
 

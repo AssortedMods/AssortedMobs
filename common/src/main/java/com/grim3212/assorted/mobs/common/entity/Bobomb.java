@@ -47,8 +47,8 @@ import java.util.OptionalInt;
  * looks after them alone; one with no owner, from a spawn egg, does the same for whichever player is
  * nearest. When a monster hurts that player it walks up to the monster and lights its fuse, going off a moment later and setting fire
  * to every creature nearby. Any creature's hit lights the fuse too, a player's or a monster's. It
- * will sit on a player's head, water puts it out for good, and an empty hand while sneaking picks
- * it back up as an item.
+ * will sit on its owner's head, water puts it out for good, and its owner's empty hand while
+ * sneaking picks it back up as an item.
  */
 public class Bobomb extends PathfinderMob implements PerchingMob, OwnableEntity {
 
@@ -229,6 +229,11 @@ public class Bobomb extends PathfinderMob implements PerchingMob, OwnableEntity 
     protected InteractionResult mobInteract(Player player, InteractionHand hand) {
         if (!(this.level() instanceof ServerLevel level)) {
             return InteractionResult.SUCCESS;
+        }
+
+        // One from a spawn egg looks after everyone, so anyone may handle it.
+        if (this.owner != null && !this.isOwnedBy(player)) {
+            return super.mobInteract(player, hand);
         }
 
         if (!player.isSecondaryUseActive() && this.perch.perchOn(player)) {

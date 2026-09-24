@@ -23,6 +23,7 @@ public final class MobsGameTests {
         TreasureMobTests.register(out);
         EightBitTests.register(out);
         FollowOwnerTests.register(out);
+        ParabuzzyTests.register(out);
         AmphibiousTests.register(out);
         SeaCreatureTests.register(out);
         SpawnerTests.register(out);

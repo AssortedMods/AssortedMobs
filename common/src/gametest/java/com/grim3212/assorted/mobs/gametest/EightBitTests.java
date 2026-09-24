@@ -38,6 +38,7 @@ final class EightBitTests {
         out.accept("owned_bobomb_only_defends_its_owner", EightBitTests::ownedBobombOnlyDefendsItsOwner);
         out.accept("bobomb_is_lit_not_hurt_by_a_monster", EightBitTests::bobombIsLitNotHurtByAMonster);
         out.accept("mobs_perch_on_a_players_head", EightBitTests::mobsPerchOnAPlayersHead);
+        out.accept("only_the_owner_carries_a_perching_mob", EightBitTests::onlyTheOwnerCarriesAPerchingMob);
         out.accept("sneaking_on_the_ground_puts_a_perched_mob_down", EightBitTests::sneakingOnTheGroundPutsAPerchedMobDown);
         out.accept("bobomb_is_picked_up_with_an_empty_hand", EightBitTests::bobombIsPickedUpWithAnEmptyHand);
         out.accept("parabuzzy_colours_set_their_stats", EightBitTests::parabuzzyColoursSetTheirStats);
@@ -168,6 +169,35 @@ final class EightBitTests {
             bobomb.discard();
             helper.succeed();
         });
+    }
+
+    private static void onlyTheOwnerCarriesAPerchingMob(GameTestHelper helper) {
+        ServerPlayer owner = standingPlayer(helper, CENTRE);
+        ServerPlayer stranger = standingPlayer(helper, CENTRE.south());
+        Bobomb bobomb = helper.spawnWithNoFreeWill(MobsEntities.BOBOMB.get(), CENTRE.east());
+        bobomb.setOwner(owner);
+        Parabuzzy parabuzzy = helper.spawnWithNoFreeWill(MobsEntities.PARABUZZY.get(), CENTRE.west());
+        parabuzzy.tame(owner);
+
+        bobomb.interact(stranger, InteractionHand.MAIN_HAND, bobomb.position());
+        helper.assertFalse(bobomb.perch().isPerched(), "an owned Bob-omb climbed onto a stranger's head");
+        stranger.setShiftKeyDown(true);
+        bobomb.interact(stranger, InteractionHand.MAIN_HAND, bobomb.position());
+        helper.assertFalse(bobomb.isRemoved(), "a stranger picked up someone else's Bob-omb");
+        stranger.setShiftKeyDown(false);
+        parabuzzy.interact(stranger, InteractionHand.MAIN_HAND, parabuzzy.position());
+        helper.assertFalse(parabuzzy.perch().isPerched(), "a tame parabuzzy climbed onto a stranger's head");
+        helper.assertFalse(parabuzzy.isOrderedToSit(), "a stranger ordered someone else's parabuzzy to sit");
+
+        parabuzzy.interact(owner, InteractionHand.MAIN_HAND, parabuzzy.position());
+        helper.assertTrue(parabuzzy.perch().isOn(owner), "a tame parabuzzy would not climb onto its owner's head");
+
+        Bobomb stray = helper.spawnWithNoFreeWill(MobsEntities.BOBOMB.get(), CENTRE.north());
+        stray.interact(stranger, InteractionHand.MAIN_HAND, stray.position());
+        helper.assertTrue(stray.perch().isOn(stranger), "a Bob-omb with no owner would not climb onto a player's head");
+        bobomb.discard();
+        stray.discard();
+        helper.succeed();
     }
 
     private static void sneakingOnTheGroundPutsAPerchedMobDown(GameTestHelper helper) {
