@@ -1,0 +1,13 @@
+{
+  "links": [
+    {
+      "entities": [
+        "assortedtreasuremob:treasure_mob"
+      ],
+      "items": [
+        "assortedtreasuremob:treasure_mob_spawn_egg"
+      ],
+      "page": "assortedmobs:treasure_mob/info"
+    }
+  ]
+}

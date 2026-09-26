@@ -1,0 +1,13 @@
+{
+  "links": [
+    {
+      "entities": [
+        "assortedicepixie:ice_pixie"
+      ],
+      "items": [
+        "assortedicepixie:ice_pixie_spawn_egg"
+      ],
+      "page": "assortedmobs:ice_pixie/info"
+    }
+  ]
+}

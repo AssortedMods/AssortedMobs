@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedseacreatures:sea_creatures_take_to_unlit_water",
+  "structure": "assortedseacreatures:test_box",
+  "max_ticks": 100,
+  "setup_ticks": 0,
+  "required": true
+}

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "S": "assortedseacreatures:sea_shell"
+  },
+  "pattern": [
+    "S S",
+    "SSS",
+    "SSS"
+  ],
+  "result": {
+    "id": "assortedseacreatures:shell_chestplate"
+  }
+}

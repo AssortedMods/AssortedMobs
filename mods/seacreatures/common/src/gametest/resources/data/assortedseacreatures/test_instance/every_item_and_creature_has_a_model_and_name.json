@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedseacreatures:every_item_and_creature_has_a_model_and_name",
+  "structure": "assortedseacreatures:test_box",
+  "max_ticks": 1,
+  "setup_ticks": 0,
+  "required": true
+}

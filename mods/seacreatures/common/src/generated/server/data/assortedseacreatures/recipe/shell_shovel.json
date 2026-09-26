@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "key": {
+    "S": "assortedseacreatures:sea_shell",
+    "T": "#c:rods/wooden"
+  },
+  "pattern": [
+    "S",
+    "T",
+    "T"
+  ],
+  "result": {
+    "id": "assortedseacreatures:shell_shovel"
+  }
+}

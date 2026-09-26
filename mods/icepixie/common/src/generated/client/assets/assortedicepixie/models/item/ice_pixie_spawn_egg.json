@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "assortedicepixie:item/ice_pixie_spawn_egg"
+  }
+}

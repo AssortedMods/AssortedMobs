@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedseacreatures:creatures_are_added_to_their_biomes",
+  "structure": "assortedseacreatures:test_box",
+  "max_ticks": 1,
+  "setup_ticks": 0,
+  "required": true
+}

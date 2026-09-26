@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "assortedseacreatures:shell"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "assortedseacreatures:shell"
+      }
+    ]
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "links": [
+    {
+      "entities": [
+        "assortedseacreatures:seal",
+        "assortedseacreatures:walrus"
+      ],
+      "items": [
+        "assortedseacreatures:seal_spawn_egg",
+        "assortedseacreatures:walrus_spawn_egg"
+      ],
+      "page": "assortedmobs:sea_creatures/seal"
+    },
+    {
+      "entities": [
+        "assortedseacreatures:narwhal"
+      ],
+      "items": [
+        "assortedseacreatures:narwhal_spawn_egg"
+      ],
+      "page": "assortedmobs:sea_creatures/narwhal"
+    },
+    {
+      "items": [
+        "assortedseacreatures:narwhal_horn",
+        "assortedseacreatures:narwhal_sword"
+      ],
+      "page": "assortedmobs:sea_creatures/narwhal_sword"
+    },
+    {
+      "entities": [
+        "assortedseacreatures:sea_otter"
+      ],
+      "items": [
+        "assortedseacreatures:sea_otter_spawn_egg"
+      ],
+      "page": "assortedmobs:sea_creatures/sea_otter"
+    },
+    {
+      "items": [
+        "assortedseacreatures:sea_shell",
+        "assortedseacreatures:shell_helmet",
+        "assortedseacreatures:shell_chestplate",
+        "assortedseacreatures:shell_leggings",
+        "assortedseacreatures:shell_boots",
+        "assortedseacreatures:shell_shovel"
+      ],
+      "page": "assortedmobs:sea_creatures/shell_gear"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedeightbit:assortedmobs_advancements_carry_over",
+  "structure": "assortedeightbit:test_box",
+  "max_ticks": 1,
+  "setup_ticks": 0,
+  "required": true
+}

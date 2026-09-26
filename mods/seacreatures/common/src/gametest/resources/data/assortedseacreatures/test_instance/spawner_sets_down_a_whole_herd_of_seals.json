@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:function",
+  "environment": "assortedseacreatures:daylight",
+  "function": "assortedseacreatures:spawner_sets_down_a_whole_herd_of_seals",
+  "structure": "assortedseacreatures:test_box",
+  "max_ticks": 100,
+  "setup_ticks": 0,
+  "sky_access": true,
+  "required": true
+}

@@ -1,0 +1,28 @@
+{
+	"entity.seal.ambient": {
+		"subtitle": "subtitles.assortedseacreatures.entity.seal.ambient",
+		"sounds": [
+			"assortedseacreatures:entity/seal/ambient"
+		]
+	},
+	"entity.seal.hurt": {
+		"subtitle": "subtitles.assortedseacreatures.entity.seal.hurt",
+		"sounds": [
+			"assortedseacreatures:entity/seal/hurt"
+		]
+	},
+	"entity.walrus.ambient": {
+		"subtitle": "subtitles.assortedseacreatures.entity.walrus.ambient",
+		"sounds": [
+			"assortedseacreatures:entity/walrus/ambient1",
+			"assortedseacreatures:entity/walrus/ambient2"
+		]
+	},
+	"entity.walrus.hurt": {
+		"subtitle": "subtitles.assortedseacreatures.entity.walrus.hurt",
+		"sounds": [
+			"assortedseacreatures:entity/walrus/hurt1",
+			"assortedseacreatures:entity/walrus/hurt2"
+		]
+	}
+}

@@ -1,0 +1,36 @@
+{
+  "parent": "assortedmobs:root",
+  "criteria": {
+    "tamed_treasure_mob": {
+      "conditions": {
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "minecraft:entity_type": "assortedtreasuremob:treasure_mob"
+            }
+          }
+        ]
+      },
+      "trigger": "minecraft:tame_animal"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.assortedtreasuremob.dont_kill_him.description"
+    },
+    "icon": {
+      "id": "assortedtreasuremob:treasure_mob_spawn_egg"
+    },
+    "title": {
+      "translate": "advancements.assortedtreasuremob.dont_kill_him.title"
+    }
+  },
+  "requirements": [
+    [
+      "tamed_treasure_mob"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

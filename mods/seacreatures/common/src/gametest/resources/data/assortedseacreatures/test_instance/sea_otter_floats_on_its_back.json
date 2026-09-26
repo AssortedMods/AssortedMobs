@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedseacreatures:sea_otter_floats_on_its_back",
+  "structure": "assortedseacreatures:test_box",
+  "max_ticks": 300,
+  "setup_ticks": 0,
+  "required": true
+}
