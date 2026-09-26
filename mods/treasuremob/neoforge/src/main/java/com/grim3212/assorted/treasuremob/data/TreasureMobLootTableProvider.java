@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * The treasure mob's chest loot. Written through {@link CrossLoaderData} so the tables for Assorted World's
+ * The treasure mob's chest loot. Written through {@link CrossLoaderData} so the tables for Assorted Structures'
  * structures carry Fabric's mod-loaded condition beside NeoForge's.
  */
 public class TreasureMobLootTableProvider extends LootTableProvider {
@@ -34,7 +34,7 @@ public class TreasureMobLootTableProvider extends LootTableProvider {
     }
 
     /**
-     * The treasure tables are left out: they point at vanilla's and Assorted World's chest tables,
+     * The treasure tables are left out: they point at vanilla's and Assorted Structures' chest tables,
      * which datagen only knows when it generates them itself, so every reference would be reported
      * missing. The game checks them against the real tables when it loads.
      */

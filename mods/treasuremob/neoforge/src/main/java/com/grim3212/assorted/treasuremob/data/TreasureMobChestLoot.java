@@ -25,12 +25,12 @@ import java.util.function.BiConsumer;
 /**
  * What a treasure mob's chest is filled with when it appears. Inside a structure it is one of that
  * structure's own chests, found by {@link TreasureMob#chestLootFor}; anywhere else, from bread to
- * diamonds. Lives in the NeoForge module for the mod-loaded condition on Assorted World's tables,
+ * diamonds. Lives in the NeoForge module for the mod-loaded condition on Assorted Structures' tables,
  * which {@code CrossLoaderData} gives Fabric's spelling as well.
  */
 public class TreasureMobChestLoot implements LootTableSubProvider {
 
-    private static final String ASSORTED_WORLD = "assortedworld";
+    private static final String ASSORTED_STRUCTURES = "assortedstructures";
 
     public TreasureMobChestLoot(HolderLookup.Provider registries) {
     }
@@ -72,9 +72,9 @@ public class TreasureMobChestLoot implements LootTableSubProvider {
         structure(output, BuiltinStructures.END_CITY, BuiltInLootTables.END_CITY_TREASURE);
 
         // The snowball has no chests, so a treasure mob there carries the usual loot.
-        assortedWorld(output, "fountain", "chests/fountain");
-        assortedWorld(output, "pyramid", "chests/pyramid");
-        assortedWorld(output, "water_dome", "chests/water_dome/cobblestone", "chests/water_dome/iron", "chests/water_dome/glowstone", "chests/water_dome/obsidian");
+        assortedStructures(output, "fountain", "chests/fountain");
+        assortedStructures(output, "pyramid", "chests/pyramid");
+        assortedStructures(output, "water_dome", "chests/water_dome/cobblestone", "chests/water_dome/iron", "chests/water_dome/glowstone", "chests/water_dome/obsidian");
     }
 
     private static LootPool.Builder one(Item item) {
@@ -96,14 +96,14 @@ public class TreasureMobChestLoot implements LootTableSubProvider {
         output.accept(TreasureMob.chestLootFor(structure), oneOf(chests));
     }
 
-    /** Only loaded with Assorted World, whose chest tables these draw from. */
-    private static void assortedWorld(BiConsumer<ResourceKey<LootTable>, LootTable.Builder> output, String structure, String... chests) {
+    /** Only loaded with Assorted Structures, whose chest tables these draw from. */
+    private static void assortedStructures(BiConsumer<ResourceKey<LootTable>, LootTable.Builder> output, String structure, String... chests) {
         ResourceKey<LootTable>[] tables = new ResourceKey[chests.length];
         for (int i = 0; i < chests.length; i++) {
-            tables[i] = ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(ASSORTED_WORLD, chests[i]));
+            tables[i] = ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(ASSORTED_STRUCTURES, chests[i]));
         }
-        ResourceKey<Structure> key = ResourceKey.create(Registries.STRUCTURE, Identifier.fromNamespaceAndPath(ASSORTED_WORLD, structure));
-        output.accept(TreasureMob.chestLootFor(key), oneOf(tables).withCondition(new ModLoadedCondition(ASSORTED_WORLD)));
+        ResourceKey<Structure> key = ResourceKey.create(Registries.STRUCTURE, Identifier.fromNamespaceAndPath(ASSORTED_STRUCTURES, structure));
+        output.accept(TreasureMob.chestLootFor(key), oneOf(tables).withCondition(new ModLoadedCondition(ASSORTED_STRUCTURES)));
     }
 
     private static void entry(LootPool.Builder pool, Item item, int weight, int min, int max) {

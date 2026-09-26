@@ -16,8 +16,8 @@ import java.util.concurrent.CompletableFuture;
 /** Which structures each creature spawns in. A datapack moves them by editing these tags. */
 public class TreasureMobStructureTagProvider extends StructureTagsProvider {
 
-    /** Assorted World's structures, optional so the tag still loads without it. */
-    private static final String ASSORTED_WORLD = "assortedworld";
+    /** The structures Assorted Structures adds, optional so the tag still loads without it. */
+    private static final String ASSORTED_STRUCTURES = "assortedstructures";
 
     public TreasureMobStructureTagProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookup) {
         super(output, lookup, Constants.MOD_ID);
@@ -29,13 +29,13 @@ public class TreasureMobStructureTagProvider extends StructureTagsProvider {
                 .add(BuiltinStructures.MINESHAFT, BuiltinStructures.MINESHAFT_MESA, BuiltinStructures.STRONGHOLD, BuiltinStructures.TRIAL_CHAMBERS,
                         BuiltinStructures.ANCIENT_CITY, BuiltinStructures.DESERT_PYRAMID, BuiltinStructures.JUNGLE_TEMPLE, BuiltinStructures.WOODLAND_MANSION,
                         BuiltinStructures.BASTION_REMNANT, BuiltinStructures.FORTRESS, BuiltinStructures.END_CITY)
-                .addOptional(assortedWorld("fountain"))
-                .addOptional(assortedWorld("pyramid"))
-                .addOptional(assortedWorld("snowball"))
-                .addOptional(assortedWorld("water_dome"));
+                .addOptional(assortedStructures("fountain"))
+                .addOptional(assortedStructures("pyramid"))
+                .addOptional(assortedStructures("snowball"))
+                .addOptional(assortedStructures("water_dome"));
     }
 
-    private static ResourceKey<Structure> assortedWorld(String name) {
-        return ResourceKey.create(Registries.STRUCTURE, Identifier.fromNamespaceAndPath(ASSORTED_WORLD, name));
+    private static ResourceKey<Structure> assortedStructures(String name) {
+        return ResourceKey.create(Registries.STRUCTURE, Identifier.fromNamespaceAndPath(ASSORTED_STRUCTURES, name));
     }
 }

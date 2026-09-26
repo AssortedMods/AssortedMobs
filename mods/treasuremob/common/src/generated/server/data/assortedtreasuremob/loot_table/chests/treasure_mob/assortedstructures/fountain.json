@@ -2,7 +2,7 @@
   "neoforge:conditions": [
     {
       "type": "neoforge:mod_loaded",
-      "modid": "assortedworld"
+      "modid": "assortedstructures"
     }
   ],
   "type": "minecraft:chest",
@@ -10,7 +10,7 @@
     {
       "condition": "fabric:all_mods_loaded",
       "values": [
-        "assortedworld"
+        "assortedstructures"
       ]
     }
   ],
@@ -19,11 +19,11 @@
       "entries": [
         {
           "type": "minecraft:loot_table",
-          "value": "assortedworld:chests/pyramid"
+          "value": "assortedstructures:chests/fountain"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "assortedtreasuremob:chests/treasure_mob/assortedworld/pyramid"
+  "random_sequence": "assortedtreasuremob:chests/treasure_mob/assortedstructures/fountain"
 }

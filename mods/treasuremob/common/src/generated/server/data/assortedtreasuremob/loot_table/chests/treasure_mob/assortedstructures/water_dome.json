@@ -2,7 +2,7 @@
   "neoforge:conditions": [
     {
       "type": "neoforge:mod_loaded",
-      "modid": "assortedworld"
+      "modid": "assortedstructures"
     }
   ],
   "type": "minecraft:chest",
@@ -10,7 +10,7 @@
     {
       "condition": "fabric:all_mods_loaded",
       "values": [
-        "assortedworld"
+        "assortedstructures"
       ]
     }
   ],
@@ -19,23 +19,23 @@
       "entries": [
         {
           "type": "minecraft:loot_table",
-          "value": "assortedworld:chests/water_dome/cobblestone"
+          "value": "assortedstructures:chests/water_dome/cobblestone"
         },
         {
           "type": "minecraft:loot_table",
-          "value": "assortedworld:chests/water_dome/iron"
+          "value": "assortedstructures:chests/water_dome/iron"
         },
         {
           "type": "minecraft:loot_table",
-          "value": "assortedworld:chests/water_dome/glowstone"
+          "value": "assortedstructures:chests/water_dome/glowstone"
         },
         {
           "type": "minecraft:loot_table",
-          "value": "assortedworld:chests/water_dome/obsidian"
+          "value": "assortedstructures:chests/water_dome/obsidian"
         }
       ],
       "rolls": 1.0
     }
   ],
-  "random_sequence": "assortedtreasuremob:chests/treasure_mob/assortedworld/water_dome"
+  "random_sequence": "assortedtreasuremob:chests/treasure_mob/assortedstructures/water_dome"
 }

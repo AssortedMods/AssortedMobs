@@ -134,7 +134,7 @@ final class TreasureMobTests {
 
     /**
      * Every structure treasure mobs spawn in has a table of its own, but the snowball, which has no
-     * chests. Assorted World's tables load only with it, so without it they are absent too.
+     * chests. Assorted Structures' tables load only with it, so without it they are absent too.
      */
     /**
      * Through vanilla's own checkDespawn, 300 blocks up, past the 128-block instant despawn from every test's players.
@@ -168,9 +168,9 @@ final class TreasureMobTests {
             }
         }
 
-        boolean assortedWorld = Services.PLATFORM.isModLoaded("assortedworld");
-        ResourceKey<Structure> fountain = ResourceKey.create(Registries.STRUCTURE, Identifier.fromNamespaceAndPath("assortedworld", "fountain"));
-        helper.assertValueEqual(loot.getLootTable(TreasureMob.chestLootFor(fountain)) != LootTable.EMPTY, assortedWorld, "treasure mob loot for Assorted World's fountain loaded");
+        boolean assortedStructures = Services.PLATFORM.isModLoaded("assortedstructures");
+        ResourceKey<Structure> fountain = ResourceKey.create(Registries.STRUCTURE, Identifier.fromNamespaceAndPath("assortedstructures", "fountain"));
+        helper.assertValueEqual(loot.getLootTable(TreasureMob.chestLootFor(fountain)) != LootTable.EMPTY, assortedStructures, "treasure mob loot for Assorted Structures' fountain loaded");
         helper.succeed();
     }
 
