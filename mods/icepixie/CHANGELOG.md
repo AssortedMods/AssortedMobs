@@ -2,7 +2,6 @@
 
 ## 1.0.0
 
-First release on its own, for Minecraft 26.2 on NeoForge and Fabric.
-
-- The ice pixie, from Grim Pack's Grim World (1.12), on its own.
-- Requires Assorted Lib 4.3.0.
+- First release as its own mod. It used to only be part of Assorted Mobs
+- Worlds from Assorted Mobs 1.x keep all of these mobs and items
+- Requires Assorted Lib 4.3.0

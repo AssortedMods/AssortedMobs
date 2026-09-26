@@ -26,7 +26,7 @@ public class IcePixieLanguageProvider extends LibLanguageProvider {
         // The Assorted Mobs root, which every part with advancements writes the same.
         this.add("advancements.assortedmobs.root.title", "Assorted Mobs");
         this.add("advancements.assortedmobs.root.description", "Meet one of the creatures Assorted Mobs adds");
-        this.add("tag.item.assortedmobs.opens_advancements_when_held", "Opens the Assorted Mobs Advancements");
+        this.add("tag.item.assortedmobs.opens_advancements_when_held", "Starts the Assorted Mobs Advancements");
         this.advancement("rare_encounter", "Rare Encounter", "Kill an ice pixie");
 
         this.addManual();
