@@ -1,7 +1,6 @@
 package com.grim3212.assorted.eightbit.client.data;
 
 import com.grim3212.assorted.eightbit.Constants;
-import com.grim3212.assorted.eightbit.Family;
 import com.grim3212.assorted.eightbit.common.entity.EightBitEntities;
 import com.grim3212.assorted.eightbit.common.handlers.EightBitCreativeItems;
 import com.grim3212.assorted.eightbit.common.item.EightBitItems;
@@ -20,13 +19,11 @@ public class EightBitManualProvider extends LibManualProvider {
     private static final int PICTURE_HEIGHT = 86;
 
     public EightBitManualProvider(PackOutput output) {
-        super(output, Constants.MOD_ID, Family.ID);
+        super(output, Constants.MOD_ID, Constants.FAMILY_ID);
     }
 
     @Override
     protected void addChapters() {
-        this.section(Family.MANUAL_ORDER, Family.ICONS.toArray(Identifier[]::new));
-
         ChapterBuilder eightBit = this.chapter("eight_bit", 20);
         eightBit.image("parabuzzy", picture("parabuzzy"), PICTURE_WIDTH, PICTURE_HEIGHT)
                 .opens(EightBitEntities.PARABUZZY.get()).opens(EightBitItems.PARABUZZY_SHELL.get(), EightBitItems.PARABUZZY_SPAWN_EGG.get());

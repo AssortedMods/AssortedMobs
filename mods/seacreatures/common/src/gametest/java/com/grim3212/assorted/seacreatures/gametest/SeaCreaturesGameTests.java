@@ -22,5 +22,6 @@ public final class SeaCreaturesGameTests {
         AmphibiousTests.register(out);
         SeaCreatureTests.register(out);
         SpawnerTests.register(out);
+        FamilyTests.register(out);
     }
 }

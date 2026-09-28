@@ -1,7 +1,6 @@
 package com.grim3212.assorted.icepixie.common.item;
 
 import com.grim3212.assorted.icepixie.Constants;
-import com.grim3212.assorted.icepixie.Family;
 import com.grim3212.assorted.icepixie.common.entity.IcePixieEntities;
 import com.grim3212.assorted.lib.registry.IRegistryObject;
 import com.grim3212.assorted.lib.registry.RegistryProvider;
@@ -18,7 +17,7 @@ import java.util.function.Supplier;
 
 public class IcePixieItems {
 
-    public static final RegistryProvider<Item> ITEMS = RegistryProvider.create(Registries.ITEM, Constants.MOD_ID).aliasFrom(Family.ID);
+    public static final RegistryProvider<Item> ITEMS = RegistryProvider.create(Registries.ITEM, Constants.MOD_ID).aliasFrom(Constants.FAMILY_ID);
 
     public static final IRegistryObject<Item> ICE_PIXIE_SPAWN_EGG = spawnEgg("ice_pixie_spawn_egg", IcePixieEntities.ICE_PIXIE::get);
 

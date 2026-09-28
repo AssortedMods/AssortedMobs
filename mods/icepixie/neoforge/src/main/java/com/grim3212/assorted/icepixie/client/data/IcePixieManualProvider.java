@@ -1,7 +1,6 @@
 package com.grim3212.assorted.icepixie.client.data;
 
 import com.grim3212.assorted.icepixie.Constants;
-import com.grim3212.assorted.icepixie.Family;
 import com.grim3212.assorted.icepixie.common.entity.IcePixieEntities;
 import com.grim3212.assorted.icepixie.common.handlers.IcePixieCreativeItems;
 import com.grim3212.assorted.icepixie.common.item.IcePixieItems;
@@ -20,13 +19,11 @@ public class IcePixieManualProvider extends LibManualProvider {
     private static final int PICTURE_HEIGHT = 86;
 
     public IcePixieManualProvider(PackOutput output) {
-        super(output, Constants.MOD_ID, Family.ID);
+        super(output, Constants.MOD_ID, Constants.FAMILY_ID);
     }
 
     @Override
     protected void addChapters() {
-        this.section(Family.MANUAL_ORDER, Family.ICONS.toArray(Identifier[]::new));
-
         ChapterBuilder icePixie = this.chapter("ice_pixie", 0);
         icePixie.image("info", picture("ice_pixie"), PICTURE_WIDTH, PICTURE_HEIGHT)
                 .opens(IcePixieEntities.ICE_PIXIE.get()).opens(IcePixieItems.ICE_PIXIE_SPAWN_EGG.get());

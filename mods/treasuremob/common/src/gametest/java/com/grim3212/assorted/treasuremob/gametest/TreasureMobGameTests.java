@@ -23,5 +23,6 @@ public final class TreasureMobGameTests {
         TreasureMobTests.register(out);
         FollowOwnerTests.register(out);
         SpawnerTests.register(out);
+        FamilyTests.register(out);
     }
 }

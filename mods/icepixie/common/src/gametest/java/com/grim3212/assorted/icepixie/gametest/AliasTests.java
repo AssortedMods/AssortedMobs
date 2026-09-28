@@ -2,7 +2,6 @@ package com.grim3212.assorted.icepixie.gametest;
 
 import com.google.gson.JsonParser;
 import com.grim3212.assorted.icepixie.Constants;
-import com.grim3212.assorted.icepixie.Family;
 import com.grim3212.assorted.icepixie.common.entity.IcePixieEntities;
 import com.grim3212.assorted.icepixie.common.item.IcePixieItems;
 import com.grim3212.assorted.lib.registry.IRegistryObject;
@@ -48,6 +47,6 @@ final class AliasTests {
     }
 
     private static Identifier old(Identifier id) {
-        return Identifier.fromNamespaceAndPath(Family.ID, id.getPath());
+        return Identifier.fromNamespaceAndPath(Constants.FAMILY_ID, id.getPath());
     }
 }

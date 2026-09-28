@@ -2,7 +2,6 @@ package com.grim3212.assorted.seacreatures.gametest;
 
 import com.google.gson.JsonObject;
 import com.grim3212.assorted.seacreatures.Constants;
-import com.grim3212.assorted.seacreatures.Family;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
@@ -59,8 +58,8 @@ final class AssetTests {
             }
         }
 
-        if (!lang.has("itemGroup." + Family.ID)) {
-            missing.add("lang key itemGroup." + Family.ID);
+        if (!lang.has("itemGroup." + Constants.FAMILY_ID)) {
+            missing.add("lang key itemGroup." + Constants.FAMILY_ID);
         }
 
         helper.assertTrue(missing.isEmpty(), missing.size() + " missing assets: " + String.join("; ", missing));

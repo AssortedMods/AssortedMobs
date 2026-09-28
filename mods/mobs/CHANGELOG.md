@@ -5,7 +5,7 @@
 - Split into four mods that can also be installed on their own
 - Assorted Mobs still includes all of them
 - Worlds from 1.x keep all your mobs, items, recipes and advancements
-- Removed the config options for turning parts off. Install only the mods you want instead
+- Each part can be turned off again in config/assortedmobs-parts.toml
 - Requires Assorted Lib 4.3.0
 
 ## 1.0.0

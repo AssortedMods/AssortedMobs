@@ -1,7 +1,6 @@
 package com.grim3212.assorted.eightbit.common.item;
 
 import com.grim3212.assorted.eightbit.Constants;
-import com.grim3212.assorted.eightbit.Family;
 import com.grim3212.assorted.eightbit.common.entity.EightBitEntities;
 import com.grim3212.assorted.lib.registry.IRegistryObject;
 import com.grim3212.assorted.lib.registry.RegistryProvider;
@@ -18,7 +17,7 @@ import java.util.function.Supplier;
 
 public class EightBitItems {
 
-    public static final RegistryProvider<Item> ITEMS = RegistryProvider.create(Registries.ITEM, Constants.MOD_ID).aliasFrom(Family.ID);
+    public static final RegistryProvider<Item> ITEMS = RegistryProvider.create(Registries.ITEM, Constants.MOD_ID).aliasFrom(Constants.FAMILY_ID);
 
     public static final IRegistryObject<Item> BOBOMB = register("bobomb", props -> new BobombItem(props.stacksTo(16)));
     public static final IRegistryObject<Item> PARABUZZY_SHELL = register("parabuzzy_shell", Item::new);

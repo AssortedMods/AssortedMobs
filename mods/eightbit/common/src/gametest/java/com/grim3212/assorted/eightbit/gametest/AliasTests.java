@@ -2,7 +2,6 @@ package com.grim3212.assorted.eightbit.gametest;
 
 import com.google.gson.JsonParser;
 import com.grim3212.assorted.eightbit.Constants;
-import com.grim3212.assorted.eightbit.Family;
 import com.grim3212.assorted.eightbit.common.entity.EightBitEntities;
 import com.grim3212.assorted.eightbit.common.item.EightBitItems;
 import com.grim3212.assorted.eightbit.common.sounds.EightBitSounds;
@@ -55,6 +54,6 @@ final class AliasTests {
     }
 
     private static Identifier old(Identifier id) {
-        return Identifier.fromNamespaceAndPath(Family.ID, id.getPath());
+        return Identifier.fromNamespaceAndPath(Constants.FAMILY_ID, id.getPath());
     }
 }

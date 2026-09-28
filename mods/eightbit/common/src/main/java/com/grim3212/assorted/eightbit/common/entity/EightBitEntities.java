@@ -1,7 +1,6 @@
 package com.grim3212.assorted.eightbit.common.entity;
 
 import com.grim3212.assorted.eightbit.Constants;
-import com.grim3212.assorted.eightbit.Family;
 import com.grim3212.assorted.lib.registry.IRegistryObject;
 import com.grim3212.assorted.lib.registry.RegistryProvider;
 import net.minecraft.core.registries.Registries;
@@ -14,7 +13,7 @@ import net.minecraft.world.entity.MobCategory;
 /** The parabuzzy stays CREATURE, a farm animal among farm animals; the Bob-omb is MISC. */
 public class EightBitEntities {
 
-    public static final RegistryProvider<EntityType<?>> ENTITIES = RegistryProvider.create(Registries.ENTITY_TYPE, Constants.MOD_ID).aliasFrom(Family.ID);
+    public static final RegistryProvider<EntityType<?>> ENTITIES = RegistryProvider.create(Registries.ENTITY_TYPE, Constants.MOD_ID).aliasFrom(Constants.FAMILY_ID);
 
     // Only ever made from its item.
     public static final IRegistryObject<EntityType<Bobomb>> BOBOMB = register("bobomb", EntityType.Builder.of(Bobomb::new, MobCategory.MISC).noLootTable().fireImmune().sized(0.3F, 0.5F).clientTrackingRange(10));

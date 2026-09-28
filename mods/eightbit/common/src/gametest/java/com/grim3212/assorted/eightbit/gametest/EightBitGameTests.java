@@ -23,5 +23,6 @@ public final class EightBitGameTests {
         EightBitTests.register(out);
         FollowOwnerTests.register(out);
         ParabuzzyTests.register(out);
+        FamilyTests.register(out);
     }
 }

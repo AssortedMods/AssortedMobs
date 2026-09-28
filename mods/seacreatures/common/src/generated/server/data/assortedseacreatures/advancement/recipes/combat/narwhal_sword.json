@@ -1,4 +1,10 @@
 {
+  "neoforge:conditions": [
+    {
+      "type": "assortedlib:part_enabled",
+      "part": "assortedseacreatures"
+    }
+  ],
   "parent": "minecraft:recipes/root",
   "criteria": {
     "has_narwhal_horn": {
@@ -18,6 +24,12 @@
       "trigger": "minecraft:recipe_unlocked"
     }
   },
+  "fabric:load_conditions": [
+    {
+      "condition": "assortedlib:part_enabled",
+      "part": "assortedseacreatures"
+    }
+  ],
   "requirements": [
     [
       "has_the_recipe",

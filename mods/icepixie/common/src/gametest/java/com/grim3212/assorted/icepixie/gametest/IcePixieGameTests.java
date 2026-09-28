@@ -21,5 +21,6 @@ public final class IcePixieGameTests {
         MigrationTests.register(out);
         SpawnTests.register(out);
         IcePixieTests.register(out);
+        FamilyTests.register(out);
     }
 }

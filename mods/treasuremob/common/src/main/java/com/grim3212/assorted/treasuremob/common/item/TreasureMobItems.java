@@ -3,7 +3,6 @@ package com.grim3212.assorted.treasuremob.common.item;
 import com.grim3212.assorted.lib.registry.IRegistryObject;
 import com.grim3212.assorted.lib.registry.RegistryProvider;
 import com.grim3212.assorted.treasuremob.Constants;
-import com.grim3212.assorted.treasuremob.Family;
 import com.grim3212.assorted.treasuremob.common.entity.TreasureMobEntities;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -18,7 +17,7 @@ import java.util.function.Supplier;
 
 public class TreasureMobItems {
 
-    public static final RegistryProvider<Item> ITEMS = RegistryProvider.create(Registries.ITEM, Constants.MOD_ID).aliasFrom(Family.ID);
+    public static final RegistryProvider<Item> ITEMS = RegistryProvider.create(Registries.ITEM, Constants.MOD_ID).aliasFrom(Constants.FAMILY_ID);
 
     public static final IRegistryObject<Item> TREASURE_MOB_SPAWN_EGG = spawnEgg("treasure_mob_spawn_egg", TreasureMobEntities.TREASURE_MOB::get);
 

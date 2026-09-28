@@ -2,7 +2,6 @@ package com.grim3212.assorted.treasuremob.client.data;
 
 import com.grim3212.assorted.lib.data.LibManualProvider;
 import com.grim3212.assorted.treasuremob.Constants;
-import com.grim3212.assorted.treasuremob.Family;
 import com.grim3212.assorted.treasuremob.common.entity.TreasureMobEntities;
 import com.grim3212.assorted.treasuremob.common.handlers.TreasureMobCreativeItems;
 import com.grim3212.assorted.treasuremob.common.item.TreasureMobItems;
@@ -20,13 +19,11 @@ public class TreasureMobManualProvider extends LibManualProvider {
     private static final int PICTURE_HEIGHT = 86;
 
     public TreasureMobManualProvider(PackOutput output) {
-        super(output, Constants.MOD_ID, Family.ID);
+        super(output, Constants.MOD_ID, Constants.FAMILY_ID);
     }
 
     @Override
     protected void addChapters() {
-        this.section(Family.MANUAL_ORDER, Family.ICONS.toArray(Identifier[]::new));
-
         ChapterBuilder treasureMob = this.chapter("treasure_mob", 10);
         treasureMob.image("info", picture("treasure_mob"), 104, 96)
                 .opens(TreasureMobEntities.TREASURE_MOB.get()).opens(TreasureMobItems.TREASURE_MOB_SPAWN_EGG.get());

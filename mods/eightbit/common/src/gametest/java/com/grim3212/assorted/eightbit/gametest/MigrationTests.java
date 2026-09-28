@@ -1,7 +1,6 @@
 package com.grim3212.assorted.eightbit.gametest;
 
 import com.grim3212.assorted.eightbit.Constants;
-import com.grim3212.assorted.eightbit.Family;
 import com.grim3212.assorted.eightbit.common.item.EightBitItems;
 import com.grim3212.assorted.lib.test.TestSupport;
 import net.minecraft.SharedConstants;
@@ -25,7 +24,7 @@ import java.util.function.Consumer;
 /** A player who played when this was all Assorted Mobs keeps their recipe book and advancements. */
 final class MigrationTests {
 
-    private static final Identifier ROOT = Identifier.fromNamespaceAndPath(Family.ID, "root");
+    private static final Identifier ROOT = Identifier.fromNamespaceAndPath(Constants.FAMILY_ID, "root");
 
     private MigrationTests() {
     }
@@ -38,7 +37,7 @@ final class MigrationTests {
 
     private static void recipeBookCarriesOver(GameTestHelper helper) {
         ServerRecipeBook book = TestSupport.survivalPlayer(helper).getRecipeBook();
-        book.loadUntrusted(new ServerRecipeBook.Packed(new RecipeBookSettings(), List.of(recipe(Family.ID, "bobomb")), List.of()),
+        book.loadUntrusted(new ServerRecipeBook.Packed(new RecipeBookSettings(), List.of(recipe(Constants.FAMILY_ID, "bobomb")), List.of()),
                 key -> helper.getLevel().recipeAccess().byKey(key).isPresent());
         helper.assertTrue(book.contains(recipe(Constants.MOD_ID, "bobomb")), "the Bob-omb recipe a player had unlocked as assortedmobs:bobomb was not carried over");
         helper.succeed();

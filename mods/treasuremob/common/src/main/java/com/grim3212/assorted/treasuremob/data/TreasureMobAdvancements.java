@@ -1,7 +1,6 @@
 package com.grim3212.assorted.treasuremob.data;
 
 import com.grim3212.assorted.treasuremob.Constants;
-import com.grim3212.assorted.treasuremob.Family;
 import com.grim3212.assorted.treasuremob.common.entity.TreasureMobEntities;
 import com.grim3212.assorted.treasuremob.common.item.TreasureMobItems;
 import net.minecraft.advancements.Advancement;
@@ -44,8 +43,8 @@ public class TreasureMobAdvancements implements AdvancementSubProvider {
         HolderGetter<EntityType<?>> entities = registries.lookupOrThrow(Registries.ENTITY_TYPE);
 
         AdvancementHolder root = Advancement.Builder.advancement()
-                .display(Items.SNOWBALL, Component.translatable("advancements." + Family.ID + ".root.title"),
-                        Component.translatable("advancements." + Family.ID + ".root.description"),
+                .display(Items.SNOWBALL, Component.translatable("advancements." + Constants.FAMILY_ID + ".root.title"),
+                        Component.translatable("advancements." + Constants.FAMILY_ID + ".root.description"),
                         Identifier.withDefaultNamespace("block/snow"), AdvancementType.TASK, false, false, false)
                 .addCriterion("killed", KilledTrigger.TriggerInstance.playerKilledEntity(EntityPredicate.Builder.entity().of(entities, OPENS_WHEN_KILLED)))
                 .addCriterion("tamed", TameAnimalTrigger.TriggerInstance.tamedAnimal(EntityPredicate.Builder.entity().of(entities, OPENS_WHEN_TAMED)))
@@ -92,6 +91,6 @@ public class TreasureMobAdvancements implements AdvancementSubProvider {
     }
 
     private static Identifier family(String name) {
-        return Identifier.fromNamespaceAndPath(Family.ID, name);
+        return Identifier.fromNamespaceAndPath(Constants.FAMILY_ID, name);
     }
 }

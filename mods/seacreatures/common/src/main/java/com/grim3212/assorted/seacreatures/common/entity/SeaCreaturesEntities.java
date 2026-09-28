@@ -3,7 +3,6 @@ package com.grim3212.assorted.seacreatures.common.entity;
 import com.grim3212.assorted.lib.registry.IRegistryObject;
 import com.grim3212.assorted.lib.registry.RegistryProvider;
 import com.grim3212.assorted.seacreatures.Constants;
-import com.grim3212.assorted.seacreatures.Family;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -14,7 +13,7 @@ import net.minecraft.world.entity.MobCategory;
 /** MISC for everything a spawn habit sets down: vanilla's spawner neither spawns nor counts it, and the habit caps it. */
 public class SeaCreaturesEntities {
 
-    public static final RegistryProvider<EntityType<?>> ENTITIES = RegistryProvider.create(Registries.ENTITY_TYPE, Constants.MOD_ID).aliasFrom(Family.ID);
+    public static final RegistryProvider<EntityType<?>> ENTITIES = RegistryProvider.create(Registries.ENTITY_TYPE, Constants.MOD_ID).aliasFrom(Constants.FAMILY_ID);
 
     public static final IRegistryObject<EntityType<Seal>> SEAL = register("seal", EntityType.Builder.of(Seal::new, MobCategory.MISC).sized(0.8F, 0.6F).eyeHeight(0.45F).clientTrackingRange(10));
     // Under a block across, though it is broader than that to look at: at a block or over, the pathfinder takes it for two

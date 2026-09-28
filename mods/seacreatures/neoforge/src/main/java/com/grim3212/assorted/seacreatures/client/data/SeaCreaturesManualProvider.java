@@ -2,7 +2,6 @@ package com.grim3212.assorted.seacreatures.client.data;
 
 import com.grim3212.assorted.lib.data.LibManualProvider;
 import com.grim3212.assorted.seacreatures.Constants;
-import com.grim3212.assorted.seacreatures.Family;
 import com.grim3212.assorted.seacreatures.common.entity.SeaCreaturesEntities;
 import com.grim3212.assorted.seacreatures.common.handlers.SeaCreaturesCreativeItems;
 import com.grim3212.assorted.seacreatures.common.item.SeaCreaturesItems;
@@ -20,13 +19,11 @@ public class SeaCreaturesManualProvider extends LibManualProvider {
     private static final int PICTURE_HEIGHT = 86;
 
     public SeaCreaturesManualProvider(PackOutput output) {
-        super(output, Constants.MOD_ID, Family.ID);
+        super(output, Constants.MOD_ID, Constants.FAMILY_ID);
     }
 
     @Override
     protected void addChapters() {
-        this.section(Family.MANUAL_ORDER, Family.ICONS.toArray(Identifier[]::new));
-
         ChapterBuilder seaCreatures = this.chapter("sea_creatures", 30);
         seaCreatures.image("seal", picture("seal"), PICTURE_WIDTH, PICTURE_HEIGHT)
                 .opens(SeaCreaturesEntities.SEAL.get(), SeaCreaturesEntities.WALRUS.get()).opens(SeaCreaturesItems.SEAL_SPAWN_EGG.get(), SeaCreaturesItems.WALRUS_SPAWN_EGG.get());

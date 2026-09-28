@@ -1,6 +1,6 @@
 package com.grim3212.assorted.icepixie.gametest;
 
-import com.grim3212.assorted.icepixie.Family;
+import com.grim3212.assorted.icepixie.Constants;
 import com.grim3212.assorted.icepixie.common.item.IcePixieItems;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.Identifier;
@@ -20,7 +20,7 @@ final class MigrationTests {
 
     // The family's first two icons, the Bob-omb and the narwhal horn, are not installed here.
     private static void advancementRootFallsBackToTheIcePixie(GameTestHelper helper) {
-        Identifier root = Identifier.fromNamespaceAndPath(Family.ID, "root");
+        Identifier root = Identifier.fromNamespaceAndPath(Constants.FAMILY_ID, "root");
         helper.assertTrue(helper.getLevel().getServer().getAdvancements().get(root).value().display().orElseThrow().getIcon().item().value() == IcePixieItems.ICE_PIXIE_SPAWN_EGG.get(),
                 "the Assorted Mobs advancement root is not drawn with the ice pixie's egg, the first of the family's icons installed");
         helper.succeed();

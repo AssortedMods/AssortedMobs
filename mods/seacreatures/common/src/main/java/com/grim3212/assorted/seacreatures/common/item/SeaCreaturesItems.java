@@ -3,7 +3,6 @@ package com.grim3212.assorted.seacreatures.common.item;
 import com.grim3212.assorted.lib.registry.IRegistryObject;
 import com.grim3212.assorted.lib.registry.RegistryProvider;
 import com.grim3212.assorted.seacreatures.Constants;
-import com.grim3212.assorted.seacreatures.Family;
 import com.grim3212.assorted.seacreatures.common.entity.SeaCreaturesEntities;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
@@ -21,7 +20,7 @@ import java.util.function.Supplier;
 
 public class SeaCreaturesItems {
 
-    public static final RegistryProvider<Item> ITEMS = RegistryProvider.create(Registries.ITEM, Constants.MOD_ID).aliasFrom(Family.ID);
+    public static final RegistryProvider<Item> ITEMS = RegistryProvider.create(Registries.ITEM, Constants.MOD_ID).aliasFrom(Constants.FAMILY_ID);
 
     public static final IRegistryObject<Item> NARWHAL_HORN = register("narwhal_horn", Item::new);
     // As good as stone, which is what the 1.2.5 sword and shovel were.

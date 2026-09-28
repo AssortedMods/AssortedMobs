@@ -3,7 +3,6 @@ package com.grim3212.assorted.seacreatures.gametest;
 import com.google.gson.JsonParser;
 import com.grim3212.assorted.lib.registry.IRegistryObject;
 import com.grim3212.assorted.seacreatures.Constants;
-import com.grim3212.assorted.seacreatures.Family;
 import com.grim3212.assorted.seacreatures.common.entity.SeaCreaturesEntities;
 import com.grim3212.assorted.seacreatures.common.item.SeaCreaturesItems;
 import com.grim3212.assorted.seacreatures.common.sounds.SeaCreaturesSounds;
@@ -55,6 +54,6 @@ final class AliasTests {
     }
 
     private static Identifier old(Identifier id) {
-        return Identifier.fromNamespaceAndPath(Family.ID, id.getPath());
+        return Identifier.fromNamespaceAndPath(Constants.FAMILY_ID, id.getPath());
     }
 }
