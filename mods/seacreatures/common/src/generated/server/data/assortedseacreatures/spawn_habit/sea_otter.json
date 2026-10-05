@@ -1,0 +1,19 @@
+{
+  "biomes": "#assortedseacreatures:spawns_sea_otters",
+  "cap": {
+    "max": 5,
+    "range": 128
+  },
+  "chance": 0.25,
+  "entity": "assortedseacreatures:sea_otter",
+  "group": {
+    "max": 4,
+    "min": 2
+  },
+  "interval": 400,
+  "seed": 0.04,
+  "site": {
+    "type": "assortedlib:water"
+  },
+  "tries": 6
+}

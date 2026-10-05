@@ -1,0 +1,29 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "assortedlib:part_enabled",
+      "part": "assortedeightbit"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "fabric:load_conditions": [
+    {
+      "condition": "assortedlib:part_enabled",
+      "part": "assortedeightbit"
+    }
+  ],
+  "key": {
+    "#": "#c:gunpowders",
+    "@": "assortedeightbit:parabuzzy_shell",
+    "X": "#c:dusts/redstone"
+  },
+  "pattern": [
+    "X",
+    "#",
+    "@"
+  ],
+  "result": {
+    "id": "assortedeightbit:bobomb"
+  }
+}

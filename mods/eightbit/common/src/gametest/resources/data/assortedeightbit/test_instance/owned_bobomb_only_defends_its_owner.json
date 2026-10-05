@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedeightbit:owned_bobomb_only_defends_its_owner",
+  "structure": "assortedeightbit:test_box",
+  "max_ticks": 300,
+  "setup_ticks": 0,
+  "required": true
+}

@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedseacreatures:assortedmobs_ids_still_load",
+  "structure": "assortedseacreatures:test_box",
+  "max_ticks": 1,
+  "setup_ticks": 0,
+  "required": true
+}

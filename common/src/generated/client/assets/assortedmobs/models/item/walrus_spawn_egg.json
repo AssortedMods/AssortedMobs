@@ -1,6 +1,0 @@
-{
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "assortedmobs:item/walrus_spawn_egg"
-  }
-}

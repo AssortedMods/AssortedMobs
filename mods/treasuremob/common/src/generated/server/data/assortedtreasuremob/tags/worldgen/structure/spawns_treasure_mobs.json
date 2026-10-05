@@ -1,0 +1,31 @@
+{
+  "values": [
+    "minecraft:mineshaft",
+    "minecraft:mineshaft_mesa",
+    "minecraft:stronghold",
+    "minecraft:trial_chambers",
+    "minecraft:ancient_city",
+    "minecraft:desert_pyramid",
+    "minecraft:jungle_pyramid",
+    "minecraft:mansion",
+    "minecraft:bastion_remnant",
+    "minecraft:fortress",
+    "minecraft:end_city",
+    {
+      "id": "assortedstructures:fountain",
+      "required": false
+    },
+    {
+      "id": "assortedstructures:pyramid",
+      "required": false
+    },
+    {
+      "id": "assortedstructures:snowball",
+      "required": false
+    },
+    {
+      "id": "assortedstructures:water_dome",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedtreasuremob:tame_treasure_mob_teleports_to_its_owner",
+  "structure": "assortedtreasuremob:test_box",
+  "max_ticks": 300,
+  "setup_ticks": 0,
+  "required": true
+}

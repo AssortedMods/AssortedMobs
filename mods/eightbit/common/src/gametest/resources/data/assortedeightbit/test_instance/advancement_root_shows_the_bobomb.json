@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedeightbit:advancement_root_shows_the_bobomb",
+  "structure": "assortedeightbit:test_box",
+  "max_ticks": 1,
+  "setup_ticks": 0,
+  "required": true
+}

@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedicepixie:ice_pixie_drops_snow_and_ice",
+  "structure": "assortedicepixie:test_box",
+  "max_ticks": 200,
+  "setup_ticks": 0,
+  "required": true
+}

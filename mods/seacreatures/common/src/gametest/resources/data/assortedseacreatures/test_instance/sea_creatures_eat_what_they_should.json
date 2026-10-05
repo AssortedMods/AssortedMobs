@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedseacreatures:sea_creatures_eat_what_they_should",
+  "structure": "assortedseacreatures:test_box",
+  "max_ticks": 1,
+  "setup_ticks": 0,
+  "required": true
+}

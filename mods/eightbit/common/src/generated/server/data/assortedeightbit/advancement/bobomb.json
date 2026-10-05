@@ -1,0 +1,32 @@
+{
+  "parent": "assortedmobs:root",
+  "criteria": {
+    "has_bobomb": {
+      "conditions": {
+        "items": [
+          {
+            "items": "assortedeightbit:bobomb"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "advancements.assortedeightbit.bobomb.description"
+    },
+    "icon": {
+      "id": "assortedeightbit:bobomb"
+    },
+    "title": {
+      "translate": "advancements.assortedeightbit.bobomb.title"
+    }
+  },
+  "requirements": [
+    [
+      "has_bobomb"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

@@ -1,0 +1,25 @@
+{
+  "conditions": [
+    {
+      "type": "assortedlib:part_enabled",
+      "part": "assortedicepixie"
+    }
+  ],
+  "pages": [
+    {
+      "type": "assortedlib:image",
+      "height": 86,
+      "id": "info",
+      "image": "assortedicepixie:textures/gui/manual/ice_pixie.png",
+      "text": "manual.assortedmobs.chapter.ice_pixie.info",
+      "title": "manual.assortedmobs.chapter.ice_pixie.info.title",
+      "width": 152
+    },
+    {
+      "type": "assortedlib:text",
+      "id": "fire",
+      "text": "manual.assortedmobs.chapter.ice_pixie.fire",
+      "title": "manual.assortedmobs.chapter.ice_pixie.fire.title"
+    }
+  ]
+}

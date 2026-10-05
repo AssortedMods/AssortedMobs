@@ -1,0 +1,16 @@
+{
+  "biomes": "#assortedicepixie:spawns_ice_pixies",
+  "cap": {
+    "max": 6,
+    "range": 128
+  },
+  "chance": 0.35,
+  "entity": "assortedicepixie:ice_pixie",
+  "group": {
+    "max": 3,
+    "min": 1
+  },
+  "interval": 400,
+  "seed": 0.03,
+  "tries": 6
+}

@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedtreasuremob:treasure_mobs_spawn_in_the_dark",
+  "structure": "assortedtreasuremob:test_box",
+  "max_ticks": 200,
+  "setup_ticks": 0,
+  "required": true
+}

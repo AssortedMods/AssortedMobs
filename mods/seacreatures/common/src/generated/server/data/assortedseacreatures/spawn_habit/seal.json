@@ -1,0 +1,16 @@
+{
+  "biomes": "#assortedseacreatures:spawns_seals",
+  "cap": {
+    "counted": "#assortedseacreatures:ice_herd",
+    "max": 6
+  },
+  "chance": 0.25,
+  "entity": "assortedseacreatures:seal",
+  "group": {
+    "max": 4,
+    "min": 2
+  },
+  "interval": 400,
+  "seed": 0.03,
+  "tries": 6
+}

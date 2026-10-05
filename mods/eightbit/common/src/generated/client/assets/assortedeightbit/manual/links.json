@@ -1,0 +1,23 @@
+{
+  "links": [
+    {
+      "entities": [
+        "assortedeightbit:parabuzzy"
+      ],
+      "items": [
+        "assortedeightbit:parabuzzy_shell",
+        "assortedeightbit:parabuzzy_spawn_egg"
+      ],
+      "page": "assortedmobs:eight_bit/parabuzzy"
+    },
+    {
+      "entities": [
+        "assortedeightbit:bobomb"
+      ],
+      "items": [
+        "assortedeightbit:bobomb"
+      ],
+      "page": "assortedmobs:eight_bit/bobomb"
+    }
+  ]
+}

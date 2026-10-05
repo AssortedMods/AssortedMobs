@@ -1,0 +1,19 @@
+{
+  "advancements.assortedicepixie.rare_encounter.description": "Kill an ice pixie",
+  "advancements.assortedicepixie.rare_encounter.title": "Rare Encounter",
+  "advancements.assortedmobs.root.description": "Meet one of the creatures Assorted Mobs adds",
+  "advancements.assortedmobs.root.title": "Assorted Mobs",
+  "entity.assortedicepixie.ice_cube": "Ice Cube",
+  "entity.assortedicepixie.ice_pixie": "Ice Pixie",
+  "item.assortedicepixie.ice_pixie_spawn_egg": "Ice Pixie Spawn Egg",
+  "itemGroup.assortedmobs": "Assorted Mobs",
+  "manual.assortedmobs.chapter.ice_pixie": "Ice Pixie",
+  "manual.assortedmobs.chapter.ice_pixie.fire": "Nothing hurts an ice pixie unless you are holding a torch or flint and steel when you hit it.\n\nAnything hot nearby burns will burn them too.",
+  "manual.assortedmobs.chapter.ice_pixie.fire.title": "Only Fire",
+  "manual.assortedmobs.chapter.ice_pixie.info": "Ice pixies live in snowy places and come out by day as well as by night. They throw ice at any player they see, and move faster on ice and snow.",
+  "manual.assortedmobs.chapter.ice_pixie.info.title": "Ice Pixie",
+  "manual.assortedmobs.description": "The ice pixie, the treasure mob, the two 8-bit creatures, and the sea creatures.",
+  "manual.assortedmobs.title": "Assorted Mobs",
+  "tag.item.assortedicepixie.ice_pixie_weapons": "Ice Pixie Weapons",
+  "tag.item.assortedmobs.opens_advancements_when_held": "Starts the Assorted Mobs Advancements"
+}

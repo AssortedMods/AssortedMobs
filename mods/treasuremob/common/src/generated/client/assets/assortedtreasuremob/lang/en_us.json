@@ -1,0 +1,18 @@
+{
+  "advancements.assortedmobs.root.description": "Meet one of the creatures Assorted Mobs adds",
+  "advancements.assortedmobs.root.title": "Assorted Mobs",
+  "advancements.assortedtreasuremob.dont_kill_him.description": "Find a treasure mob in the wild and tame it",
+  "advancements.assortedtreasuremob.dont_kill_him.title": "Don't Kill Him",
+  "entity.assortedtreasuremob.treasure_mob": "Treasure Mob",
+  "item.assortedtreasuremob.treasure_mob_spawn_egg": "Treasure Mob Spawn Egg",
+  "itemGroup.assortedmobs": "Assorted Mobs",
+  "manual.assortedmobs.chapter.treasure_mob": "Treasure Mob",
+  "manual.assortedmobs.chapter.treasure_mob.info": "Now and then a chest walks off on its own. It carries whatever it found, anything from bread to diamonds.",
+  "manual.assortedmobs.chapter.treasure_mob.info.title": "Treasure Mob",
+  "manual.assortedmobs.chapter.treasure_mob.taming": "A wild one keeps away from players, but gold nuggets lure it in. Feed it nuggets and it may decide to stay.\n\nA tamed Treasure Mob follows you and sits when told to. Sneak and use it to open it as a chest.",
+  "manual.assortedmobs.chapter.treasure_mob.taming.title": "Taming",
+  "manual.assortedmobs.description": "The ice pixie, the treasure mob, the two 8-bit creatures, and the sea creatures.",
+  "manual.assortedmobs.title": "Assorted Mobs",
+  "tag.item.assortedmobs.opens_advancements_when_held": "Starts the Assorted Mobs Advancements",
+  "tag.item.assortedtreasuremob.treasure_mob_tempt_items": "Treasure Mob Lures"
+}

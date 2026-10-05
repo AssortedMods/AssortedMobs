@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedseacreatures:seals_and_walruses_spawn_on_snow_and_ice",
+  "structure": "assortedseacreatures:test_box",
+  "max_ticks": 100,
+  "setup_ticks": 0,
+  "required": true
+}
