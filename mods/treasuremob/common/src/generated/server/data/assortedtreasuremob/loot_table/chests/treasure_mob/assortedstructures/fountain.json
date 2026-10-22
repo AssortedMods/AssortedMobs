@@ -22,7 +22,7 @@
           "value": "assortedstructures:chests/fountain"
         }
       ],
-      "rolls": 1.0
+      "rolls": 1
     }
   ],
   "random_sequence": "assortedtreasuremob:chests/treasure_mob/assortedstructures/fountain"

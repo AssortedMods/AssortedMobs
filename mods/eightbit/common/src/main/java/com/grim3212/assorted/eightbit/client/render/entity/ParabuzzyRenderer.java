@@ -46,8 +46,8 @@ public class ParabuzzyRenderer extends MobRenderer<Parabuzzy, ParabuzzyRenderer.
     }
 
     @Override
-    public boolean shouldRender(Parabuzzy entity, Frustum culler, double camX, double camY, double camZ) {
-        return !PerchRendering.hiddenFromCarrier(entity) && super.shouldRender(entity, culler, camX, camY, camZ);
+    public boolean shouldRender(Parabuzzy entity, Frustum culler, double camX, double camY, double camZ, float partialTicks) {
+        return !PerchRendering.hiddenFromCarrier(entity) && super.shouldRender(entity, culler, camX, camY, camZ, partialTicks);
     }
 
     @Override

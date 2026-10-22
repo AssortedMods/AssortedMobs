@@ -19,7 +19,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "assortedseacreatures:shell_leggings"
+        "recipes": "assortedseacreatures:shell_leggings"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

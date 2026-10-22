@@ -3,15 +3,13 @@
   "criteria": {
     "killed_ice_pixie": {
       "conditions": {
-        "entity": [
-          {
-            "condition": "minecraft:entity_properties",
-            "entity": "this",
-            "predicate": {
-              "minecraft:entity_type": "assortedicepixie:ice_pixie"
-            }
+        "entity": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "minecraft:entity_type": "assortedicepixie:ice_pixie"
           }
-        ]
+        }
       },
       "trigger": "minecraft:player_killed_entity"
     }

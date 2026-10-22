@@ -41,7 +41,7 @@ final class IcePixieTests {
         helper.assertFalse(pixie.isAlive(), "a torch bearer could not kill the ice pixie");
 
         String table = readJson(helper, "/data/assortedicepixie/loot_table/entities/ice_pixie.json").toString();
-        helper.assertTrue(table.contains("\"c:rods/frost\""), "the ice pixie has no chance of dropping a frost rod");
+        helper.assertTrue(table.contains("\"#c:rods/frost\""), "the ice pixie has no chance of dropping a frost rod");
 
         helper.succeedWhen(() -> {
             helper.assertItemEntityPresent(Items.SNOWBALL, CENTRE, 2.0D);

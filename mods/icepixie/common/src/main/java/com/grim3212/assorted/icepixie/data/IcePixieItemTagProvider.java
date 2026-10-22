@@ -30,6 +30,9 @@ public class IcePixieItemTagProvider extends LibItemTagProvider {
             weapons.add(key(item));
         }
 
+        // 26.3 will not load a loot table naming a tag nobody made, so it exists, empty, without Tools.
+        appender.apply(IcePixieTags.Items.FROST_RODS);
+
         IcePixieAdvancements.itemTags(appender);
     }
 

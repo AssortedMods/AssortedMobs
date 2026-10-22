@@ -133,7 +133,7 @@ final class EightBitTests {
         Vec3 above = helper.absoluteVec(new Vec3(4.5D, 11.0D, 4.5D));
         player.snapTo(above.x, above.y, above.z);
         player.setNoGravity(true);
-        player.setInvulnerable(true);
+        player.setPermanentlyInvulnerable(true);
         return player;
     }
 

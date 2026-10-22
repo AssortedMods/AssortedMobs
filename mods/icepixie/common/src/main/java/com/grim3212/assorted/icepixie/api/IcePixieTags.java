@@ -1,6 +1,7 @@
 package com.grim3212.assorted.icepixie.api;
 
 import com.grim3212.assorted.icepixie.Constants;
+import com.grim3212.assorted.lib.util.LibCommonTags;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
@@ -22,6 +23,8 @@ public class IcePixieTags {
     public static class Items {
         /** What a player has to be holding to hurt an ice pixie. */
         public static final TagKey<Item> ICE_PIXIE_WEAPONS = create("ice_pixie_weapons");
+        /** Assorted Tools' frost rod, which an ice pixie can drop; kept here too so the drop still loads without Tools. */
+        public static final TagKey<Item> FROST_RODS = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(LibCommonTags.COMMON_NAMESPACE, "rods/frost"));
 
         private static TagKey<Item> create(String name) {
             return TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Constants.MOD_ID, name));

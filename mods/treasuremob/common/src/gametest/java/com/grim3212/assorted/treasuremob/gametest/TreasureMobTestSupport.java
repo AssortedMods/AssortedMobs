@@ -18,6 +18,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.densityfunction.SamplerContext;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
@@ -76,7 +77,8 @@ final class TreasureMobTestSupport {
         ChunkGenerator generator = level.getChunkSource().getGenerator();
         ChunkPos origin = ChunkPos.containing(helper.absolutePos(CENTRE));
         StructureStart start = structure.value().generate(structure, level.dimension(), level.registryAccess(), generator, generator.getBiomeSource(),
-                level.getChunkSource().randomState(), level.getStructureManager(), level.getSeed(), origin, 0, level, biome -> true);
+                level.getChunkSource().randomState().createClimateSampler(SamplerContext.EMPTY_UNCACHED),
+                level.getChunkSource().randomState(), level.getStructureTemplateManager(), level.getSeed(), origin, 0, level, biome -> true);
         helper.assertTrue(start.isValid(), "could not lay out " + key.identifier() + " to test in");
 
         start.getPieces().forEach(piece -> piece.move(0, lift, 0));

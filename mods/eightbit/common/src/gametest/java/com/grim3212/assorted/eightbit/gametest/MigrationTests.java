@@ -66,7 +66,7 @@ final class MigrationTests {
     }
 
     private static void advancementRootShowsTheBobomb(GameTestHelper helper) {
-        helper.assertTrue(helper.getLevel().getServer().getAdvancements().get(ROOT).value().display().orElseThrow().getIcon().item().value() == EightBitItems.BOBOMB.get(),
+        helper.assertTrue(helper.getLevel().getServer().getAdvancements().get(ROOT).value().display().orElseThrow().icon().item().value() == EightBitItems.BOBOMB.get(),
                 "the Assorted Mobs advancement root is not drawn with the Bob-omb, the family's first icon");
         helper.succeed();
     }

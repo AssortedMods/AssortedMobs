@@ -1,5 +1,6 @@
 package com.grim3212.assorted.seacreatures.common.entity;
 
+import com.grim3212.assorted.lib.util.BlockPosUtil;
 import com.grim3212.assorted.seacreatures.common.entity.ai.AmphibiousMoveControl;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
@@ -136,7 +137,7 @@ public abstract class AmphibiousAnimal extends Animal {
         }
         if (this.shore == null && this.tickCount % SHORE_SEARCH_INTERVAL == 0) {
             // Only where the world is already loaded: asking after a block in a chunk that is not loads it, or makes it.
-            this.shore = BlockPos.findClosestMatch(this.blockPosition(), SHORE_RANGE, SHORE_SEARCH_HEIGHT, pos -> this.level().isLoaded(pos) && this.level().getFluidState(pos).is(FluidTags.WATER)).orElse(null);
+            this.shore = BlockPosUtil.findClosestMatch(this.blockPosition(), SHORE_RANGE, SHORE_SEARCH_HEIGHT, pos -> this.level().isLoaded(pos) && this.level().getFluidState(pos).is(FluidTags.WATER)).orElse(null);
         }
         if (this.shore == null || this.isLeashed()) {
             return;

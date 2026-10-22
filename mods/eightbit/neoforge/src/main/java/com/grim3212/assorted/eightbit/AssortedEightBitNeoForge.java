@@ -6,25 +6,24 @@ import com.grim3212.assorted.eightbit.client.data.EightBitManualProvider;
 import com.grim3212.assorted.eightbit.data.EightBitAdvancements;
 import com.grim3212.assorted.eightbit.data.EightBitBiomeTagProvider;
 import com.grim3212.assorted.eightbit.data.EightBitBlockTagProvider;
+import com.grim3212.assorted.eightbit.data.EightBitEntityLoot;
 import com.grim3212.assorted.eightbit.data.EightBitEntityTagProvider;
 import com.grim3212.assorted.eightbit.data.EightBitItemTagProvider;
-import com.grim3212.assorted.eightbit.data.EightBitLootTableProvider;
 import com.grim3212.assorted.eightbit.data.EightBitRecipes;
 import com.grim3212.assorted.eightbit.data.EightBitSpawnHabitProvider;
 import com.grim3212.assorted.lib.data.ForgeBiomeTagProvider;
 import com.grim3212.assorted.lib.data.ForgeBlockTagProvider;
 import com.grim3212.assorted.lib.data.ForgeEntityTagProvider;
 import com.grim3212.assorted.lib.data.ForgeItemTagProvider;
+import com.grim3212.assorted.lib.data.ForgeRegistryEntries;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.advancements.AdvancementProvider;
-import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
 
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Mod(Constants.MOD_ID)
@@ -47,17 +46,14 @@ public class AssortedEightBitNeoForge {
      */
     private void gatherServerData(final GatherDataEvent.Server event) {
         PackOutput packOutput = event.getGenerator().getPackOutput();
-        CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
+        CompletableFuture<HolderLookup.Provider> lookupProvider = event.getWorldLookupProvider();
 
         ForgeBlockTagProvider blockTagProvider = event.addProvider(new ForgeBlockTagProvider(packOutput, lookupProvider, Constants.MOD_ID, new EightBitBlockTagProvider(packOutput, lookupProvider)));
         event.addProvider(new ForgeItemTagProvider(packOutput, lookupProvider, blockTagProvider.contentsGetter(), Constants.MOD_ID, new EightBitItemTagProvider(packOutput, lookupProvider, blockTagProvider.contentsGetter())));
         event.addProvider(new ForgeBiomeTagProvider(packOutput, lookupProvider, Constants.MOD_ID, new EightBitBiomeTagProvider(packOutput, lookupProvider)));
         event.addProvider(new ForgeEntityTagProvider(packOutput, lookupProvider, Constants.MOD_ID, new EightBitEntityTagProvider(packOutput, lookupProvider)));
         event.addProvider(new EightBitSpawnHabitProvider(packOutput));
-        // Recipe providers are not data providers any more - the Runner owns the output.
-        event.addProvider(new EightBitRecipes.Runner(packOutput, lookupProvider));
-        event.addProvider(new EightBitLootTableProvider(packOutput, lookupProvider));
-        event.addProvider(new AdvancementProvider(packOutput, lookupProvider, List.of(new EightBitAdvancements())));
+        ForgeRegistryEntries.of(Constants.MOD_ID).recipes(EightBitRecipes::new).advancements(EightBitAdvancements::new).loot(EightBitEntityLoot::new, LootContextParamSets.ENTITY).addTo(event);
     }
 
     /** Client datagen: models, the language file and the manual, written into common for both loaders. */

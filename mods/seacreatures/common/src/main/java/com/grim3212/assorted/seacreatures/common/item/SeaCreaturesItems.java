@@ -10,7 +10,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.item.ToolMaterial;
 import net.minecraft.world.item.equipment.ArmorType;
@@ -30,7 +29,7 @@ public class SeaCreaturesItems {
     public static final IRegistryObject<Item> SHELL_CHESTPLATE = register("shell_chestplate", props -> new Item(props.humanoidArmor(SeaCreaturesArmorMaterials.SHELL, ArmorType.CHESTPLATE)));
     public static final IRegistryObject<Item> SHELL_LEGGINGS = register("shell_leggings", props -> new Item(props.humanoidArmor(SeaCreaturesArmorMaterials.SHELL, ArmorType.LEGGINGS)));
     public static final IRegistryObject<Item> SHELL_BOOTS = register("shell_boots", props -> new Item(props.humanoidArmor(SeaCreaturesArmorMaterials.SHELL, ArmorType.BOOTS)));
-    public static final IRegistryObject<Item> SHELL_SHOVEL = register("shell_shovel", props -> new ShovelItem(ToolMaterial.STONE, 1.5F, -3.0F, props));
+    public static final IRegistryObject<Item> SHELL_SHOVEL = register("shell_shovel", props -> new Item(props.shovel(ToolMaterial.STONE, 1.5F, -3.0F)));
 
     public static final IRegistryObject<Item> SEAL_SPAWN_EGG = spawnEgg("seal_spawn_egg", SeaCreaturesEntities.SEAL::get);
     public static final IRegistryObject<Item> WALRUS_SPAWN_EGG = spawnEgg("walrus_spawn_egg", SeaCreaturesEntities.WALRUS::get);

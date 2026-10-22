@@ -3,15 +3,13 @@
   "criteria": {
     "tamed_treasure_mob": {
       "conditions": {
-        "entity": [
-          {
-            "condition": "minecraft:entity_properties",
-            "entity": "this",
-            "predicate": {
-              "minecraft:entity_type": "assortedtreasuremob:treasure_mob"
-            }
+        "entity": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "minecraft:entity_type": "assortedtreasuremob:treasure_mob"
           }
-        ]
+        }
       },
       "trigger": "minecraft:tame_animal"
     }

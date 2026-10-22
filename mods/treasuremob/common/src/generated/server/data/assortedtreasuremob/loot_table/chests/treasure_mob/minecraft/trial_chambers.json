@@ -20,7 +20,7 @@
           "value": "minecraft:chests/trial_chambers/entrance"
         }
       ],
-      "rolls": 1.0
+      "rolls": 1
     }
   ],
   "random_sequence": "assortedtreasuremob:chests/treasure_mob/minecraft/trial_chambers"

@@ -66,7 +66,7 @@ final class SpawnerTests {
             helper.assertValueEqual(spawned, 1, "treasure mobs the spawner set down in a desert pyramid");
             helper.assertValueEqual(found.size(), 1, "treasure mobs found in the pyramid");
             TreasureMob mob = found.getFirst();
-            BoundingBox piece = level.structureManager().getStructureWithPieceAt(mob.blockPosition(), structure).getBoundingBox();
+            BoundingBox piece = level.structureManager().getStructureWithPieceAt(mob.getBlockX(), mob.getBlockY(), mob.getBlockZ(), structure).getBoundingBox();
             helper.assertTrue(piece.isInside(mob.blockPosition()), "the treasure mob was set down outside the pyramid at " + mob.blockPosition());
             helper.assertFalse(mob.getChest().isEmpty(), "the spawned treasure mob has an empty chest");
         });

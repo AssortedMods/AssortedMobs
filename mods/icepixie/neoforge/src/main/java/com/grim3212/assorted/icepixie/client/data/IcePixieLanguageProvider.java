@@ -22,6 +22,7 @@ public class IcePixieLanguageProvider extends LibLanguageProvider {
         this.add("itemGroup.assortedmobs", "Assorted Mobs");
 
         this.add("tag.item.assortedicepixie.ice_pixie_weapons", "Ice Pixie Weapons");
+        this.add("tag.item.c.rods.frost", "Frost Rods");
 
         // The Assorted Mobs root, which every part with advancements writes the same.
         this.add("advancements.assortedmobs.root.title", "Assorted Mobs");

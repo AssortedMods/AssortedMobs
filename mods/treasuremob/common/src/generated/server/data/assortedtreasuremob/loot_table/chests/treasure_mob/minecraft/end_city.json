@@ -8,7 +8,7 @@
           "value": "minecraft:chests/end_city_treasure"
         }
       ],
-      "rolls": 1.0
+      "rolls": 1
     }
   ],
   "random_sequence": "assortedtreasuremob:chests/treasure_mob/minecraft/end_city"

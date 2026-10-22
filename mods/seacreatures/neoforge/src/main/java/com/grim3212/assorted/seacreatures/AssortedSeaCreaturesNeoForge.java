@@ -4,20 +4,21 @@ import com.grim3212.assorted.lib.data.ForgeBiomeTagProvider;
 import com.grim3212.assorted.lib.data.ForgeBlockTagProvider;
 import com.grim3212.assorted.lib.data.ForgeEntityTagProvider;
 import com.grim3212.assorted.lib.data.ForgeItemTagProvider;
+import com.grim3212.assorted.lib.data.ForgeRegistryEntries;
 import com.grim3212.assorted.seacreatures.client.data.SeaCreaturesEquipmentAssetProvider;
 import com.grim3212.assorted.seacreatures.client.data.SeaCreaturesItemModelProvider;
 import com.grim3212.assorted.seacreatures.client.data.SeaCreaturesLanguageProvider;
 import com.grim3212.assorted.seacreatures.client.data.SeaCreaturesManualProvider;
 import com.grim3212.assorted.seacreatures.data.SeaCreaturesBiomeTagProvider;
 import com.grim3212.assorted.seacreatures.data.SeaCreaturesBlockTagProvider;
+import com.grim3212.assorted.seacreatures.data.SeaCreaturesEntityLoot;
 import com.grim3212.assorted.seacreatures.data.SeaCreaturesEntityTagProvider;
 import com.grim3212.assorted.seacreatures.data.SeaCreaturesItemTagProvider;
-import com.grim3212.assorted.seacreatures.data.SeaCreaturesLootTableProvider;
 import com.grim3212.assorted.seacreatures.data.SeaCreaturesRecipes;
 import com.grim3212.assorted.seacreatures.data.SeaCreaturesSpawnHabitProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
-import net.minecraft.world.item.crafting.Recipe;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -45,16 +46,14 @@ public class AssortedSeaCreaturesNeoForge {
      */
     private void gatherServerData(final GatherDataEvent.Server event) {
         PackOutput packOutput = event.getGenerator().getPackOutput();
-        CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
+        CompletableFuture<HolderLookup.Provider> lookupProvider = event.getWorldLookupProvider();
 
         ForgeBlockTagProvider blockTagProvider = event.addProvider(new ForgeBlockTagProvider(packOutput, lookupProvider, Constants.MOD_ID, new SeaCreaturesBlockTagProvider(packOutput, lookupProvider)));
         event.addProvider(new ForgeItemTagProvider(packOutput, lookupProvider, blockTagProvider.contentsGetter(), Constants.MOD_ID, new SeaCreaturesItemTagProvider(packOutput, lookupProvider, blockTagProvider.contentsGetter())));
         event.addProvider(new ForgeBiomeTagProvider(packOutput, lookupProvider, Constants.MOD_ID, new SeaCreaturesBiomeTagProvider(packOutput, lookupProvider)));
         event.addProvider(new ForgeEntityTagProvider(packOutput, lookupProvider, Constants.MOD_ID, new SeaCreaturesEntityTagProvider(packOutput, lookupProvider)));
         event.addProvider(new SeaCreaturesSpawnHabitProvider(packOutput));
-        // Recipe providers are not data providers any more - the Runner owns the output.
-        event.addProvider(new SeaCreaturesRecipes.Runner(packOutput, lookupProvider));
-        event.addProvider(new SeaCreaturesLootTableProvider(packOutput, lookupProvider));
+        ForgeRegistryEntries.of(Constants.MOD_ID).recipes(SeaCreaturesRecipes::new).loot(SeaCreaturesEntityLoot::new, LootContextParamSets.ENTITY).addTo(event);
     }
 
     /** Client datagen: models, the language file and the manual, written into common for both loaders. */

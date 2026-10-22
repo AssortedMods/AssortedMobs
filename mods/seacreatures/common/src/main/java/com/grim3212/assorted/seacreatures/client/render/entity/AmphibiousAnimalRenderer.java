@@ -36,7 +36,7 @@ public class AmphibiousAnimalRenderer<T extends AmphibiousAnimal, M extends Enti
         state.waterAmount = entity.getWaterAmount(partialTicks);
         state.swimPitch = entity.getSwimPitch(partialTicks) * Mth.DEG_TO_RAD;
         state.floatAmount = entity instanceof SeaOtter otter ? otter.getFloatAmount(partialTicks) : 0.0F;
-        state.attackAnim = entity.getAttackAnim(partialTicks);
+        state.attackAnim = entity.getSwingAnimation(partialTicks);
     }
 
     /** The same half LivingEntity#getAgeScale shrinks a pup's hitbox to, so what you see is what it collides with. 1 for an adult. */

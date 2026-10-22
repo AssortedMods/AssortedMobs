@@ -3,15 +3,13 @@
   "criteria": {
     "tamed_parabuzzy": {
       "conditions": {
-        "entity": [
-          {
-            "condition": "minecraft:entity_properties",
-            "entity": "this",
-            "predicate": {
-              "minecraft:entity_type": "assortedeightbit:parabuzzy"
-            }
+        "entity": {
+          "type": "minecraft:entity_properties",
+          "entity": "this",
+          "predicate": {
+            "minecraft:entity_type": "assortedeightbit:parabuzzy"
           }
-        ]
+        }
       },
       "trigger": "minecraft:tame_animal"
     }

@@ -7,7 +7,6 @@ import com.grim3212.assorted.seacreatures.common.entity.ai.HaulOutGoal;
 import com.grim3212.assorted.seacreatures.common.entity.ai.SeekWaterGoal;
 import com.grim3212.assorted.seacreatures.common.sounds.SeaCreaturesSounds;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction8;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.WorldGenRegion;
 import net.minecraft.sounds.SoundEvent;
@@ -39,6 +38,9 @@ import org.jetbrains.annotations.Nullable;
  * holding a fish, and is full of them. On land it is slow; hit one and it bolts for the water, where it is not.
  */
 public class Seal extends AmphibiousAnimal {
+
+    // The eight compass points, x then z, as Direction8 had them before 26.3 took it out.
+    private static final int[][] AROUND = {{0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1}};
 
     private static final UniformInt LAND_TIME = TimeUtil.rangeOfSeconds(60, 150);
     private static final UniformInt WATER_TIME = TimeUtil.rangeOfSeconds(45, 120);
@@ -72,8 +74,8 @@ public class Seal extends AmphibiousAnimal {
         ChunkPos generating = level instanceof WorldGenRegion region ? region.getCenter() : null;
         BlockPos.MutableBlockPos look = new BlockPos.MutableBlockPos();
         for (int distance : WATER_WITHIN) {
-            for (Direction8 direction : Direction8.values()) {
-                look.set(pos.getX() + direction.getStepX() * distance, pos.getY(), pos.getZ() + direction.getStepZ() * distance);
+            for (int[] step : AROUND) {
+                look.set(pos.getX() + step[0] * distance, pos.getY(), pos.getZ() + step[1] * distance);
                 if (generating != null ? !generating.equals(ChunkPos.containing(look)) : !AmphibiousAnimal.isLoaded(level, look)) {
                     continue;
                 }

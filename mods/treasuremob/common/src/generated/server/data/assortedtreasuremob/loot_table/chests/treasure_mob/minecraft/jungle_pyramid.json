@@ -8,7 +8,7 @@
           "value": "minecraft:chests/jungle_temple"
         }
       ],
-      "rolls": 1.0
+      "rolls": 1
     }
   ],
   "random_sequence": "assortedtreasuremob:chests/treasure_mob/minecraft/jungle_pyramid"
