@@ -1,5 +1,7 @@
 package com.grim3212.assorted.icepixie.gametest;
 
+import com.grim3212.assorted.icepixie.Constants;
+import com.grim3212.assorted.lib.test.ClientChecks;
 import com.grim3212.assorted.icepixie.common.entity.IcePixieEntities;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
 import net.fabricmc.fabric.api.client.gametest.v1.context.ClientGameTestContext;
@@ -23,6 +25,7 @@ public class IcePixieClientGameTests implements FabricClientGameTest {
     @Override
     public void runTest(ClientGameTestContext context) {
         try (TestSingleplayerContext world = context.worldBuilder().create()) {
+            ClientChecks.assertDrawsRight(context, Constants.MOD_ID);
             world.getConnection().waitForChunksRender();
             lineUp(context, world, List.of(IcePixieEntities.ICE_PIXIE.get()));
             context.takeScreenshot("assortedicepixie_ice_pixie");

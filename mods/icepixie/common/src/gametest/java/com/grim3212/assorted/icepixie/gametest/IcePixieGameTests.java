@@ -1,5 +1,7 @@
 package com.grim3212.assorted.icepixie.gametest;
 
+import com.grim3212.assorted.icepixie.Constants;
+import com.grim3212.assorted.lib.test.CommonTests;
 import net.minecraft.gametest.framework.GameTestHelper;
 
 import java.util.function.BiConsumer;
@@ -22,5 +24,7 @@ public final class IcePixieGameTests {
         SpawnTests.register(out);
         IcePixieTests.register(out);
         FamilyTests.register(out);
+        BehaviourTests.register(out);
+        CommonTests.register(out, Constants.MOD_ID);
     }
 }

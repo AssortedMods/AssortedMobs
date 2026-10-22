@@ -1,5 +1,7 @@
 package com.grim3212.assorted.seacreatures.gametest;
 
+import com.grim3212.assorted.seacreatures.Constants;
+import com.grim3212.assorted.lib.test.ClientChecks;
 import com.grim3212.assorted.seacreatures.common.entity.SeaCreaturesEntities;
 import com.grim3212.assorted.seacreatures.common.entity.SeaOtter;
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
@@ -34,6 +36,7 @@ public class SeaCreaturesClientGameTests implements FabricClientGameTest {
     @Override
     public void runTest(ClientGameTestContext context) {
         try (TestSingleplayerContext world = context.worldBuilder().create()) {
+            ClientChecks.assertDrawsRight(context, Constants.MOD_ID);
             world.getConnection().waitForChunksRender();
 
             List<Integer> row = world.getServer().computeOnServer(server -> {

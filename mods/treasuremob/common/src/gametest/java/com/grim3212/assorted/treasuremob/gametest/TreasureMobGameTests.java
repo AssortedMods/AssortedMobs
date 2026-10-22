@@ -1,5 +1,7 @@
 package com.grim3212.assorted.treasuremob.gametest;
 
+import com.grim3212.assorted.treasuremob.Constants;
+import com.grim3212.assorted.lib.test.CommonTests;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.entity.Mob;
 
@@ -24,5 +26,6 @@ public final class TreasureMobGameTests {
         FollowOwnerTests.register(out);
         SpawnerTests.register(out);
         FamilyTests.register(out);
+        CommonTests.register(out, Constants.MOD_ID);
     }
 }

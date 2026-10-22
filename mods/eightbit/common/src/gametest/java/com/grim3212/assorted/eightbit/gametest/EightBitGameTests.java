@@ -1,5 +1,7 @@
 package com.grim3212.assorted.eightbit.gametest;
 
+import com.grim3212.assorted.eightbit.Constants;
+import com.grim3212.assorted.lib.test.CommonTests;
 import net.minecraft.gametest.framework.GameTestHelper;
 
 import java.util.function.BiConsumer;
@@ -24,5 +26,7 @@ public final class EightBitGameTests {
         FollowOwnerTests.register(out);
         ParabuzzyTests.register(out);
         FamilyTests.register(out);
+        TamingTests.register(out);
+        CommonTests.register(out, Constants.MOD_ID);
     }
 }

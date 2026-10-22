@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedeightbit:parabuzzy_is_tamed_with_fish_and_healed_with_food",
+  "structure": "assortedeightbit:test_box",
+  "max_ticks": 40,
+  "setup_ticks": 0,
+  "required": true
+}

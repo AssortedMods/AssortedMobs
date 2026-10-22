@@ -1,5 +1,7 @@
 package com.grim3212.assorted.eightbit.gametest;
 
+import com.grim3212.assorted.eightbit.Constants;
+import com.grim3212.assorted.lib.test.ClientChecks;
 import com.grim3212.assorted.eightbit.common.entity.Bobomb;
 import com.grim3212.assorted.eightbit.common.entity.EightBitEntities;
 import com.grim3212.assorted.eightbit.common.entity.Parabuzzy;
@@ -28,6 +30,7 @@ public class EightBitClientGameTests implements FabricClientGameTest {
     @Override
     public void runTest(ClientGameTestContext context) {
         try (TestSingleplayerContext world = context.worldBuilder().create()) {
+            ClientChecks.assertDrawsRight(context, Constants.MOD_ID);
             world.getConnection().waitForChunksRender();
             lineUp(context, world, List.of(EightBitEntities.BOBOMB.get(), EightBitEntities.PARABUZZY.get(), EightBitEntities.PARABUZZY.get(), EightBitEntities.PARABUZZY.get(), EightBitEntities.PARABUZZY.get()));
             context.takeScreenshot("assortedeightbit_lineup");

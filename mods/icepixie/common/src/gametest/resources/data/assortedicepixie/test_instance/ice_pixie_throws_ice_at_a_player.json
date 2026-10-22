@@ -1,0 +1,9 @@
+{
+  "type": "minecraft:function",
+  "environment": "minecraft:default",
+  "function": "assortedicepixie:ice_pixie_throws_ice_at_a_player",
+  "structure": "assortedicepixie:test_box",
+  "max_ticks": 200,
+  "setup_ticks": 0,
+  "required": true
+}
