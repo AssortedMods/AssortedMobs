@@ -28,5 +28,6 @@ public final class EightBitGameTests {
         FamilyTests.register(out);
         TamingTests.register(out);
         CommonTests.register(out, Constants.MOD_ID);
+        CommonTests.registerSpawnEggs(out, Constants.MOD_ID);
     }
 }

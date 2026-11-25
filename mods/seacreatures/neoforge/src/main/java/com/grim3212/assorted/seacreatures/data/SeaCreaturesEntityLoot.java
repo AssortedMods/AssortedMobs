@@ -3,9 +3,9 @@ package com.grim3212.assorted.seacreatures.data;
 import com.grim3212.assorted.seacreatures.Constants;
 import com.grim3212.assorted.seacreatures.common.entity.SeaCreaturesEntities;
 import com.grim3212.assorted.seacreatures.common.item.SeaCreaturesItems;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.loot.EntityLootSubProvider;
-import net.minecraft.data.loot.LootTableSubProvider;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.Item;
@@ -14,12 +14,12 @@ import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.entries.LootPoolEntryContainer;
-import net.minecraft.world.level.storage.loot.entries.UniformContainerBase;
+import net.minecraft.world.level.storage.loot.entries.LootPoolSingletonContainer;
 import net.minecraft.world.level.storage.loot.functions.EnchantedCountIncreaseFunction;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.functions.SmeltItemFunction;
-import net.minecraft.world.level.storage.loot.providers.number.floats.ContextFloatProviders;
-import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 
 import java.util.stream.Stream;
 
@@ -29,8 +29,8 @@ import java.util.stream.Stream;
  */
 public class SeaCreaturesEntityLoot extends EntityLootSubProvider {
 
-    public SeaCreaturesEntityLoot(LootTableSubProvider.Context context) {
-        super(FeatureFlags.REGISTRY.allFlags(), context);
+    public SeaCreaturesEntityLoot(HolderLookup.Provider registries) {
+        super(FeatureFlags.REGISTRY.allFlags(), registries);
     }
 
     @Override
@@ -38,11 +38,17 @@ public class SeaCreaturesEntityLoot extends EntityLootSubProvider {
         return BuiltInRegistries.ENTITY_TYPE.stream().filter(type -> Constants.MOD_ID.equals(BuiltInRegistries.ENTITY_TYPE.getKey(type).getNamespace()));
     }
 
+    /** Vanilla reads MISC as not alive; these are MISC only so that its spawner leaves them to their spawn habits. */
+    @Override
+    protected boolean canHaveLootTable(EntityType<?> type) {
+        return true;
+    }
+
     private LootTable.Builder upToTwo(Item item) {
-        return LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ContextIntProviders.exactly(1))
+        return LootTable.lootTable().withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1))
                 .add(LootItem.lootTableItem(item)
-                        .apply(SetItemCountFunction.setCount(ContextIntProviders.between(0, 2)))
-                        .apply(EnchantedCountIncreaseFunction.lootingMultiplier(this.enchantments, ContextFloatProviders.between(0.0F, 1.0F)))));
+                        .apply(SetItemCountFunction.setCount(UniformGenerator.between(0, 2)))
+                        .apply(EnchantedCountIncreaseFunction.lootingMultiplier(this.registries, UniformGenerator.between(0.0F, 1.0F)))));
     }
 
     /**
@@ -51,18 +57,18 @@ public class SeaCreaturesEntityLoot extends EntityLootSubProvider {
      * and the tropical fish in it, and no seal ever came up with one of those.
      */
     private LootPool.Builder fishOf(LootPoolEntryContainer.Builder<?>... fish) {
-        LootPool.Builder pool = LootPool.lootPool().setRolls(ContextIntProviders.exactly(1));
+        LootPool.Builder pool = LootPool.lootPool().setRolls(ConstantValue.exactly(1));
         for (LootPoolEntryContainer.Builder<?> entry : fish) {
             pool.add(entry);
         }
         return pool;
     }
 
-    private UniformContainerBase.Builder<?> fish(Item fish, int weight) {
+    private LootPoolSingletonContainer.Builder<?> fish(Item fish, int weight) {
         return LootItem.lootTableItem(fish).setWeight(weight)
-                .apply(SetItemCountFunction.setCount(ContextIntProviders.between(0, 2)))
+                .apply(SetItemCountFunction.setCount(UniformGenerator.between(0, 2)))
                 .apply(SmeltItemFunction.smelted().when(this.shouldSmeltLoot()))
-                .apply(EnchantedCountIncreaseFunction.lootingMultiplier(this.enchantments, ContextFloatProviders.between(0.0F, 1.0F)));
+                .apply(EnchantedCountIncreaseFunction.lootingMultiplier(this.registries, UniformGenerator.between(0.0F, 1.0F)));
     }
 
     @Override
@@ -74,7 +80,7 @@ public class SeaCreaturesEntityLoot extends EntityLootSubProvider {
         this.add(SeaCreaturesEntities.WALRUS.get(), LootTable.lootTable().withPool(this.fishOf(this.fish(Items.COD, 1))));
         this.add(SeaCreaturesEntities.SEA_OTTER.get(), this.upToTwo(SeaCreaturesItems.SEA_SHELL.get()).withPool(this.fishOf(this.fish(Items.SALMON, 2), this.fish(Items.COD, 1))));
         this.add(SeaCreaturesEntities.NARWHAL.get(), LootTable.lootTable()
-                .withPool(LootPool.lootPool().setRolls(ContextIntProviders.exactly(1)).add(LootItem.lootTableItem(SeaCreaturesItems.NARWHAL_HORN.get())))
+                .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1)).add(LootItem.lootTableItem(SeaCreaturesItems.NARWHAL_HORN.get())))
                 .withPool(this.fishOf(this.fish(Items.COD, 3), this.fish(Items.SALMON, 1))));
     }
 }

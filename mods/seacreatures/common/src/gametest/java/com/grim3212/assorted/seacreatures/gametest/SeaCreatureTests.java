@@ -7,10 +7,10 @@ import com.grim3212.assorted.seacreatures.common.entity.Walrus;
 import com.grim3212.assorted.seacreatures.common.item.SeaCreaturesItems;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.monster.zombie.Husk;
+import net.minecraft.world.entity.monster.Husk;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 
@@ -42,7 +42,7 @@ final class SeaCreatureTests {
         // Not on its first tick: a blow then carries the same timestamp as no blow at all.
         helper.startSequence()
                 .thenIdle(5)
-                .thenExecute(() -> struck.hurtServer(helper.getLevel(), struck.damageSources().playerAttack(player), 1.0F))
+                .thenExecute(() -> struck.hurt(struck.damageSources().playerAttack(player), 1.0F))
                 .thenWaitUntil(() -> {
                     helper.assertTrue(struck.getTarget() == player, "the walrus that was hit is after " + struck.getTarget());
                     helper.assertTrue(other.getTarget() == player, "the walrus beside it is after " + other.getTarget());
@@ -79,7 +79,7 @@ final class SeaCreatureTests {
 
     private static void narwhalLeavesItsHorn(GameTestHelper helper) {
         Narwhal narwhal = helper.spawnWithNoFreeWill(SeaCreaturesEntities.NARWHAL.get(), CENTRE);
-        narwhal.kill(helper.getLevel());
+        narwhal.kill();
         helper.succeedWhen(() -> helper.assertItemEntityPresent(SeaCreaturesItems.NARWHAL_HORN.get(), CENTRE, 3.0D));
     }
 
@@ -103,20 +103,20 @@ final class SeaCreatureTests {
         helper.succeed();
     }
 
-    /** Chainmail is 12: 2, 5, 4 and 1. Worn armour with no equipment asset, or no texture behind it, is drawn as nothing. */
+    /** Chainmail is 12: 2, 5, 4 and 1. Worn armour with no texture behind it is drawn as the missing texture. */
     private static void shellArmorIsAsGoodAsChainmailAndHasItsTextures(GameTestHelper helper) {
         // On a husk: a test's player is never ticked, so what it wears never reaches its attributes.
-        Husk wearer = helper.spawnWithNoFreeWill(EntityTypes.HUSK, CENTRE);
+        Husk wearer = helper.spawnWithNoFreeWill(EntityType.HUSK, CENTRE);
         double bare = wearer.getAttributeValue(Attributes.ARMOR);
         wearer.setItemSlot(EquipmentSlot.HEAD, new ItemStack(SeaCreaturesItems.SHELL_HELMET.get()));
         wearer.setItemSlot(EquipmentSlot.CHEST, new ItemStack(SeaCreaturesItems.SHELL_CHESTPLATE.get()));
         wearer.setItemSlot(EquipmentSlot.LEGS, new ItemStack(SeaCreaturesItems.SHELL_LEGGINGS.get()));
         wearer.setItemSlot(EquipmentSlot.FEET, new ItemStack(SeaCreaturesItems.SHELL_BOOTS.get()));
 
-        for (String asset : new String[]{"equipment/shell.json", "textures/entity/equipment/humanoid/shell.png", "textures/entity/equipment/humanoid_leggings/shell.png"}) {
+        for (String asset : new String[]{"textures/models/armor/shell_layer_1.png", "textures/models/armor/shell_layer_2.png"}) {
             helper.assertTrue(resourceExists("/assets/assortedseacreatures/" + asset), "shell armour is missing " + asset);
         }
-        helper.assertTrue(new ItemStack(SeaCreaturesItems.SHELL_HELMET.get()).isValidRepairItem(new ItemStack(SeaCreaturesItems.SEA_SHELL.get())), "a sea shell does not mend shell armour");
+        helper.assertTrue(SeaCreaturesItems.SHELL_HELMET.get().isValidRepairItem(new ItemStack(SeaCreaturesItems.SHELL_HELMET.get()), new ItemStack(SeaCreaturesItems.SEA_SHELL.get())), "a sea shell does not mend shell armour");
 
         helper.startSequence()
                 .thenIdle(2)

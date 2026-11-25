@@ -1,24 +1,25 @@
 package com.grim3212.assorted.icepixie.client.render.model;
 
-import net.minecraft.client.model.EntityModel;
+import com.grim3212.assorted.icepixie.common.entity.IcePixie;
+import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
-import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
 import net.minecraft.util.Mth;
 
 /**
  * The ice pixie: a body with its face on the front, stub arms and legs, and a pair of wings behind
  * that turn with it. The wings are a single flat plane, one side of the texture each way round.
  */
-public class IcePixieModel extends EntityModel<LivingEntityRenderState> {
+public class IcePixieModel extends HierarchicalModel<IcePixie> {
 
     /** How far out from the body's middle the arms hang. */
     private static final float ARM_SPREAD = 5.0F;
 
+    private final ModelPart root;
     private final ModelPart body;
     private final ModelPart wings;
     private final ModelPart rightArm;
@@ -27,7 +28,7 @@ public class IcePixieModel extends EntityModel<LivingEntityRenderState> {
     private final ModelPart leftLeg;
 
     public IcePixieModel(ModelPart root) {
-        super(root);
+        this.root = root;
         this.body = root.getChild("body");
         this.wings = root.getChild("wings");
         this.rightArm = root.getChild("right_arm");
@@ -51,13 +52,16 @@ public class IcePixieModel extends EntityModel<LivingEntityRenderState> {
     }
 
     @Override
-    public void setupAnim(LivingEntityRenderState state) {
-        super.setupAnim(state);
+    public ModelPart root() {
+        return this.root;
+    }
 
-        float swing = state.walkAnimationPos;
-        float amount = state.walkAnimationSpeed;
+    @Override
+    public void setupAnim(IcePixie entity, float swing, float amount, float ageInTicks, float netHeadYaw, float headPitch) {
+        this.root.getAllParts().forEach(ModelPart::resetPose);
+
         // The whole pixie turns to look, rather than a head on its own.
-        float turn = state.yRot * Mth.DEG_TO_RAD;
+        float turn = netHeadYaw * Mth.DEG_TO_RAD;
 
         this.body.yRot = turn;
         this.wings.yRot = turn;

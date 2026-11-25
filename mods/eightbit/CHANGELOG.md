@@ -1,13 +1,9 @@
 # Changelog
 
-## 2.0.0
+## 21.1.0.0
 
-Updated to Minecraft 26.3, for NeoForge and Fabric.
+First release for Minecraft 1.21.1, for NeoForge and Fabric. Releases for 1.21.1 are numbered 21.1.x.y, where 21.1 is the Minecraft version.
 
-- Requires Assorted Lib 5.0.0
-
-## 1.0.0
-
-- First release as its own mod. It used to only be part of Assorted Mobs
-- Worlds from Assorted Mobs 1.x keep all of these mobs and items
-- Requires Assorted Lib 4.3.0
+- Matches Assorted 8-Bit Mobs 2.0.0 for Minecraft 26.3
+- No tempt range attribute, which 1.21.1 doesn't have
+- Requires Assorted Lib 21.1.0.0

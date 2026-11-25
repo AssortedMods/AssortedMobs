@@ -14,8 +14,12 @@
     }
   ],
   "key": {
-    "N": "assortedseacreatures:narwhal_horn",
-    "S": "#c:rods/wooden"
+    "N": {
+      "item": "assortedseacreatures:narwhal_horn"
+    },
+    "S": {
+      "tag": "c:rods/wooden"
+    }
   },
   "pattern": [
     "N",
@@ -23,6 +27,7 @@
     "S"
   ],
   "result": {
+    "count": 1,
     "id": "assortedseacreatures:narwhal_sword"
   }
 }

@@ -7,11 +7,8 @@ import com.grim3212.assorted.lib.spawn.SpawnHabits;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.util.random.Weighted;
-import net.minecraft.world.attribute.EnvironmentAttributes;
-import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
@@ -48,7 +45,7 @@ final class SpawnTests {
     /** A living type with no attributes cannot even be constructed. */
     private static void creaturesSpawnWithTheirAttributes(GameTestHelper helper) {
         for (EntityType<? extends Mob> type : List.of(EightBitEntities.BOBOMB.get(), EightBitEntities.PARABUZZY.get())) {
-            Mob mob = helper.spawn(type, CENTRE, EntitySpawnReason.SPAWN_ITEM_USE);
+            Mob mob = helper.spawn(type, CENTRE);
             helper.assertTrue(mob.isAlive() && mob.getHealth() > 0, type.getDescriptionId() + " did not spawn alive");
             mob.discard();
         }
@@ -59,8 +56,8 @@ final class SpawnTests {
     private static void creaturesAreAddedToTheirBiomes(GameTestHelper helper) {
         for (EntityType<?> type : HABITS.values()) {
             for (MobCategory category : MobCategory.values()) {
-                helper.getLevel().registryAccess().lookupOrThrow(Registries.BIOME).listElementIds().forEach(biome ->
-                        helper.assertTrue(spawnEntry(helper, biome, category, type).isEmpty(), type.getDescriptionId() + " is on the biome spawn list of " + biome.identifier() + " as well as a habit"));
+                helper.getLevel().registryAccess().registryOrThrow(Registries.BIOME).registryKeySet().forEach(biome ->
+                        helper.assertTrue(spawnEntry(helper, biome, category, type).isEmpty(), type.getDescriptionId() + " is on the biome spawn list of " + biome.location() + " as well as a habit"));
             }
         }
         helper.succeed();
@@ -69,7 +66,7 @@ final class SpawnTests {
     /** Each habit loaded from data/assortedeightbit/spawn_habit, on with its mod installed, capped, and seeding new terrain where it can. */
     private static void creaturesHaveSpawnHabits(GameTestHelper helper) {
         HABITS.forEach((name, type) -> {
-            SpawnHabit habit = SpawnHabits.get(Identifier.fromNamespaceAndPath(Constants.MOD_ID, name));
+            SpawnHabit habit = SpawnHabits.get(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, name));
             helper.assertTrue(habit != null, "no spawn habit " + name + " loaded; loaded: " + SpawnHabits.all().keySet());
             helper.assertValueEqual(habit.entity(), type, "the creature of habit " + name);
             helper.assertTrue(habit.isEnabled(), "habit " + name + " is off");
@@ -78,7 +75,7 @@ final class SpawnTests {
         });
         // A farm animal among farm animals: it counts toward the animal cap and waits for it.
         helper.assertValueEqual(EightBitEntities.PARABUZZY.get().getCategory(), MobCategory.CREATURE, "parabuzzy category");
-        helper.assertTrue(SpawnHabits.get(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "parabuzzy")).mobCap(), "the parabuzzy habit ignores the animal cap");
+        helper.assertTrue(SpawnHabits.get(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "parabuzzy")).mobCap(), "the parabuzzy habit ignores the animal cap");
         helper.succeed();
     }
 
@@ -89,8 +86,8 @@ final class SpawnTests {
         helper.succeed();
     }
 
-    private static Optional<Weighted<MobSpawnSettings.SpawnerData>> spawnEntry(GameTestHelper helper, ResourceKey<Biome> biome, MobCategory category, EntityType<?> type) {
-        Holder<Biome> holder = helper.getLevel().registryAccess().lookupOrThrow(Registries.BIOME).getOrThrow(biome);
-        return holder.value().getAttributes().applyModifier(EnvironmentAttributes.NATURAL_MOB_SPAWNS, MobSpawnSettings.EMPTY).getMobsToSpawn(category).unwrap().stream().filter(weighted -> weighted.value().type() == type).findFirst();
+    private static Optional<MobSpawnSettings.SpawnerData> spawnEntry(GameTestHelper helper, ResourceKey<Biome> biome, MobCategory category, EntityType<?> type) {
+        Holder<Biome> holder = helper.getLevel().registryAccess().registryOrThrow(Registries.BIOME).getHolderOrThrow(biome);
+        return holder.value().getMobSettings().getMobs(category).unwrap().stream().filter(data -> data.type == type).findFirst();
     }
 }

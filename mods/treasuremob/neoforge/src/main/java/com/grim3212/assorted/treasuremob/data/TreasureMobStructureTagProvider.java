@@ -3,13 +3,11 @@ package com.grim3212.assorted.treasuremob.data;
 import com.grim3212.assorted.treasuremob.Constants;
 import com.grim3212.assorted.treasuremob.api.TreasureMobTags;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.StructureTagsProvider;
-import net.minecraft.resources.Identifier;
-import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.levelgen.structure.BuiltinStructures;
-import net.minecraft.world.level.levelgen.structure.Structure;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -19,8 +17,8 @@ public class TreasureMobStructureTagProvider extends StructureTagsProvider {
     /** The structures Assorted Structures adds, optional so the tag still loads without it. */
     private static final String ASSORTED_STRUCTURES = "assortedstructures";
 
-    public TreasureMobStructureTagProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookup) {
-        super(output, lookup, Constants.MOD_ID);
+    public TreasureMobStructureTagProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookup, ExistingFileHelper existingFileHelper) {
+        super(output, lookup, Constants.MOD_ID, existingFileHelper);
     }
 
     @Override
@@ -35,7 +33,7 @@ public class TreasureMobStructureTagProvider extends StructureTagsProvider {
                 .addOptional(assortedStructures("water_dome"));
     }
 
-    private static ResourceKey<Structure> assortedStructures(String name) {
-        return ResourceKey.create(Registries.STRUCTURE, Identifier.fromNamespaceAndPath(ASSORTED_STRUCTURES, name));
+    private static ResourceLocation assortedStructures(String name) {
+        return ResourceLocation.fromNamespaceAndPath(ASSORTED_STRUCTURES, name);
     }
 }

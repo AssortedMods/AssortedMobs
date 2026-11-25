@@ -11,10 +11,9 @@ import net.minecraft.util.TimeUtil;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.AgeableMob;
-import net.minecraft.world.entity.EntityReference;
-import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.NeutralMob;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -31,9 +30,10 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.UUID;
 
 /**
  * A great tusked lump of the ice and snow, and of the water under it. Left alone it is harmless; hit
@@ -48,16 +48,16 @@ public class Walrus extends AmphibiousAnimal implements NeutralMob {
     private static final UniformInt PERSISTENT_ANGER_TIME = TimeUtil.rangeOfSeconds(20, 40);
     private static final double CHARGE_SPEED = 1.6D;
 
-    private long persistentAngerEndTime;
+    private int remainingPersistentAngerTime;
     @Nullable
-    private EntityReference<LivingEntity> persistentAngerTarget;
+    private UUID persistentAngerTarget;
 
     public Walrus(EntityType<? extends Walrus> type, Level level) {
         super(type, level, 0.018F, LAND_TIME, WATER_TIME);
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Animal.createAnimalAttributes().add(Attributes.MAX_HEALTH, 24.0D).add(Attributes.MOVEMENT_SPEED, 0.18D).add(Attributes.ATTACK_DAMAGE, 5.0D)
+        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 24.0D).add(Attributes.MOVEMENT_SPEED, 0.18D).add(Attributes.ATTACK_DAMAGE, 5.0D)
                 .add(Attributes.KNOCKBACK_RESISTANCE, 0.5D).add(Attributes.FOLLOW_RANGE, 32.0D).add(Attributes.STEP_HEIGHT, 1.0D);
     }
 
@@ -87,39 +87,39 @@ public class Walrus extends AmphibiousAnimal implements NeutralMob {
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
-        super.addAdditionalSaveData(output);
-        this.addPersistentAngerSaveData(output);
+    public void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        this.addPersistentAngerSaveData(tag);
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput input) {
-        super.readAdditionalSaveData(input);
-        this.readPersistentAngerSaveData(this.level(), input);
+    public void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        this.readPersistentAngerSaveData(this.level(), tag);
     }
 
     @Override
     public void startPersistentAngerTimer() {
-        this.setTimeToRemainAngry(PERSISTENT_ANGER_TIME.sample(this.random));
+        this.setRemainingPersistentAngerTime(PERSISTENT_ANGER_TIME.sample(this.random));
     }
 
     @Override
-    public void setPersistentAngerEndTime(long endTime) {
-        this.persistentAngerEndTime = endTime;
+    public void setRemainingPersistentAngerTime(int time) {
+        this.remainingPersistentAngerTime = time;
     }
 
     @Override
-    public long getPersistentAngerEndTime() {
-        return this.persistentAngerEndTime;
+    public int getRemainingPersistentAngerTime() {
+        return this.remainingPersistentAngerTime;
     }
 
     @Override
-    public void setPersistentAngerTarget(@Nullable EntityReference<LivingEntity> target) {
+    public void setPersistentAngerTarget(@Nullable UUID target) {
         this.persistentAngerTarget = target;
     }
 
     @Override
-    public @Nullable EntityReference<LivingEntity> getPersistentAngerTarget() {
+    public @Nullable UUID getPersistentAngerTarget() {
         return this.persistentAngerTarget;
     }
 
@@ -130,7 +130,7 @@ public class Walrus extends AmphibiousAnimal implements NeutralMob {
 
     @Override
     public @Nullable AgeableMob getBreedOffspring(ServerLevel level, AgeableMob partner) {
-        return SeaCreaturesEntities.WALRUS.get().create(level, EntitySpawnReason.BREEDING);
+        return SeaCreaturesEntities.WALRUS.get().create(level);
     }
 
     @Override

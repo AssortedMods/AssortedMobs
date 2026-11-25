@@ -1,25 +1,9 @@
 # Changelog
 
-## 3.0.0
+## 21.1.0.0
 
-Updated to Minecraft 26.3, for NeoForge and Fabric.
+First release for Minecraft 1.21.1, for NeoForge and Fabric. Releases for 1.21.1 are numbered 21.1.x.y, where 21.1 is the Minecraft version.
 
-- Requires Assorted Lib 5.0.0
-
-## 2.0.0
-
-- Split into four mods that can also be installed on their own
-- Assorted Mobs still includes all of them
-- Worlds from 1.x keep all your mobs, items, recipes and advancements
-- Each part can be turned off again in config/assortedmobs-parts.toml
-- Requires Assorted Lib 4.3.0
-
-## 1.0.0
-
-Grim Pack's creatures from its Grim World part, ported from 1.12 and modernized. The ice pixie, the
-treasure mob, and the two 8-bit mobs, the parabuzzy and the Bob-omb.
-
-- Parabuzzies and Bob-ombs still sit on your head, though nothing may ride a player any more. They
-  are pinned there instead, and sneaking on the ground puts them down.
-- Sea Creatures seals, walruses, narwhals, and sea otters
-- Requires Assorted Lib 4.2.0.
+- Matches Assorted Mobs 3.0.0 for Minecraft 26.3
+- Includes Assorted Ice Pixie, Assorted Treasure Mob, Assorted 8-Bit Mobs and Assorted Sea Creatures, each at 21.1.0.0
+- Requires Assorted Lib 21.1.0.0

@@ -49,9 +49,9 @@ final class FollowOwnerTests {
         }
 
         ServerPlayer owner = survivalPlayer(helper);
-        owner.snapTo(helper.absoluteVec(Vec3.atBottomCenterOf(PLATFORM)));
+        owner.moveTo(helper.absoluteVec(Vec3.atBottomCenterOf(PLATFORM)));
         owner.setOnGround(true);
-        owner.setPermanentlyInvulnerable(true);
+        owner.setInvulnerable(true);
         return owner;
     }
 

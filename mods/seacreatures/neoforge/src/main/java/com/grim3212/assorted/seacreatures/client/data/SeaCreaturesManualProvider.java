@@ -6,7 +6,7 @@ import com.grim3212.assorted.seacreatures.common.entity.SeaCreaturesEntities;
 import com.grim3212.assorted.seacreatures.common.handlers.SeaCreaturesCreativeItems;
 import com.grim3212.assorted.seacreatures.common.item.SeaCreaturesItems;
 import net.minecraft.data.PackOutput;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 /**
  * This part's chapter of the Assorted Mobs section, which every part shares; the explicit chapter orders keep the
@@ -40,7 +40,7 @@ public class SeaCreaturesManualProvider extends LibManualProvider {
     }
 
     /** In-game screenshots of each creature where it lives, under {@code textures/gui/manual}. */
-    private static Identifier picture(String name) {
-        return Identifier.fromNamespaceAndPath(Constants.MOD_ID, "textures/gui/manual/" + name + ".png");
+    private static ResourceLocation picture(String name) {
+        return ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "textures/gui/manual/" + name + ".png");
     }
 }

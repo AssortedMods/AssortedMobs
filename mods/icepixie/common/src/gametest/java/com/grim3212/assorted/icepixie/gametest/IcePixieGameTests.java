@@ -26,5 +26,6 @@ public final class IcePixieGameTests {
         FamilyTests.register(out);
         BehaviourTests.register(out);
         CommonTests.register(out, Constants.MOD_ID);
+        CommonTests.registerSpawnEggs(out, Constants.MOD_ID);
     }
 }

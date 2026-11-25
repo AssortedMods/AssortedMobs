@@ -26,5 +26,6 @@ public final class SeaCreaturesGameTests {
         SpawnerTests.register(out);
         FamilyTests.register(out);
         CommonTests.register(out, Constants.MOD_ID);
+        CommonTests.registerSpawnEggs(out, Constants.MOD_ID);
     }
 }

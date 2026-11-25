@@ -4,7 +4,7 @@ import com.grim3212.assorted.icepixie.Constants;
 import com.grim3212.assorted.icepixie.api.IcePixieTags;
 import com.grim3212.assorted.icepixie.common.entity.ai.AvoidBlocksGoal;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
@@ -27,7 +27,6 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -44,7 +43,7 @@ public class IcePixie extends Monster implements RangedAttackMob {
     public static final int REPELLENT_RANGE = 3;
     private static final int REPELLENT_CHECK_INTERVAL = 10;
 
-    private static final Identifier ON_ICE_ID = Identifier.fromNamespaceAndPath(Constants.MOD_ID, "ice_pixie_on_ice");
+    private static final ResourceLocation ON_ICE_ID = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "ice_pixie_on_ice");
     private static final AttributeModifier ON_ICE = new AttributeModifier(ON_ICE_ID, 0.15D, AttributeModifier.Operation.ADD_VALUE);
 
     public IcePixie(EntityType<? extends IcePixie> type, Level level) {
@@ -77,7 +76,7 @@ public class IcePixie extends Monster implements RangedAttackMob {
             if (this.tickCount % REPELLENT_CHECK_INTERVAL == 0) {
                 int repellents = AvoidBlocksGoal.count(level, this.blockPosition(), IcePixieTags.Blocks.ICE_PIXIE_REPELLENTS, REPELLENT_RANGE);
                 if (repellents > 0) {
-                    this.hurtServer(level, this.damageSources().generic(), repellents * 0.5F);
+                    this.hurt(this.damageSources().generic(), repellents * 0.5F);
                 }
             }
         }
@@ -106,9 +105,9 @@ public class IcePixie extends Monster implements RangedAttackMob {
     }
 
     @Override
-    public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
+    public boolean hurt(DamageSource source, float damage) {
         if (source.is(DamageTypeTags.BYPASSES_INVULNERABILITY) || source.is(DamageTypes.GENERIC) || isArmedAgainst(source)) {
-            return super.hurtServer(level, source, damage);
+            return super.hurt(source, damage);
         }
         return false;
     }
@@ -127,8 +126,9 @@ public class IcePixie extends Monster implements RangedAttackMob {
         float inaccuracy = 14 - this.level().getDifficulty().getId() * 4;
 
         if (this.level() instanceof ServerLevel level) {
-            ItemStack stack = new ItemStack(Items.ICE);
-            Projectile.spawnProjectile(new IceCube(level, this, stack), level, stack, cube -> cube.shoot(dx, dy + arc, dz, 1.2F, inaccuracy));
+            IceCube cube = new IceCube(level, this, new ItemStack(Items.ICE));
+            cube.shoot(dx, dy + arc, dz, 1.2F, inaccuracy);
+            level.addFreshEntity(cube);
         }
 
         this.playSound(SoundEvents.SLIME_ATTACK, 1.0F, 1.0F / (this.getRandom().nextFloat() * 0.4F + 0.8F));

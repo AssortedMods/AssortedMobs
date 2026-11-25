@@ -2,22 +2,17 @@ package com.grim3212.assorted.icepixie.client.data;
 
 import com.grim3212.assorted.icepixie.Constants;
 import com.grim3212.assorted.icepixie.common.item.IcePixieItems;
-import net.minecraft.client.data.models.BlockModelGenerators;
-import net.minecraft.client.data.models.ItemModelGenerators;
-import net.minecraft.client.data.models.ModelProvider;
-import net.minecraft.client.data.models.model.ModelTemplates;
-import net.minecraft.core.Holder;
 import net.minecraft.data.PackOutput;
-import net.minecraft.world.level.block.Block;
+import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
-/** Every item here is a flat sprite named after it, spawn eggs included, as vanilla's are now. */
-public class IcePixieItemModelProvider extends ModelProvider {
+/** Every item here is a flat sprite named after it, spawn eggs included: their own textures are already coloured. */
+public class IcePixieItemModelProvider extends ItemModelProvider {
 
-    public IcePixieItemModelProvider(PackOutput output) {
-        super(output, Constants.MOD_ID);
+    public IcePixieItemModelProvider(PackOutput output, ExistingFileHelper existingFileHelper) {
+        super(output, Constants.MOD_ID, existingFileHelper);
     }
 
     @Override
@@ -26,13 +21,8 @@ public class IcePixieItemModelProvider extends ModelProvider {
     }
 
     @Override
-    protected Stream<? extends Holder<Block>> getKnownBlocks() {
-        return Stream.empty();
-    }
-
-    @Override
-    protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
+    protected void registerModels() {
         IcePixieItems.ITEMS.getEntries().stream().map(Supplier::get)
-                .forEach(item -> itemModels.generateFlatItem(item, ModelTemplates.FLAT_ITEM));
+                .forEach(this::basicItem);
     }
 }

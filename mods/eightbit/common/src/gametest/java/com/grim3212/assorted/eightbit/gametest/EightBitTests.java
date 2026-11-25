@@ -9,14 +9,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.EntityReference;
-import net.minecraft.world.entity.EntityTypes;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.monster.zombie.Husk;
+import net.minecraft.world.entity.monster.Husk;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -53,7 +52,7 @@ final class EightBitTests {
     private static void bobombDefendsAPlayerFromAMonster(GameTestHelper helper) {
         ServerPlayer player = playerOverhead(helper);
         Bobomb bobomb = helper.spawn(EightBitEntities.BOBOMB.get(), CENTRE);
-        Husk husk = helper.spawnWithNoFreeWill(EntityTypes.HUSK, CENTRE.south(3));
+        Husk husk = helper.spawnWithNoFreeWill(EntityType.HUSK, CENTRE.south(3));
         player.setLastHurtByMob(husk);
 
         helper.succeedWhen(() -> helper.assertTrue(bobomb.isRemoved(), "the Bob-omb never went off: its target " + bobomb.getTarget() + ", lit " + bobomb.isLit()));
@@ -63,7 +62,7 @@ final class EightBitTests {
     private static void bobombLeavesMonstersAlone(GameTestHelper helper) {
         playerOverhead(helper);
         Bobomb bobomb = helper.spawn(EightBitEntities.BOBOMB.get(), CENTRE);
-        helper.spawnWithNoFreeWill(EntityTypes.HUSK, CENTRE.south(3));
+        helper.spawnWithNoFreeWill(EntityType.HUSK, CENTRE.south(3));
 
         helper.runAfterDelay(60, () -> {
             helper.assertTrue(bobomb.getTarget() == null, "the Bob-omb went after a monster that hurt no one: " + bobomb.getTarget());
@@ -80,8 +79,8 @@ final class EightBitTests {
 
         Bobomb bobomb = helper.findOneEntity(EightBitEntities.BOBOMB.get());
         helper.assertTrue(bobomb.getOwner() == player, "the Bob-omb's owner is " + bobomb.getOwner() + ", not the player who put it down");
-        EntityReference<LivingEntity> reloaded = afterReload(helper, bobomb, EightBitEntities.BOBOMB.get()).getOwnerReference();
-        helper.assertTrue(reloaded != null && reloaded.matches(player), "the Bob-omb's owner did not survive a reload: " + reloaded);
+        UUID reloaded = afterReload(helper, bobomb, EightBitEntities.BOBOMB.get()).getOwnerUUID();
+        helper.assertTrue(player.getUUID().equals(reloaded), "the Bob-omb's owner did not survive a reload: " + reloaded);
 
         bobomb.discard();
         helper.succeed();
@@ -96,7 +95,7 @@ final class EightBitTests {
         ServerPlayer stranger = playerOverhead(helper);
         Bobomb bobomb = helper.spawn(EightBitEntities.BOBOMB.get(), CENTRE);
         bobomb.setOwner(owner);
-        Husk husk = helper.spawnWithNoFreeWill(EntityTypes.HUSK, CENTRE.south(3));
+        Husk husk = helper.spawnWithNoFreeWill(EntityType.HUSK, CENTRE.south(3));
         stranger.setLastHurtByMob(husk);
 
         boolean[] ownerHurt = {false};
@@ -115,9 +114,9 @@ final class EightBitTests {
     /** A monster's hit lights the fuse like a player's does, rather than setting it off there and then. */
     private static void bobombIsLitNotHurtByAMonster(GameTestHelper helper) {
         Bobomb bobomb = helper.spawnWithNoFreeWill(EightBitEntities.BOBOMB.get(), CENTRE);
-        Husk husk = helper.spawnWithNoFreeWill(EntityTypes.HUSK, CENTRE.south(3));
+        Husk husk = helper.spawnWithNoFreeWill(EntityType.HUSK, CENTRE.south(3));
 
-        bobomb.hurtServer(helper.getLevel(), bobomb.damageSources().mobAttack(husk), 4.0F);
+        bobomb.hurt(bobomb.damageSources().mobAttack(husk), 4.0F);
         helper.assertFalse(bobomb.isRemoved(), "a monster's hit set the Bob-omb off at once");
         helper.assertTrue(bobomb.isLit(), "a monster's hit did not light the Bob-omb");
         helper.assertValueEqual(bobomb.getHealth(), bobomb.getMaxHealth(), "Bob-omb health after a monster's hit");
@@ -131,9 +130,9 @@ final class EightBitTests {
     private static ServerPlayer playerOverhead(GameTestHelper helper) {
         ServerPlayer player = survivalPlayer(helper);
         Vec3 above = helper.absoluteVec(new Vec3(4.5D, 11.0D, 4.5D));
-        player.snapTo(above.x, above.y, above.z);
+        player.moveTo(above.x, above.y, above.z);
         player.setNoGravity(true);
-        player.setPermanentlyInvulnerable(true);
+        player.setInvulnerable(true);
         return player;
     }
 
@@ -141,7 +140,7 @@ final class EightBitTests {
         Bobomb bobomb = helper.spawnWithNoFreeWill(EightBitEntities.BOBOMB.get(), CENTRE);
         ServerPlayer player = survivalPlayer(helper);
 
-        bobomb.hurtServer(helper.getLevel(), bobomb.damageSources().playerAttack(player), 4.0F);
+        bobomb.hurt(bobomb.damageSources().playerAttack(player), 4.0F);
         helper.assertTrue(bobomb.isLit(), "a player's hit did not light the Bob-omb");
         helper.assertValueEqual(bobomb.getHealth(), bobomb.getMaxHealth(), "Bob-omb health after a player's hit");
 
@@ -156,11 +155,11 @@ final class EightBitTests {
         Parabuzzy parabuzzy = helper.spawnWithNoFreeWill(EightBitEntities.PARABUZZY.get(), CENTRE.west());
         parabuzzy.tame(player);
 
-        bobomb.interact(player, InteractionHand.MAIN_HAND, bobomb.position());
+        bobomb.interact(player, InteractionHand.MAIN_HAND);
         helper.assertTrue(bobomb.perch().isOn(player), "using a Bob-omb did not put it on the player's head");
         helper.assertTrue(Perch.isCarrying(player), "the player is not counted as carrying the Bob-omb");
 
-        parabuzzy.interact(player, InteractionHand.MAIN_HAND, parabuzzy.position());
+        parabuzzy.interact(player, InteractionHand.MAIN_HAND);
         helper.assertFalse(parabuzzy.perch().isPerched(), "a second creature climbed onto a head already carrying one");
 
         helper.runAfterDelay(2, () -> {
@@ -179,21 +178,21 @@ final class EightBitTests {
         Parabuzzy parabuzzy = helper.spawnWithNoFreeWill(EightBitEntities.PARABUZZY.get(), CENTRE.west());
         parabuzzy.tame(owner);
 
-        bobomb.interact(stranger, InteractionHand.MAIN_HAND, bobomb.position());
+        bobomb.interact(stranger, InteractionHand.MAIN_HAND);
         helper.assertFalse(bobomb.perch().isPerched(), "an owned Bob-omb climbed onto a stranger's head");
         stranger.setShiftKeyDown(true);
-        bobomb.interact(stranger, InteractionHand.MAIN_HAND, bobomb.position());
+        bobomb.interact(stranger, InteractionHand.MAIN_HAND);
         helper.assertFalse(bobomb.isRemoved(), "a stranger picked up someone else's Bob-omb");
         stranger.setShiftKeyDown(false);
-        parabuzzy.interact(stranger, InteractionHand.MAIN_HAND, parabuzzy.position());
+        parabuzzy.interact(stranger, InteractionHand.MAIN_HAND);
         helper.assertFalse(parabuzzy.perch().isPerched(), "a tame parabuzzy climbed onto a stranger's head");
         helper.assertFalse(parabuzzy.isOrderedToSit(), "a stranger ordered someone else's parabuzzy to sit");
 
-        parabuzzy.interact(owner, InteractionHand.MAIN_HAND, parabuzzy.position());
+        parabuzzy.interact(owner, InteractionHand.MAIN_HAND);
         helper.assertTrue(parabuzzy.perch().isOn(owner), "a tame parabuzzy would not climb onto its owner's head");
 
         Bobomb stray = helper.spawnWithNoFreeWill(EightBitEntities.BOBOMB.get(), CENTRE.north());
-        stray.interact(stranger, InteractionHand.MAIN_HAND, stray.position());
+        stray.interact(stranger, InteractionHand.MAIN_HAND);
         helper.assertTrue(stray.perch().isOn(stranger), "a Bob-omb with no owner would not climb onto a player's head");
         bobomb.discard();
         stray.discard();
@@ -205,7 +204,7 @@ final class EightBitTests {
         Parabuzzy parabuzzy = helper.spawnWithNoFreeWill(EightBitEntities.PARABUZZY.get(), CENTRE.west());
         parabuzzy.tame(player);
 
-        parabuzzy.interact(player, InteractionHand.MAIN_HAND, parabuzzy.position());
+        parabuzzy.interact(player, InteractionHand.MAIN_HAND);
         helper.assertTrue(parabuzzy.perch().isOn(player), "using a tame parabuzzy did not put it on the player's head");
 
         player.setShiftKeyDown(true);
@@ -220,7 +219,7 @@ final class EightBitTests {
         Bobomb bobomb = helper.spawnWithNoFreeWill(EightBitEntities.BOBOMB.get(), CENTRE.east());
 
         player.setShiftKeyDown(true);
-        bobomb.interact(player, InteractionHand.MAIN_HAND, bobomb.position());
+        bobomb.interact(player, InteractionHand.MAIN_HAND);
         helper.assertTrue(bobomb.isRemoved(), "the Bob-omb was not picked up");
         helper.succeedWhen(() -> helper.assertItemEntityPresent(EightBitItems.BOBOMB.get(), CENTRE.east(), 2.0D));
     }
@@ -245,8 +244,8 @@ final class EightBitTests {
         blue.setVariant(Parabuzzy.Variant.BLUE);
         red.setVariant(Parabuzzy.Variant.RED);
 
-        blue.kill(helper.getLevel());
-        red.kill(helper.getLevel());
+        blue.kill();
+        red.kill();
 
         helper.succeedWhen(() -> {
             helper.assertItemEntityPresent(EightBitItems.PARABUZZY_SHELL.get(), bluePos, 2.0D);

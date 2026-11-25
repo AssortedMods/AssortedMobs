@@ -3,9 +3,9 @@ package com.grim3212.assorted.icepixie.data;
 import com.grim3212.assorted.icepixie.Constants;
 import com.grim3212.assorted.icepixie.api.IcePixieTags;
 import com.grim3212.assorted.icepixie.common.entity.IcePixieEntities;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.loot.EntityLootSubProvider;
-import net.minecraft.data.loot.LootTableSubProvider;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.Items;
@@ -17,8 +17,8 @@ import net.minecraft.world.level.storage.loot.functions.EnchantedCountIncreaseFu
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemKilledByPlayerCondition;
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceWithEnchantedBonusCondition;
-import net.minecraft.world.level.storage.loot.providers.number.floats.ContextFloatProviders;
-import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 
 import java.util.stream.Stream;
 
@@ -28,8 +28,8 @@ import java.util.stream.Stream;
  */
 public class IcePixieEntityLoot extends EntityLootSubProvider {
 
-    public IcePixieEntityLoot(LootTableSubProvider.Context context) {
-        super(FeatureFlags.REGISTRY.allFlags(), context);
+    public IcePixieEntityLoot(HolderLookup.Provider registries) {
+        super(FeatureFlags.REGISTRY.allFlags(), registries);
     }
 
     @Override
@@ -41,20 +41,20 @@ public class IcePixieEntityLoot extends EntityLootSubProvider {
     public void generate() {
         // Snowballs every time, ice now and then, the rarer kinds of ice more rarely still.
         this.add(IcePixieEntities.ICE_PIXIE.get(), LootTable.lootTable()
-                .withPool(LootPool.lootPool().setRolls(ContextIntProviders.exactly(1))
+                .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F))
                         .add(LootItem.lootTableItem(Items.SNOWBALL)
-                                .apply(SetItemCountFunction.setCount(ContextIntProviders.between(1, 3)))
-                                .apply(EnchantedCountIncreaseFunction.lootingMultiplier(this.enchantments, ContextFloatProviders.between(0.0F, 1.0F)))))
-                .withPool(LootPool.lootPool().setRolls(ContextIntProviders.exactly(1))
-                        .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(this.enchantments, 0.5F, 0.1F))
-                        .add(LootItem.lootTableItem(Items.ICE).setWeight(12).apply(SetItemCountFunction.setCount(ContextIntProviders.between(1, 2))))
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0F, 3.0F)))
+                                .apply(EnchantedCountIncreaseFunction.lootingMultiplier(this.registries, UniformGenerator.between(0.0F, 1.0F)))))
+                .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F))
+                        .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(this.registries, 0.5F, 0.1F))
+                        .add(LootItem.lootTableItem(Items.ICE).setWeight(12).apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0F, 2.0F))))
                         .add(LootItem.lootTableItem(Items.PACKED_ICE).setWeight(5))
                         .add(LootItem.lootTableItem(Items.BLUE_ICE).setWeight(1)))
                 // Assorted Tools' frost rod, by its tag, so this is empty without Tools. Tools also
                 // gives every monster killed in a snowy biome its own small chance at one.
-                .withPool(LootPool.lootPool().setRolls(ContextIntProviders.exactly(1))
+                .withPool(LootPool.lootPool().setRolls(ConstantValue.exactly(1.0F))
                         .when(LootItemKilledByPlayerCondition.killedByPlayer())
-                        .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(this.enchantments, 0.05F, 0.02F))
-                        .add(TagEntry.expandTag(this.items.getOrThrow(IcePixieTags.Items.FROST_RODS)))));
+                        .when(LootItemRandomChanceWithEnchantedBonusCondition.randomChanceAndLootingBoost(this.registries, 0.05F, 0.02F))
+                        .add(TagEntry.expandTag(IcePixieTags.Items.FROST_RODS))));
     }
 }

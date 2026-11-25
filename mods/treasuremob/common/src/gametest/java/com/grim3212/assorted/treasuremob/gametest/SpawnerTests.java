@@ -2,12 +2,13 @@ package com.grim3212.assorted.treasuremob.gametest;
 
 import com.grim3212.assorted.lib.spawn.SpawnHabit;
 import com.grim3212.assorted.lib.spawn.SpawnHabits;
+import com.grim3212.assorted.lib.test.TestSupport;
 import com.grim3212.assorted.treasuremob.Constants;
 import com.grim3212.assorted.treasuremob.common.entity.TreasureMob;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
@@ -32,7 +33,7 @@ final class SpawnerTests {
     }
 
     static SpawnHabit habit(String name) {
-        SpawnHabit habit = SpawnHabits.get(Identifier.fromNamespaceAndPath(Constants.MOD_ID, name));
+        SpawnHabit habit = SpawnHabits.get(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, name));
         if (habit == null) {
             throw new IllegalStateException("spawn habit " + name + " did not load; loaded: " + SpawnHabits.all().keySet());
         }
@@ -49,7 +50,7 @@ final class SpawnerTests {
                 .forEach(pos -> level.setBlockAndUpdate(pos, pos.getX() == cell.getX() && pos.getZ() == cell.getZ() && (pos.getY() == cell.getY() || pos.getY() == cell.getY() + 1)
                         ? Blocks.AIR.defaultBlockState() : Blocks.STONE.defaultBlockState()));
 
-        helper.runBeforeTestEnd(() -> BlockPos.betweenClosed(cell.offset(-1, -1, -1), cell.offset(1, 2, 1))
+        TestSupport.whenTestEnds(helper, () -> BlockPos.betweenClosed(cell.offset(-1, -1, -1), cell.offset(1, 2, 1))
                 .forEach(pos -> level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState())));
 
         SpawnHabit habit = habit("treasure_mob");
@@ -66,7 +67,7 @@ final class SpawnerTests {
             helper.assertValueEqual(spawned, 1, "treasure mobs the spawner set down in a desert pyramid");
             helper.assertValueEqual(found.size(), 1, "treasure mobs found in the pyramid");
             TreasureMob mob = found.getFirst();
-            BoundingBox piece = level.structureManager().getStructureWithPieceAt(mob.getBlockX(), mob.getBlockY(), mob.getBlockZ(), structure).getBoundingBox();
+            BoundingBox piece = level.structureManager().getStructureWithPieceAt(mob.blockPosition(), structure).getBoundingBox();
             helper.assertTrue(piece.isInside(mob.blockPosition()), "the treasure mob was set down outside the pyramid at " + mob.blockPosition());
             helper.assertFalse(mob.getChest().isEmpty(), "the spawned treasure mob has an empty chest");
         });

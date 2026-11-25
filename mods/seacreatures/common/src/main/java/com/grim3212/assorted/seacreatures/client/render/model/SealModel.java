@@ -1,5 +1,6 @@
 package com.grim3212.assorted.seacreatures.client.render.model;
 
+import com.grim3212.assorted.seacreatures.common.entity.Seal;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
@@ -8,7 +9,7 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 
 /** The seal, at its own size: a sleek body in three lengths, so it can arch its chest up ashore and scull with its hips afloat. */
-public class SealModel extends PinnipedModel {
+public class SealModel extends PinnipedModel<Seal> {
 
     public SealModel(ModelPart root) {
         super(root, 1.0F);

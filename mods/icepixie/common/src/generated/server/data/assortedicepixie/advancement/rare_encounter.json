@@ -3,13 +3,15 @@
   "criteria": {
     "killed_ice_pixie": {
       "conditions": {
-        "entity": {
-          "type": "minecraft:entity_properties",
-          "entity": "this",
-          "predicate": {
-            "minecraft:entity_type": "assortedicepixie:ice_pixie"
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "assortedicepixie:ice_pixie"
+            }
           }
-        }
+        ]
       },
       "trigger": "minecraft:player_killed_entity"
     }
@@ -19,6 +21,7 @@
       "translate": "advancements.assortedicepixie.rare_encounter.description"
     },
     "icon": {
+      "count": 1,
       "id": "assortedicepixie:ice_pixie_spawn_egg"
     },
     "title": {

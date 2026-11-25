@@ -1,8 +1,8 @@
 package com.grim3212.assorted.treasuremob.common.entity.ai;
 
 import com.grim3212.assorted.treasuremob.common.entity.TreasureMob;
-import net.minecraft.world.entity.ContainerUser;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.player.Player;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -34,9 +34,9 @@ public class StayWhileOpenGoal extends Goal {
 
     @Override
     public void tick() {
-        List<ContainerUser> viewers = this.mob.getChest().getEntitiesWithContainerOpen();
+        List<Player> viewers = this.mob.getChest().getViewers();
         if (!viewers.isEmpty()) {
-            this.mob.getLookControl().setLookAt(viewers.getFirst().getLivingEntity());
+            this.mob.getLookControl().setLookAt(viewers.getFirst());
         }
     }
 }

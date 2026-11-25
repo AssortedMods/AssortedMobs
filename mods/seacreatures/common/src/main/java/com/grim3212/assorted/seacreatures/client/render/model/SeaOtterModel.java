@@ -1,7 +1,8 @@
 package com.grim3212.assorted.seacreatures.client.render.model;
 
 import com.grim3212.assorted.seacreatures.client.render.entity.AmphibiousRenderState;
-import net.minecraft.client.model.EntityModel;
+import com.grim3212.assorted.seacreatures.common.entity.SeaOtter;
+import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
@@ -16,8 +17,10 @@ import net.minecraft.util.Mth;
  * back, and rolled over on its back at the surface with its paws on its chest. Each is blended in
  * by how far into it the otter is, so it rolls over and rights itself rather than snapping between them.
  */
-public class SeaOtterModel extends EntityModel<AmphibiousRenderState> {
+public class SeaOtterModel extends HierarchicalModel<SeaOtter> {
 
+    private final AmphibiousRenderState state = new AmphibiousRenderState();
+    private final ModelPart root;
     private final ModelPart body;
     private final ModelPart hips;
     private final ModelPart head;
@@ -29,7 +32,7 @@ public class SeaOtterModel extends EntityModel<AmphibiousRenderState> {
     private final ModelPart rightHindLeg;
 
     public SeaOtterModel(ModelPart root) {
-        super(root);
+        this.root = root;
         this.body = root.getChild("body");
         this.hips = this.body.getChild("hips");
         this.head = this.body.getChild("head");
@@ -63,8 +66,20 @@ public class SeaOtterModel extends EntityModel<AmphibiousRenderState> {
     }
 
     @Override
-    public void setupAnim(AmphibiousRenderState state) {
-        super.setupAnim(state);
+    public ModelPart root() {
+        return this.root;
+    }
+
+    @Override
+    public void prepareMobModel(SeaOtter entity, float limbSwing, float limbSwingAmount, float partialTick) {
+        this.state.extract(entity, partialTick);
+    }
+
+    @Override
+    public void setupAnim(SeaOtter entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+        AmphibiousRenderState state = this.state;
+        state.setUp(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+        this.root.getAllParts().forEach(ModelPart::resetPose);
 
         float age = state.ageInTicks;
         float floating = state.floatAmount;

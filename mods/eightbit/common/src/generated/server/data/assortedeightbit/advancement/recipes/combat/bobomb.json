@@ -19,7 +19,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "assortedeightbit:bobomb"
+        "recipe": "assortedeightbit:bobomb"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

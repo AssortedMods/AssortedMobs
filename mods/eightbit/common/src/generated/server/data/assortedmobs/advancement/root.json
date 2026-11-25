@@ -12,36 +12,41 @@
     },
     "killed": {
       "conditions": {
-        "entity": {
-          "type": "minecraft:entity_properties",
-          "entity": "this",
-          "predicate": {
-            "minecraft:entity_type": "#assortedmobs:opens_advancements_when_killed"
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "#assortedmobs:opens_advancements_when_killed"
+            }
           }
-        }
+        ]
       },
       "trigger": "minecraft:player_killed_entity"
     },
     "tamed": {
       "conditions": {
-        "entity": {
-          "type": "minecraft:entity_properties",
-          "entity": "this",
-          "predicate": {
-            "minecraft:entity_type": "#assortedmobs:opens_advancements_when_tamed"
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "#assortedmobs:opens_advancements_when_tamed"
+            }
           }
-        }
+        ]
       },
       "trigger": "minecraft:tame_animal"
     }
   },
   "display": {
     "announce_to_chat": false,
-    "background": "minecraft:block/snow",
+    "background": "minecraft:textures/block/snow.png",
     "description": {
       "translate": "advancements.assortedmobs.root.description"
     },
     "icon": {
+      "count": 1,
       "id": "minecraft:snowball"
     },
     "show_toast": false,

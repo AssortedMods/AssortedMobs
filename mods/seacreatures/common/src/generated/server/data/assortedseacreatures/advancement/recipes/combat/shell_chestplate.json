@@ -19,7 +19,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "assortedseacreatures:shell_chestplate"
+        "recipe": "assortedseacreatures:shell_chestplate"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

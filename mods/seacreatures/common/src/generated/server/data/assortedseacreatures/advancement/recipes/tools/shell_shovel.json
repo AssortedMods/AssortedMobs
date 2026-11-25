@@ -19,7 +19,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "assortedseacreatures:shell_shovel"
+        "recipe": "assortedseacreatures:shell_shovel"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

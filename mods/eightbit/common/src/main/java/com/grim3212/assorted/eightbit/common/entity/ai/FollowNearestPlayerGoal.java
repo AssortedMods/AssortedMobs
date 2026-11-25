@@ -120,7 +120,7 @@ public class FollowNearestPlayerGoal extends Goal {
             if (Math.abs(xd) >= 2 || Math.abs(zd) >= 2) {
                 BlockPos pos = target.offset(xd, this.mob.getRandom().nextIntBetweenInclusive(-1, 1), zd);
                 if (this.canTeleportTo(pos)) {
-                    this.mob.snapTo(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, this.mob.getYRot(), this.mob.getXRot());
+                    this.mob.moveTo(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, this.mob.getYRot(), this.mob.getXRot());
                     this.mob.getNavigation().stop();
                     return;
                 }

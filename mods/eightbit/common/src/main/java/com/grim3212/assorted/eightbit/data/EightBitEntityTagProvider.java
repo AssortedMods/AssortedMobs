@@ -5,7 +5,6 @@ import com.grim3212.assorted.lib.data.LibEntityTagProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.tags.TagAppender;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
@@ -21,7 +20,7 @@ public class EightBitEntityTagProvider extends LibEntityTagProvider {
 
     @Override
     public void addCommonTags(Function<TagKey<EntityType<?>>, TagAppender<EntityType<?>>> tagger) {
-        EightBitAdvancements.openedWhenTamed(tagger).add(key(EightBitEntities.PARABUZZY.get()));
+        tagger.apply(EightBitAdvancements.openedWhenTamed(tagger::apply)).add(key(EightBitEntities.PARABUZZY.get()));
     }
 
     private static ResourceKey<EntityType<?>> key(EntityType<?> type) {

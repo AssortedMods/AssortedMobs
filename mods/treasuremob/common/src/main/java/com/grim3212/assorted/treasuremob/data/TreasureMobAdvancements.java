@@ -8,81 +8,70 @@ import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementRequirements;
 import net.minecraft.advancements.AdvancementType;
 import net.minecraft.advancements.DisplayInfo;
-import net.minecraft.advancements.predicates.ItemPredicate;
-import net.minecraft.advancements.predicates.entity.EntityPredicate;
-import net.minecraft.advancements.triggers.InventoryChangeTrigger;
-import net.minecraft.advancements.triggers.KilledTrigger;
-import net.minecraft.advancements.triggers.TameAnimalTrigger;
-import net.minecraft.core.ClientAsset;
-import net.minecraft.core.HolderGetter;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.advancements.critereon.InventoryChangeTrigger;
+import net.minecraft.advancements.critereon.ItemPredicate;
+import net.minecraft.advancements.critereon.KilledTrigger;
+import net.minecraft.advancements.critereon.TameAnimalTrigger;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.advancements.AdvancementSubProvider;
-import net.minecraft.data.tags.TagAppender;
-import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.ItemLike;
 
 import java.util.Optional;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 /**
  * This part's advancements, under the Assorted Mobs root that every part with advancements writes the same. The root
  * names only tags each part fills, so it loads whichever parts are installed and opens on meeting any of their creatures.
  */
-public class TreasureMobAdvancements extends AdvancementSubProvider {
+public class TreasureMobAdvancements implements AdvancementSubProvider {
 
     public static final TagKey<EntityType<?>> OPENS_WHEN_KILLED = TagKey.create(Registries.ENTITY_TYPE, family("opens_advancements_when_killed"));
     public static final TagKey<EntityType<?>> OPENS_WHEN_TAMED = TagKey.create(Registries.ENTITY_TYPE, family("opens_advancements_when_tamed"));
     public static final TagKey<Item> OPENS_WHEN_HELD = TagKey.create(Registries.ITEM, family("opens_advancements_when_held"));
 
-    public TreasureMobAdvancements(BootstrapContext<Advancement> output) {
-        super(output);
-    }
-
     @Override
-    public void generate() {
-        HolderGetter<EntityType<?>> entities = this.output.lookup(Registries.ENTITY_TYPE);
-
+    public void generate(HolderLookup.Provider registries, Consumer<AdvancementHolder> output) {
         AdvancementHolder root = Advancement.Builder.advancement()
-                .display(new DisplayInfo(new ItemStackTemplate(Items.SNOWBALL.asItem()), Component.translatable("advancements." + Constants.FAMILY_ID + ".root.title"),
+                .display(new DisplayInfo(new ItemStack(Items.SNOWBALL), Component.translatable("advancements." + Constants.FAMILY_ID + ".root.title"),
                         Component.translatable("advancements." + Constants.FAMILY_ID + ".root.description"),
-                        Optional.of(new ClientAsset.ResourceTexture(Identifier.withDefaultNamespace("block/snow"))), AdvancementType.TASK, false, false, false))
-                .addCriterion("killed", KilledTrigger.TriggerInstance.playerKilledEntity(EntityPredicate.Builder.entity().of(entities, OPENS_WHEN_KILLED)))
-                .addCriterion("tamed", TameAnimalTrigger.TriggerInstance.tamedAnimal(EntityPredicate.Builder.entity().of(entities, OPENS_WHEN_TAMED)))
-                .addCriterion("held", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(this.output.lookup(Registries.ITEM), OPENS_WHEN_HELD)))
+                        Optional.of(ResourceLocation.withDefaultNamespace("textures/block/snow.png")), AdvancementType.TASK, false, false, false))
+                .addCriterion("killed", KilledTrigger.TriggerInstance.playerKilledEntity(EntityPredicate.Builder.entity().of(OPENS_WHEN_KILLED)))
+                .addCriterion("tamed", TameAnimalTrigger.TriggerInstance.tamedAnimal(EntityPredicate.Builder.entity().of(OPENS_WHEN_TAMED)))
+                .addCriterion("held", InventoryChangeTrigger.TriggerInstance.hasItems(ItemPredicate.Builder.item().of(OPENS_WHEN_HELD)))
                 .requirements(AdvancementRequirements.Strategy.OR)
-                .save(this.output, family("root").toString());
+                .save(output, family("root").toString());
 
         task("dont_kill_him", root, TreasureMobItems.TREASURE_MOB_SPAWN_EGG.get())
-                .addCriterion("tamed_treasure_mob", TameAnimalTrigger.TriggerInstance.tamedAnimal(EntityPredicate.Builder.entity().of(entities, TreasureMobEntities.TREASURE_MOB.get())))
-                .save(this.output, id("dont_kill_him"));
+                .addCriterion("tamed_treasure_mob", TameAnimalTrigger.TriggerInstance.tamedAnimal(EntityPredicate.Builder.entity().of(TreasureMobEntities.TREASURE_MOB.get())))
+                .save(output, id("dont_kill_him"));
     }
 
-    /** Every part with advancements writes all three of the root's tags, empty or not, so none is ever missing. */
-    static TagAppender<EntityType<?>> openedWhenKilled(Function<TagKey<EntityType<?>>, TagAppender<EntityType<?>>> tagger) {
-        tagger.apply(OPENS_WHEN_TAMED);
-        return tagger.apply(OPENS_WHEN_KILLED);
+    /**
+     * Every part with advancements writes all three of the root's tags, empty or not, so none is ever missing: the
+     * two entity tags here, {@link #OPENS_WHEN_HELD} through {@link #itemTags}.
+     */
+    static void entityTags(Consumer<TagKey<EntityType<?>>> declare) {
+        declare.accept(OPENS_WHEN_KILLED);
+        declare.accept(OPENS_WHEN_TAMED);
     }
 
-    static TagAppender<EntityType<?>> openedWhenTamed(Function<TagKey<EntityType<?>>, TagAppender<EntityType<?>>> tagger) {
-        tagger.apply(OPENS_WHEN_KILLED);
-        return tagger.apply(OPENS_WHEN_TAMED);
-    }
-
-    static TagAppender<Item> itemTags(Function<TagKey<Item>, TagAppender<Item>> appender) {
-        return appender.apply(OPENS_WHEN_HELD);
+    static void itemTags(Consumer<TagKey<Item>> declare) {
+        declare.accept(OPENS_WHEN_HELD);
     }
 
     private static Advancement.Builder task(String name, AdvancementHolder parent, ItemLike icon) {
         return Advancement.Builder.advancement()
                 .parent(parent)
-                .display(icon.asItem(), title(name), description(name), AdvancementType.TASK, true, true, false);
+                .display(icon, title(name), description(name), null, AdvancementType.TASK, true, true, false);
     }
 
     private static Component title(String name) {
@@ -94,10 +83,10 @@ public class TreasureMobAdvancements extends AdvancementSubProvider {
     }
 
     private static String id(String name) {
-        return Identifier.fromNamespaceAndPath(Constants.MOD_ID, name).toString();
+        return ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, name).toString();
     }
 
-    private static Identifier family(String name) {
-        return Identifier.fromNamespaceAndPath(Constants.FAMILY_ID, name);
+    private static ResourceLocation family(String name) {
+        return ResourceLocation.fromNamespaceAndPath(Constants.FAMILY_ID, name);
     }
 }

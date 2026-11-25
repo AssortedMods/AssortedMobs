@@ -2,22 +2,17 @@ package com.grim3212.assorted.treasuremob.client.data;
 
 import com.grim3212.assorted.treasuremob.Constants;
 import com.grim3212.assorted.treasuremob.common.item.TreasureMobItems;
-import net.minecraft.client.data.models.BlockModelGenerators;
-import net.minecraft.client.data.models.ItemModelGenerators;
-import net.minecraft.client.data.models.ModelProvider;
-import net.minecraft.client.data.models.model.ModelTemplates;
-import net.minecraft.core.Holder;
 import net.minecraft.data.PackOutput;
-import net.minecraft.world.level.block.Block;
+import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
-/** Every item here is a flat sprite named after it, spawn eggs included, as vanilla's are now. */
-public class TreasureMobItemModelProvider extends ModelProvider {
+/** Every item here is a flat sprite named after it, spawn eggs included. */
+public class TreasureMobItemModelProvider extends ItemModelProvider {
 
-    public TreasureMobItemModelProvider(PackOutput output) {
-        super(output, Constants.MOD_ID);
+    public TreasureMobItemModelProvider(PackOutput output, ExistingFileHelper existingFileHelper) {
+        super(output, Constants.MOD_ID, existingFileHelper);
     }
 
     @Override
@@ -26,13 +21,7 @@ public class TreasureMobItemModelProvider extends ModelProvider {
     }
 
     @Override
-    protected Stream<? extends Holder<Block>> getKnownBlocks() {
-        return Stream.empty();
-    }
-
-    @Override
-    protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
-        TreasureMobItems.ITEMS.getEntries().stream().map(Supplier::get)
-                .forEach(item -> itemModels.generateFlatItem(item, ModelTemplates.FLAT_ITEM));
+    protected void registerModels() {
+        TreasureMobItems.ITEMS.getEntries().stream().map(Supplier::get).forEach(this::basicItem);
     }
 }

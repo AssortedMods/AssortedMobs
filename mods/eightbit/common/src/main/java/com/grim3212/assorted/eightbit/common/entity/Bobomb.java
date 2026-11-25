@@ -5,6 +5,7 @@ import com.grim3212.assorted.eightbit.common.entity.ai.FollowNearestPlayerGoal;
 import com.grim3212.assorted.eightbit.common.item.EightBitItems;
 import com.grim3212.assorted.eightbit.common.sounds.EightBitSounds;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -15,7 +16,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -35,12 +35,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.PathType;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.OptionalInt;
+import java.util.UUID;
 
 /**
  * A walking bomb that sides with players. The player who puts one down owns it, and it follows and
@@ -65,7 +64,7 @@ public class Bobomb extends PathfinderMob implements PerchingMob, OwnableEntity 
     private final Perch perch = new Perch(this, DATA_PERCHED_ON);
     private int fuse = FUSE;
     @Nullable
-    private EntityReference<LivingEntity> owner;
+    private UUID owner;
 
     public Bobomb(EntityType<? extends Bobomb> type, Level level) {
         super(type, level);
@@ -113,28 +112,30 @@ public class Bobomb extends PathfinderMob implements PerchingMob, OwnableEntity 
 
     @Override
     @Nullable
-    public EntityReference<LivingEntity> getOwnerReference() {
+    public UUID getOwnerUUID() {
         return this.owner;
     }
 
     public boolean isOwnedBy(LivingEntity entity) {
-        return this.owner != null && this.owner.matches(entity);
+        return this.owner != null && this.owner.equals(entity.getUUID());
     }
 
     public void setOwner(@Nullable LivingEntity owner) {
-        this.owner = EntityReference.of(owner);
+        this.owner = owner != null ? owner.getUUID() : null;
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
-        super.addAdditionalSaveData(output);
-        EntityReference.store(this.owner, output, "Owner");
+    public void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        if (this.owner != null) {
+            tag.putUUID("Owner", this.owner);
+        }
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput input) {
-        super.readAdditionalSaveData(input);
-        this.owner = EntityReference.read(input, "Owner");
+    public void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        this.owner = tag.hasUUID("Owner") ? tag.getUUID("Owner") : null;
     }
 
     @Override
@@ -167,7 +168,7 @@ public class Bobomb extends PathfinderMob implements PerchingMob, OwnableEntity 
 
         if (this.level() instanceof ServerLevel level) {
             if (this.isInWater()) {
-                this.kill(level);
+                this.kill();
             } else if (this.isLit() && --this.fuse <= 0) {
                 this.explode(level);
             }
@@ -200,13 +201,17 @@ public class Bobomb extends PathfinderMob implements PerchingMob, OwnableEntity 
 
     /** Its melee attack: reaching the monster lights the fuse rather than hitting it. */
     @Override
-    public boolean doHurtTarget(ServerLevel level, Entity target) {
+    public boolean doHurtTarget(Entity target) {
         this.light();
         return true;
     }
 
     @Override
-    public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
+    public boolean hurt(DamageSource source, float damage) {
+        if (this.level().isClientSide()) {
+            return false;
+        }
+
         Entity attacker = source.getEntity();
         if (attacker instanceof Bobomb || attacker instanceof Parabuzzy) {
             return false;
@@ -217,7 +222,7 @@ public class Bobomb extends PathfinderMob implements PerchingMob, OwnableEntity 
             return true;
         }
 
-        return super.hurtServer(level, source, damage);
+        return super.hurt(source, damage);
     }
 
     @Override
@@ -237,14 +242,14 @@ public class Bobomb extends PathfinderMob implements PerchingMob, OwnableEntity 
         }
 
         if (!player.isSecondaryUseActive() && this.perch.perchOn(player)) {
-            return InteractionResult.SUCCESS_SERVER;
+            return InteractionResult.SUCCESS;
         }
 
         if (player.getItemInHand(hand).isEmpty() && this.getTarget() == null) {
             level.sendParticles(ParticleTypes.POOF, this.getX(), this.getY(0.5D), this.getZ(), 20, this.getBbWidth() / 2, this.getBbHeight() / 2, this.getBbWidth() / 2, 0.02D);
-            this.spawnAtLocation(level, new ItemStack(EightBitItems.BOBOMB.get()));
+            this.spawnAtLocation(new ItemStack(EightBitItems.BOBOMB.get()));
             this.discard();
-            return InteractionResult.SUCCESS_SERVER;
+            return InteractionResult.SUCCESS;
         }
 
         return super.mobInteract(player, hand);
@@ -284,7 +289,7 @@ public class Bobomb extends PathfinderMob implements PerchingMob, OwnableEntity 
     }
 
     @Override
-    public boolean causeFallDamage(double fallDistance, float damageModifier, DamageSource damageSource) {
+    public boolean causeFallDamage(float fallDistance, float damageModifier, DamageSource damageSource) {
         return !this.perch.isPerched() && super.causeFallDamage(fallDistance, damageModifier, damageSource);
     }
 

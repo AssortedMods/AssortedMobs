@@ -5,10 +5,8 @@ import com.grim3212.assorted.eightbit.common.entity.EightBitEntities;
 import com.grim3212.assorted.lib.registry.IRegistryObject;
 import com.grim3212.assorted.lib.registry.RegistryProvider;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.SpawnEggItem;
 
@@ -17,20 +15,26 @@ import java.util.function.Supplier;
 
 public class EightBitItems {
 
+    private static final int UNTINTED = 0xFFFFFF;
+
     public static final RegistryProvider<Item> ITEMS = RegistryProvider.create(Registries.ITEM, Constants.MOD_ID).aliasFrom(Constants.FAMILY_ID);
 
     public static final IRegistryObject<Item> BOBOMB = register("bobomb", props -> new BobombItem(props.stacksTo(16)));
     public static final IRegistryObject<Item> PARABUZZY_SHELL = register("parabuzzy_shell", Item::new);
     public static final IRegistryObject<Item> PARABUZZY_SPAWN_EGG = spawnEgg("parabuzzy_spawn_egg", EightBitEntities.PARABUZZY::get);
 
-    private static IRegistryObject<Item> spawnEgg(String name, Supplier<? extends EntityType<?>> type) {
-        // Entity types register before items, so the type exists by the time this runs.
-        return register(name, props -> new SpawnEggItem(props.spawnEgg(type.get())));
+    private static IRegistryObject<Item> spawnEgg(String name, Supplier<? extends EntityType<? extends Mob>> type) {
+        // Entity types register before items, so the type exists by the time this runs. The egg's texture is
+        // already coloured, and white leaves the tint 1.21.1 lays over a spawn egg's layers as it is. NeoForge
+        // deprecates this constructor for its own DeferredSpawnEggItem, which the common code cannot name, and the type
+        // it would defer is already registered.
+        @SuppressWarnings("deprecation")
+        IRegistryObject<Item> egg = register(name, props -> new SpawnEggItem(type.get(), UNTINTED, UNTINTED, props));
+        return egg;
     }
 
     private static <T extends Item> IRegistryObject<T> register(final String name, final Function<Item.Properties, ? extends T> factory) {
-        final ResourceKey<Item> key = ResourceKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Constants.MOD_ID, name));
-        return ITEMS.register(name, () -> factory.apply(new Item.Properties().setId(key)));
+        return ITEMS.register(name, () -> factory.apply(new Item.Properties()));
     }
 
     public static void init() {

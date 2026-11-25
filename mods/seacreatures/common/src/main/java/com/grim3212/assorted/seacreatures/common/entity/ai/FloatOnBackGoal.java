@@ -19,6 +19,8 @@ public class FloatOnBackGoal extends Goal {
     /** How much of it lies under the water, as a share of its height: a fixed depth is deeper than a pup is tall. */
     private static final double FLOAT_FRACTION = 2.0D / 3.0D;
     private static final double SETTLED_FRACTION = 1.0D / 3.0D;
+    /** How far its eyes are kept over the surface, as a share of its height: held level with it, the eyes count as under. */
+    private static final double EYE_CLEARANCE = 0.1D;
     private static final double RISE_SPEED = 0.06D;
     private static final int DRIFT_INTERVAL = 160;
     private static final int DRIFT_RANGE = 5;
@@ -68,8 +70,8 @@ public class FloatOnBackGoal extends Goal {
         }
 
         double height = this.otter.getBbHeight();
-        double floatDepth = height * FLOAT_FRACTION;
-        double depth = this.otter.getFluidHeight(FluidTags.WATER);
+        double floatDepth = Math.min(height * FLOAT_FRACTION, this.otter.getEyeHeight() - height * EYE_CLEARANCE);
+        double depth = this.otter.getWaterDepth();
         boolean submerged = depth >= height;
         // Nothing sinks it or floats it in the water, so this is all that holds it at the surface.
         double lift = submerged ? RISE_SPEED : Mth.clamp((depth - floatDepth) * 0.2D, -0.04D, 0.04D);

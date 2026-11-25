@@ -7,7 +7,7 @@ import com.grim3212.assorted.treasuremob.common.entity.TreasureMobEntities;
 import com.grim3212.assorted.treasuremob.common.entity.TreasureMobSpawns;
 import com.grim3212.assorted.treasuremob.common.handlers.TreasureMobCreativeItems;
 import com.grim3212.assorted.treasuremob.common.item.TreasureMobItems;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Map;
 
@@ -20,7 +20,7 @@ public class TreasureMobCommonMod {
     public static void init() {
         Constants.LOG.info(Constants.MOD_NAME + " starting up...");
         Families.join(Constants.MOD_ID, Constants.FAMILY_ID)
-                .icon(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "treasure_mob_spawn_egg"), 10)
+                .icon(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "treasure_mob_spawn_egg"), 10)
                 .manualOrder(70);
 
         TreasureMobEntities.init();
@@ -31,7 +31,7 @@ public class TreasureMobCommonMod {
         // Recipes and advancements unlocked when this was all one mod carry over to their new ids.
         MovedIds.inherit(Constants.FAMILY_ID, Constants.MOD_ID);
         // The advancement root every part shares: its icon is the first installed of the family's, its criteria renamed.
-        Identifier root = Identifier.fromNamespaceAndPath(Constants.FAMILY_ID, "root");
+        ResourceLocation root = ResourceLocation.fromNamespaceAndPath(Constants.FAMILY_ID, "root");
         AdvancementIcons.register(root, () -> Families.icons(Constants.FAMILY_ID));
         MovedIds.renameCriteria(root, Map.of("tamed_treasure_mob", "tamed"));
     }

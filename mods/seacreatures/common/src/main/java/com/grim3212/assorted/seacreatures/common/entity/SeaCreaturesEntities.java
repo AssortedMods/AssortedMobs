@@ -4,8 +4,6 @@ import com.grim3212.assorted.lib.registry.IRegistryObject;
 import com.grim3212.assorted.lib.registry.RegistryProvider;
 import com.grim3212.assorted.seacreatures.Constants;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -23,8 +21,7 @@ public class SeaCreaturesEntities {
     public static final IRegistryObject<EntityType<SeaOtter>> SEA_OTTER = register("sea_otter", EntityType.Builder.of(SeaOtter::new, MobCategory.MISC).sized(0.6F, 0.45F).eyeHeight(0.3F).clientTrackingRange(8));
 
     private static <T extends Entity> IRegistryObject<EntityType<T>> register(final String name, final EntityType.Builder<T> builder) {
-        final ResourceKey<EntityType<?>> key = ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Constants.MOD_ID, name));
-        return ENTITIES.register(name, () -> builder.build(key));
+        return ENTITIES.register(name, () -> builder.build(Constants.MOD_ID + ":" + name));
     }
 
     public static void init() {

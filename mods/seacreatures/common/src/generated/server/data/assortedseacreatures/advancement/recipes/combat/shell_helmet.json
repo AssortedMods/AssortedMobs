@@ -19,7 +19,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "assortedseacreatures:shell_helmet"
+        "recipe": "assortedseacreatures:shell_helmet"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

@@ -1,7 +1,7 @@
 package com.grim3212.assorted.eightbit.client.render.model;
 
-import com.grim3212.assorted.eightbit.client.render.entity.BobombRenderer;
-import net.minecraft.client.model.EntityModel;
+import com.grim3212.assorted.eightbit.common.entity.Bobomb;
+import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
@@ -12,11 +12,12 @@ import net.minecraft.client.model.geom.builders.PartDefinition;
 import net.minecraft.util.Mth;
 
 /** A round bomb on two feet, a fuse on top and a wind-up key turning at its back. */
-public class BobombModel extends EntityModel<BobombRenderer.State> {
+public class BobombModel extends HierarchicalModel<Bobomb> {
 
     /** Radians the key turns each tick. */
     private static final float KEY_SPEED = 0.25F;
 
+    private final ModelPart root;
     private final ModelPart keyShaft;
     private final ModelPart keyGrip;
     private final ModelPart rightLeg;
@@ -25,7 +26,7 @@ public class BobombModel extends EntityModel<BobombRenderer.State> {
     private final ModelPart leftFoot;
 
     public BobombModel(ModelPart root) {
-        super(root);
+        this.root = root;
         this.keyShaft = root.getChild("key_shaft");
         this.keyGrip = root.getChild("key_grip");
         this.rightLeg = root.getChild("right_leg");
@@ -54,17 +55,20 @@ public class BobombModel extends EntityModel<BobombRenderer.State> {
     }
 
     @Override
-    public void setupAnim(BobombRenderer.State state) {
-        super.setupAnim(state);
+    public ModelPart root() {
+        return this.root;
+    }
 
-        float swing = state.walkAnimationPos;
-        float amount = state.walkAnimationSpeed;
+    @Override
+    public void setupAnim(Bobomb entity, float swing, float amount, float ageInTicks, float netHeadYaw, float headPitch) {
+        this.root.getAllParts().forEach(ModelPart::resetPose);
+
         this.leftLeg.xRot = Mth.cos(swing * 1.9662F + Mth.PI) * amount;
         this.rightLeg.xRot = Mth.cos(swing * 1.9662F) * amount;
         this.leftFoot.xRot = this.leftLeg.xRot;
         this.rightFoot.xRot = this.rightLeg.xRot;
 
-        this.keyShaft.zRot = state.ageInTicks * KEY_SPEED;
+        this.keyShaft.zRot = ageInTicks * KEY_SPEED;
         this.keyGrip.zRot = this.keyShaft.zRot;
     }
 }

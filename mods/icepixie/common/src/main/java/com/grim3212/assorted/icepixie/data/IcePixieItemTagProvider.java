@@ -5,7 +5,6 @@ import com.grim3212.assorted.lib.data.LibItemTagProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.tags.TagAppender;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
@@ -24,16 +23,16 @@ public class IcePixieItemTagProvider extends LibItemTagProvider {
 
     @Override
     public void addCommonTags(Function<TagKey<Item>, TagAppender<Item>> appender, BiConsumer<TagKey<Block>, TagKey<Item>> copier) {
-        // Anything a player can hold that is on fire, or lights one.
+        // Anything a player can hold that is on fire, or lights one. 1.21.1 has no copper torch.
         TagAppender<Item> weapons = appender.apply(IcePixieTags.Items.ICE_PIXIE_WEAPONS);
-        for (Item item : new Item[]{Items.TORCH, Items.SOUL_TORCH, Items.COPPER_TORCH, Items.FLINT_AND_STEEL}) {
+        for (Item item : new Item[]{Items.TORCH, Items.SOUL_TORCH, Items.FLINT_AND_STEEL}) {
             weapons.add(key(item));
         }
 
-        // 26.3 will not load a loot table naming a tag nobody made, so it exists, empty, without Tools.
+        // Written, empty, without Tools, so the loot table never names a tag nobody made.
         appender.apply(IcePixieTags.Items.FROST_RODS);
 
-        IcePixieAdvancements.itemTags(appender);
+        appender.apply(IcePixieAdvancements.itemTag());
     }
 
     private static ResourceKey<Item> key(Item item) {

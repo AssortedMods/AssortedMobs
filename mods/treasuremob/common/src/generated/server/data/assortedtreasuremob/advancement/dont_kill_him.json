@@ -3,13 +3,15 @@
   "criteria": {
     "tamed_treasure_mob": {
       "conditions": {
-        "entity": {
-          "type": "minecraft:entity_properties",
-          "entity": "this",
-          "predicate": {
-            "minecraft:entity_type": "assortedtreasuremob:treasure_mob"
+        "entity": [
+          {
+            "condition": "minecraft:entity_properties",
+            "entity": "this",
+            "predicate": {
+              "type": "assortedtreasuremob:treasure_mob"
+            }
           }
-        }
+        ]
       },
       "trigger": "minecraft:tame_animal"
     }
@@ -19,6 +21,7 @@
       "translate": "advancements.assortedtreasuremob.dont_kill_him.description"
     },
     "icon": {
+      "count": 1,
       "id": "assortedtreasuremob:treasure_mob_spawn_egg"
     },
     "title": {

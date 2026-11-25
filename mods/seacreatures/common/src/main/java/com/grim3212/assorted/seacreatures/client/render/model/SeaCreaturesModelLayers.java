@@ -2,7 +2,7 @@ package com.grim3212.assorted.seacreatures.client.render.model;
 
 import com.grim3212.assorted.seacreatures.Constants;
 import net.minecraft.client.model.geom.ModelLayerLocation;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 public class SeaCreaturesModelLayers {
 
@@ -12,6 +12,6 @@ public class SeaCreaturesModelLayers {
     public static final ModelLayerLocation SEA_OTTER = create("sea_otter");
 
     private static ModelLayerLocation create(String name) {
-        return new ModelLayerLocation(Identifier.fromNamespaceAndPath(Constants.MOD_ID, name), "main");
+        return new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, name), "main");
     }
 }

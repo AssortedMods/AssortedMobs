@@ -19,7 +19,8 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.util.TimeUtil;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.AgeableMob;
-import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -32,10 +33,9 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -67,15 +67,17 @@ public class SeaOtter extends AmphibiousAnimal {
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Animal.createAnimalAttributes().add(Attributes.MAX_HEALTH, 8.0D).add(Attributes.MOVEMENT_SPEED, 0.2D).add(Attributes.STEP_HEIGHT, 1.0D);
+        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, 8.0D).add(Attributes.MOVEMENT_SPEED, 0.2D).add(Attributes.STEP_HEIGHT, 1.0D);
     }
 
     /**
      * Near the top of the water, however little of it there is: a river is seldom three blocks deep. And not in a frozen
      * one: the biome tag it spawns by has every river and shallow sea in it, the frozen ones too, and those are the seal's.
      */
-    public static boolean checkSeaOtterSpawnRules(EntityType<SeaOtter> type, LevelAccessor level, EntitySpawnReason spawnReason, BlockPos pos, RandomSource random) {
-        return pos.getY() >= level.getSeaLevel() - SPAWN_DEPTH && pos.getY() <= level.getSeaLevel() && isWarmEnough(level.getBiome(pos));
+    public static boolean checkSeaOtterSpawnRules(EntityType<SeaOtter> type, ServerLevelAccessor level, MobSpawnType spawnReason, BlockPos pos, RandomSource random) {
+        // The generator's sea level, which is the level's: the level's own getter is deprecated on both.
+        int seaLevel = level.getLevel().getChunkSource().getGenerator().getSeaLevel();
+        return pos.getY() >= seaLevel - SPAWN_DEPTH && pos.getY() <= seaLevel && isWarmEnough(level.getBiome(pos));
     }
 
     /**
@@ -133,7 +135,7 @@ public class SeaOtter extends AmphibiousAnimal {
         super.aiStep();
         if (this.level() instanceof ServerLevel level && this.isAlive() && !this.isBaby() && this.isFloating() && --this.shellTime <= 0) {
             this.playSound(SoundEvents.TURTLE_EGG_CRACK, 0.7F, 1.2F + this.random.nextFloat() * 0.3F);
-            this.spawnAtLocation(level, SeaCreaturesItems.SEA_SHELL.get());
+            this.spawnAtLocation(SeaCreaturesItems.SEA_SHELL.get());
             this.shellTime = SHELL_TIME.sample(this.random);
         }
     }
@@ -145,18 +147,20 @@ public class SeaOtter extends AmphibiousAnimal {
 
     @Override
     public @Nullable AgeableMob getBreedOffspring(ServerLevel level, AgeableMob partner) {
-        return SeaCreaturesEntities.SEA_OTTER.get().create(level, EntitySpawnReason.BREEDING);
+        return SeaCreaturesEntities.SEA_OTTER.get().create(level);
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
-        super.addAdditionalSaveData(output);
-        output.putInt("ShellTime", this.shellTime);
+    public void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        tag.putInt("ShellTime", this.shellTime);
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput input) {
-        super.readAdditionalSaveData(input);
-        input.getInt("ShellTime").ifPresent(time -> this.shellTime = time);
+    public void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        if (tag.contains("ShellTime")) {
+            this.shellTime = tag.getInt("ShellTime");
+        }
     }
 }

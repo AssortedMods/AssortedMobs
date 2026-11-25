@@ -7,23 +7,19 @@ import com.grim3212.assorted.treasuremob.Constants;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.ChunkGenerator;
-import net.minecraft.world.level.levelgen.densityfunction.SamplerContext;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureStart;
-import net.minecraft.world.level.storage.TagValueInput;
-import net.minecraft.world.level.storage.TagValueOutput;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,19 +40,14 @@ final class TreasureMobTestSupport {
 
     /**
      * Writes an entity out and reads it into a fresh one of the same type, as a chunk save and load
-     * would, failing the test on any serialization problem.
+     * would.
      */
     static <T extends Entity> T afterReload(GameTestHelper helper, T entity, EntityType<T> type) {
-        ProblemReporter.Collector problems = new ProblemReporter.Collector();
-        TagValueOutput output = TagValueOutput.createWithContext(problems, helper.getLevel().registryAccess());
-        entity.saveWithoutId(output);
-        helper.assertTrue(problems.isEmpty(), type.getDescriptionId() + " reported serialization errors: " + problems.getReport());
-        CompoundTag saved = output.buildResult();
+        CompoundTag saved = entity.saveWithoutId(new CompoundTag());
 
-        T reloaded = type.create(helper.getLevel(), EntitySpawnReason.LOAD);
+        T reloaded = type.create(helper.getLevel());
         helper.assertTrue(reloaded != null, "could not create a " + type.getDescriptionId() + " to load into");
-        reloaded.load(TagValueInput.create(problems, helper.getLevel().registryAccess(), saved));
-        helper.assertTrue(problems.isEmpty(), type.getDescriptionId() + " reported problems loading: " + problems.getReport());
+        reloaded.load(saved);
         return reloaded;
     }
 
@@ -75,18 +66,17 @@ final class TreasureMobTestSupport {
         ServerLevel level = helper.getLevel();
         Holder.Reference<Structure> structure = level.registryAccess().lookupOrThrow(Registries.STRUCTURE).getOrThrow(key);
         ChunkGenerator generator = level.getChunkSource().getGenerator();
-        ChunkPos origin = ChunkPos.containing(helper.absolutePos(CENTRE));
-        StructureStart start = structure.value().generate(structure, level.dimension(), level.registryAccess(), generator, generator.getBiomeSource(),
-                level.getChunkSource().randomState().createClimateSampler(SamplerContext.EMPTY_UNCACHED),
-                level.getChunkSource().randomState(), level.getStructureTemplateManager(), level.getSeed(), origin, 0, level, biome -> true);
-        helper.assertTrue(start.isValid(), "could not lay out " + key.identifier() + " to test in");
+        ChunkPos origin = new ChunkPos(helper.absolutePos(CENTRE));
+        StructureStart start = structure.value().generate(level.registryAccess(), generator, generator.getBiomeSource(),
+                level.getChunkSource().randomState(), level.getStructureManager(), level.getSeed(), origin, 0, level, biome -> true);
+        helper.assertTrue(start.isValid(), "could not lay out " + key.location() + " to test in");
 
         start.getPieces().forEach(piece -> piece.move(0, lift, 0));
         BoundingBox bounds = start.getPieces().getFirst().getBoundingBox();
         BlockPos inside = bounds.getCenter();
-        level.getChunk(origin.x(), origin.z()).setStartForStructure(structure.value(), start);
-        level.getChunk(inside).addReferenceForStructure(structure.value(), origin.pack());
-        helper.runBeforeTestEnd(() -> level.getChunk(origin.x(), origin.z()).setStartForStructure(structure.value(), StructureStart.INVALID_START));
+        level.getChunk(origin.x, origin.z).setStartForStructure(structure.value(), start);
+        level.getChunk(inside).addReferenceForStructure(structure.value(), origin.toLong());
+        TestSupport.whenTestEnds(helper, () -> level.getChunk(origin.x, origin.z).setStartForStructure(structure.value(), StructureStart.INVALID_START));
         return new LaidOut(inside, new BlockPos(inside.getX(), bounds.maxY() + 8, inside.getZ()));
     }
 
@@ -107,7 +97,7 @@ final class TreasureMobTestSupport {
             helper.assertTrue(in != null, path + " is not on the classpath");
             return JsonParser.parseReader(new InputStreamReader(in, StandardCharsets.UTF_8)).getAsJsonObject();
         } catch (IOException e) {
-            throw helper.assertionException("could not read " + path + ": " + e);
+            throw new GameTestAssertException("could not read " + path + ": " + e);
         }
     }
 

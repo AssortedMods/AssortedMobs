@@ -2,27 +2,21 @@ package com.grim3212.assorted.seacreatures.client.data;
 
 import com.grim3212.assorted.seacreatures.Constants;
 import com.grim3212.assorted.seacreatures.common.item.SeaCreaturesItems;
-import net.minecraft.client.data.models.BlockModelGenerators;
-import net.minecraft.client.data.models.ItemModelGenerators;
-import net.minecraft.client.data.models.ModelProvider;
-import net.minecraft.client.data.models.model.ModelTemplates;
-import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
-import net.minecraft.world.level.block.Block;
+import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
+import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import java.util.Set;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
-/** Every item here is a flat sprite named after it, spawn eggs included, as vanilla's are now. */
-public class SeaCreaturesItemModelProvider extends ModelProvider {
+/** Every item here is a flat sprite named after it, spawn eggs included. */
+public class SeaCreaturesItemModelProvider extends ItemModelProvider {
 
-    /** Held like a tool, not like a loaf of bread. */
-    private static final Set<Item> HANDHELD = Set.of(SeaCreaturesItems.NARWHAL_SWORD.get(), SeaCreaturesItems.SHELL_SHOVEL.get());
-
-    public SeaCreaturesItemModelProvider(PackOutput output) {
-        super(output, Constants.MOD_ID);
+    public SeaCreaturesItemModelProvider(PackOutput output, ExistingFileHelper existingFileHelper) {
+        super(output, Constants.MOD_ID, existingFileHelper);
     }
 
     @Override
@@ -31,13 +25,17 @@ public class SeaCreaturesItemModelProvider extends ModelProvider {
     }
 
     @Override
-    protected Stream<? extends Holder<Block>> getKnownBlocks() {
-        return Stream.empty();
-    }
-
-    @Override
-    protected void registerModels(BlockModelGenerators blockModels, ItemModelGenerators itemModels) {
-        SeaCreaturesItems.ITEMS.getEntries().stream().map(Supplier::get)
-                .forEach(item -> itemModels.generateFlatItem(item, HANDHELD.contains(item) ? ModelTemplates.FLAT_HANDHELD_ITEM : ModelTemplates.FLAT_ITEM));
+    protected void registerModels() {
+        // Held like a tool, not like a loaf of bread.
+        Set<Item> handheld = Set.of(SeaCreaturesItems.NARWHAL_SWORD.get(), SeaCreaturesItems.SHELL_SHOVEL.get());
+        SeaCreaturesItems.ITEMS.getEntries().stream().map(Supplier::get).forEach(item -> {
+            if (handheld.contains(item)) {
+                ResourceLocation id = BuiltInRegistries.ITEM.getKey(item);
+                this.withExistingParent(id.toString(), ResourceLocation.withDefaultNamespace("item/handheld"))
+                        .texture("layer0", ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "item/" + id.getPath()));
+            } else {
+                this.basicItem(item);
+            }
+        });
     }
 }

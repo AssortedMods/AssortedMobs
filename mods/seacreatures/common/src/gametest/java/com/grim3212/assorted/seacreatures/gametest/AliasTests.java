@@ -10,13 +10,11 @@ import com.mojang.serialization.JsonOps;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.util.ProblemReporter;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.storage.TagValueInput;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -36,8 +34,7 @@ final class AliasTests {
             // The id a chunk saved an entity under, read back the way the world reads it.
             CompoundTag saved = new CompoundTag();
             saved.putString("id", old(entity.getId()).toString());
-            ProblemReporter.Collector problems = new ProblemReporter.Collector();
-            helper.assertValueEqual(EntityType.by(TagValueInput.create(problems, helper.getLevel().registryAccess(), saved)).orElse(null), entity.get(),
+            helper.assertValueEqual(EntityType.by(saved).orElse(null), entity.get(),
                     "the entity saved as " + old(entity.getId()));
         }
 
@@ -48,12 +45,12 @@ final class AliasTests {
         }
 
         for (IRegistryObject<SoundEvent> sound : SeaCreaturesSounds.SOUNDS.getEntries()) {
-            helper.assertValueEqual(BuiltInRegistries.SOUND_EVENT.getValue(old(sound.getId())), sound.get(), "the sound saved as " + old(sound.getId()));
+            helper.assertValueEqual(BuiltInRegistries.SOUND_EVENT.get(old(sound.getId())), sound.get(), "the sound saved as " + old(sound.getId()));
         }
         helper.succeed();
     }
 
-    private static Identifier old(Identifier id) {
-        return Identifier.fromNamespaceAndPath(Constants.FAMILY_ID, id.getPath());
+    private static ResourceLocation old(ResourceLocation id) {
+        return ResourceLocation.fromNamespaceAndPath(Constants.FAMILY_ID, id.getPath());
     }
 }

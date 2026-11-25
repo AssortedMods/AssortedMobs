@@ -5,7 +5,6 @@ import com.grim3212.assorted.lib.data.LibBlockTagProvider;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
-import net.minecraft.data.tags.TagAppender;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
@@ -23,10 +22,10 @@ public class IcePixieBlockTagProvider extends LibBlockTagProvider {
 
     @Override
     public void addCommonTags(Function<TagKey<Block>, TagAppender<Block>> appender) {
-        // Anything hot. A redstone torch is not a fire; a lantern is light, not heat.
+        // Anything hot. A redstone torch is not a fire; a lantern is light, not heat. 1.21.1 has no copper torch.
         TagAppender<Block> repellents = appender.apply(IcePixieTags.Blocks.ICE_PIXIE_REPELLENTS).addTag(BlockTags.FIRE).addTag(BlockTags.CAMPFIRES)
                 .add(key(Blocks.LAVA)).add(key(Blocks.MAGMA_BLOCK));
-        for (Block torch : new Block[]{Blocks.TORCH, Blocks.WALL_TORCH, Blocks.SOUL_TORCH, Blocks.SOUL_WALL_TORCH, Blocks.COPPER_TORCH, Blocks.COPPER_WALL_TORCH}) {
+        for (Block torch : new Block[]{Blocks.TORCH, Blocks.WALL_TORCH, Blocks.SOUL_TORCH, Blocks.SOUL_WALL_TORCH}) {
             repellents.add(key(torch));
         }
     }

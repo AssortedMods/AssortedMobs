@@ -14,9 +14,15 @@
     }
   ],
   "key": {
-    "#": "#c:gunpowders",
-    "@": "assortedeightbit:parabuzzy_shell",
-    "X": "#c:dusts/redstone"
+    "#": {
+      "tag": "c:gunpowders"
+    },
+    "@": {
+      "item": "assortedeightbit:parabuzzy_shell"
+    },
+    "X": {
+      "tag": "c:dusts/redstone"
+    }
   },
   "pattern": [
     "X",
@@ -24,6 +30,7 @@
     "@"
   ],
   "result": {
+    "count": 1,
     "id": "assortedeightbit:bobomb"
   }
 }

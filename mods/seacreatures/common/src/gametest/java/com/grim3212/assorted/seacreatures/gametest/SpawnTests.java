@@ -9,11 +9,8 @@ import com.grim3212.assorted.seacreatures.common.entity.SeaCreaturesEntities;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.util.random.Weighted;
-import net.minecraft.world.attribute.EnvironmentAttributes;
-import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
@@ -51,7 +48,7 @@ final class SpawnTests {
     /** A living type with no attributes cannot even be constructed. */
     private static void creaturesSpawnWithTheirAttributes(GameTestHelper helper) {
         for (EntityType<? extends Mob> type : List.of(SeaCreaturesEntities.SEAL.get(), SeaCreaturesEntities.WALRUS.get(), SeaCreaturesEntities.NARWHAL.get(), SeaCreaturesEntities.SEA_OTTER.get())) {
-            Mob mob = helper.spawn(type, CENTRE, EntitySpawnReason.SPAWN_ITEM_USE);
+            Mob mob = helper.spawn(type, CENTRE);
             helper.assertTrue(mob.isAlive() && mob.getHealth() > 0, type.getDescriptionId() + " did not spawn alive");
             mob.discard();
         }
@@ -63,7 +60,7 @@ final class SpawnTests {
         for (EntityType<?> type : HABITS.values()) {
             for (MobCategory category : MobCategory.values()) {
                 helper.getLevel().registryAccess().lookupOrThrow(Registries.BIOME).listElementIds().forEach(biome ->
-                        helper.assertTrue(spawnEntry(helper, biome, category, type).isEmpty(), type.getDescriptionId() + " is on the biome spawn list of " + biome.identifier() + " as well as a habit"));
+                        helper.assertTrue(spawnEntry(helper, biome, category, type).isEmpty(), type.getDescriptionId() + " is on the biome spawn list of " + biome.location() + " as well as a habit"));
             }
         }
         helper.succeed();
@@ -72,15 +69,15 @@ final class SpawnTests {
     /** Each habit loaded from data/assortedseacreatures/spawn_habit, on with its mod installed, capped, and seeding new terrain where it can. */
     private static void creaturesHaveSpawnHabits(GameTestHelper helper) {
         HABITS.forEach((name, type) -> {
-            SpawnHabit habit = SpawnHabits.get(Identifier.fromNamespaceAndPath(Constants.MOD_ID, name));
+            SpawnHabit habit = SpawnHabits.get(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, name));
             helper.assertTrue(habit != null, "no spawn habit " + name + " loaded; loaded: " + SpawnHabits.all().keySet());
             helper.assertValueEqual(habit.entity(), type, "the creature of habit " + name);
             helper.assertTrue(habit.isEnabled(), "habit " + name + " is off");
             helper.assertTrue(habit.cap().isPresent(), "habit " + name + " has no cap");
             helper.assertTrue(habit.seed() > 0.0D || !habit.site().seedsAtGeneration(), "habit " + name + " never seeds new terrain");
         });
-        helper.assertValueEqual(SpawnHabits.get(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "sea_otter")).site().type(), SpawnSites.WATER, "sea otter site");
-        helper.assertTrue(SpawnHabits.get(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "seal")).cap().get().counted().isPresent(), "the seal cap counts only seals");
+        helper.assertValueEqual(SpawnHabits.get(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "sea_otter")).site().type(), SpawnSites.WATER, "sea otter site");
+        helper.assertTrue(SpawnHabits.get(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "seal")).cap().get().counted().isPresent(), "the seal cap counts only seals");
         for (EntityType<?> type : List.of(SeaCreaturesEntities.SEAL.get(), SeaCreaturesEntities.WALRUS.get(), SeaCreaturesEntities.NARWHAL.get(), SeaCreaturesEntities.SEA_OTTER.get())) {
             helper.assertValueEqual(type.getCategory(), MobCategory.MISC, type.getDescriptionId() + " category");
         }
@@ -99,8 +96,8 @@ final class SpawnTests {
         helper.succeed();
     }
 
-    private static Optional<Weighted<MobSpawnSettings.SpawnerData>> spawnEntry(GameTestHelper helper, ResourceKey<Biome> biome, MobCategory category, EntityType<?> type) {
+    private static Optional<MobSpawnSettings.SpawnerData> spawnEntry(GameTestHelper helper, ResourceKey<Biome> biome, MobCategory category, EntityType<?> type) {
         Holder<Biome> holder = helper.getLevel().registryAccess().lookupOrThrow(Registries.BIOME).getOrThrow(biome);
-        return holder.value().getAttributes().applyModifier(EnvironmentAttributes.NATURAL_MOB_SPAWNS, MobSpawnSettings.EMPTY).getMobsToSpawn(category).unwrap().stream().filter(weighted -> weighted.value().type() == type).findFirst();
+        return holder.value().getMobSettings().getMobs(category).unwrap().stream().filter(data -> data.type == type).findFirst();
     }
 }

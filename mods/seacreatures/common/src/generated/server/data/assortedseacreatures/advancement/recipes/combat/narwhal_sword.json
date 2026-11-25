@@ -19,7 +19,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "assortedseacreatures:narwhal_sword"
+        "recipe": "assortedseacreatures:narwhal_sword"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

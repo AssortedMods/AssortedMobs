@@ -7,7 +7,6 @@ import com.grim3212.assorted.seacreatures.Constants;
 import com.grim3212.assorted.seacreatures.api.SeaCreaturesTags;
 import com.grim3212.assorted.seacreatures.common.entity.SeaCreaturesEntities;
 import net.minecraft.data.PackOutput;
-import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.level.biome.Biomes;
 
 import java.util.function.BiConsumer;

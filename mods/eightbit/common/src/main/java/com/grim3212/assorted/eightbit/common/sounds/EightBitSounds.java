@@ -4,7 +4,7 @@ import com.grim3212.assorted.eightbit.Constants;
 import com.grim3212.assorted.lib.registry.IRegistryObject;
 import com.grim3212.assorted.lib.registry.RegistryProvider;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 
 public class EightBitSounds {
@@ -17,7 +17,7 @@ public class EightBitSounds {
     public static final IRegistryObject<SoundEvent> PARABUZZY_DEATH = registerSound("entity.parabuzzy.death");
 
     private static IRegistryObject<SoundEvent> registerSound(String name) {
-        Identifier loc = Identifier.fromNamespaceAndPath(Constants.MOD_ID, name);
+        ResourceLocation loc = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, name);
         return SOUNDS.register(name, () -> SoundEvent.createVariableRangeEvent(loc));
     }
 

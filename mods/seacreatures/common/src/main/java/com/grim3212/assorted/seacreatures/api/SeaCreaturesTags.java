@@ -2,7 +2,7 @@ package com.grim3212.assorted.seacreatures.api;
 
 import com.grim3212.assorted.seacreatures.Constants;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.Item;
@@ -16,7 +16,7 @@ public class SeaCreaturesTags {
         public static final TagKey<Block> SEALS_SPAWNABLE_ON = create("seals_spawnable_on");
 
         private static TagKey<Block> create(String name) {
-            return TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(Constants.MOD_ID, name));
+            return TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, name));
         }
     }
 
@@ -26,7 +26,7 @@ public class SeaCreaturesTags {
         public static final TagKey<Item> REPAIRS_SHELL_ARMOR = create("repairs_shell_armor");
 
         private static TagKey<Item> create(String name) {
-            return TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Constants.MOD_ID, name));
+            return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, name));
         }
     }
 
@@ -35,7 +35,7 @@ public class SeaCreaturesTags {
         public static final TagKey<EntityType<?>> ICE_HERD = create("ice_herd");
 
         private static TagKey<EntityType<?>> create(String name) {
-            return TagKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(Constants.MOD_ID, name));
+            return TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, name));
         }
     }
 
@@ -48,7 +48,7 @@ public class SeaCreaturesTags {
         public static final TagKey<Biome> SPAWNS_SEA_OTTERS = create("spawns_sea_otters");
 
         private static TagKey<Biome> create(String name) {
-            return TagKey.create(Registries.BIOME, Identifier.fromNamespaceAndPath(Constants.MOD_ID, name));
+            return TagKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, name));
         }
     }
 }

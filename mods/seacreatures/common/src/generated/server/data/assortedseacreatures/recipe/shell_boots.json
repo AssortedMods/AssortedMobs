@@ -14,13 +14,16 @@
     }
   ],
   "key": {
-    "S": "assortedseacreatures:sea_shell"
+    "S": {
+      "item": "assortedseacreatures:sea_shell"
+    }
   },
   "pattern": [
     "S S",
     "S S"
   ],
   "result": {
+    "count": 1,
     "id": "assortedseacreatures:shell_boots"
   }
 }

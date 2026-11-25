@@ -1,7 +1,6 @@
 package com.grim3212.assorted.treasuremob.common.entity;
 
 import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.entity.ContainerUser;
 import net.minecraft.world.entity.player.Player;
 
 import java.util.ArrayList;
@@ -17,7 +16,7 @@ public class TreasureChest extends SimpleContainer {
 
     private final TreasureMob owner;
     /** Server side only: the menu opens and closes it there. */
-    private final List<ContainerUser> viewers = new ArrayList<>();
+    private final List<Player> viewers = new ArrayList<>();
 
     public TreasureChest(TreasureMob owner) {
         super(SIZE);
@@ -25,17 +24,17 @@ public class TreasureChest extends SimpleContainer {
     }
 
     @Override
-    public void startOpen(ContainerUser user) {
+    public void startOpen(Player user) {
         this.viewers.add(user);
     }
 
     @Override
-    public void stopOpen(ContainerUser user) {
+    public void stopOpen(Player user) {
         this.viewers.remove(user);
     }
 
-    @Override
-    public List<ContainerUser> getEntitiesWithContainerOpen() {
+    /** Who has it open, first opened first. */
+    public List<Player> getViewers() {
         return List.copyOf(this.viewers);
     }
 
@@ -45,6 +44,6 @@ public class TreasureChest extends SimpleContainer {
 
     @Override
     public boolean stillValid(Player player) {
-        return this.owner.isAlive() && player.isWithinEntityInteractionRange(this.owner, 4.0D);
+        return this.owner.isAlive() && player.canInteractWithEntity(this.owner, 4.0D);
     }
 }

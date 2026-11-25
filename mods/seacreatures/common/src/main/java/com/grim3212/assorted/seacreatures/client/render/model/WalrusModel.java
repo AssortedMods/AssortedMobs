@@ -1,5 +1,6 @@
 package com.grim3212.assorted.seacreatures.client.render.model;
 
+import com.grim3212.assorted.seacreatures.common.entity.Walrus;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
@@ -8,7 +9,7 @@ import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.client.model.geom.builders.PartDefinition;
 
 /** The walrus: the seal's build at several times the bulk and a good deal slower, with a whiskered muzzle and a pair of tusks. */
-public class WalrusModel extends PinnipedModel {
+public class WalrusModel extends PinnipedModel<Walrus> {
 
     public WalrusModel(ModelPart root) {
         super(root, 1.6F);

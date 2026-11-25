@@ -10,12 +10,12 @@ import net.minecraft.core.Holder;
 import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.ReloadableServerRegistries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -49,7 +49,9 @@ final class TreasureMobTests {
     }
 
     private static void treasureMobArrivesWithLoot(GameTestHelper helper) {
-        TreasureMob mob = helper.spawn(TreasureMobEntities.TREASURE_MOB.get(), CENTRE, EntitySpawnReason.NATURAL);
+        TreasureMob mob = helper.spawn(TreasureMobEntities.TREASURE_MOB.get(), CENTRE);
+        // 1.21.1's helper never finalizes what it spawns; the natural spawner would.
+        Services.PLATFORM.finalizeSpawn(mob, helper.getLevel(), helper.getLevel().getCurrentDifficultyAt(mob.blockPosition()), MobSpawnType.NATURAL, null);
         helper.assertFalse(mob.getChest().isEmpty(), "a treasure mob arrived with an empty chest");
         helper.succeed();
     }
@@ -59,7 +61,7 @@ final class TreasureMobTests {
         mob.getChest().clearContent();
         mob.getChest().setItem(13, new ItemStack(Items.DIAMOND, 3));
 
-        mob.kill(helper.getLevel());
+        mob.kill();
 
         helper.succeedWhen(() -> helper.assertItemEntityPresent(Items.DIAMOND, CENTRE, 2.0D));
     }
@@ -82,7 +84,7 @@ final class TreasureMobTests {
      */
     private static void treasureMobIsTamedWithGoldNuggets(GameTestHelper helper) {
         ServerPlayer player = survivalPlayer(helper, new ItemStack(Items.GOLD_NUGGET, 64));
-        player.snapTo(helper.absoluteVec(Vec3.atBottomCenterOf(CENTRE.west(3))));
+        player.moveTo(helper.absoluteVec(Vec3.atBottomCenterOf(CENTRE.west(3))));
         player.setOnGround(true);
         TreasureMob mob = helper.spawn(TreasureMobEntities.TREASURE_MOB.get(), CENTRE.east(3));
 
@@ -90,7 +92,7 @@ final class TreasureMobTests {
             if (!mob.isTame() && helper.getTick() % 5 == 0) {
                 player.setYRot(player.getYRot() + 10.0F);
                 if (player.distanceToSqr(mob) < 9.0D) {
-                    mob.interact(player, InteractionHand.MAIN_HAND, mob.position());
+                    mob.interact(player, InteractionHand.MAIN_HAND);
                 }
             }
         });
@@ -101,14 +103,14 @@ final class TreasureMobTests {
     private static void treasureMobStandsStillWhileOpen(GameTestHelper helper) {
         TreasureMob mob = helper.spawn(TreasureMobEntities.TREASURE_MOB.get(), CENTRE);
         ServerPlayer owner = survivalPlayer(helper);
-        owner.snapTo(helper.absoluteVec(Vec3.atBottomCenterOf(CENTRE.north())));
+        owner.moveTo(helper.absoluteVec(Vec3.atBottomCenterOf(CENTRE.north())));
         owner.setOnGround(true);
         mob.tame(owner);
 
         BlockPos corner = helper.absolutePos(new BlockPos(7, 1, 7));
         mob.getNavigation().moveTo(corner.getX() + 0.5D, corner.getY(), corner.getZ() + 0.5D, 1.0D);
         owner.setShiftKeyDown(true);
-        mob.interact(owner, InteractionHand.MAIN_HAND, mob.position());
+        mob.interact(owner, InteractionHand.MAIN_HAND);
         helper.assertTrue(mob.getChest().isOpen(), "sneaking and using the treasure mob did not open its chest");
 
         Vec3[] openedAt = new Vec3[1];
@@ -143,8 +145,8 @@ final class TreasureMobTests {
      */
     private static void treasureMobsNeverDespawn(GameTestHelper helper) {
         survivalPlayer(helper);
-        TreasureMob wild = helper.spawnEntity(TreasureMobEntities.TREASURE_MOB.get(), CENTRE.above(300)).requirePersistence(false).spawn();
-        TreasureMob tame = helper.spawnEntity(TreasureMobEntities.TREASURE_MOB.get(), CENTRE.above(300).east(2)).requirePersistence(false).spawn();
+        TreasureMob wild = withoutPersistence(helper, CENTRE.above(300));
+        TreasureMob tame = withoutPersistence(helper, CENTRE.above(300).east(2));
         tame.setTame(true, false);
         wild.tickCount = tame.tickCount = 100000;
 
@@ -158,18 +160,27 @@ final class TreasureMobTests {
         helper.succeed();
     }
 
+    /** Set down as {@code GameTestHelper#spawn} would, but without the persistence it hands every mob. */
+    private static TreasureMob withoutPersistence(GameTestHelper helper, BlockPos rel) {
+        TreasureMob mob = TreasureMobEntities.TREASURE_MOB.get().create(helper.getLevel());
+        Vec3 at = helper.absoluteVec(Vec3.atBottomCenterOf(rel));
+        mob.moveTo(at.x, at.y, at.z, 0.0F, 0.0F);
+        helper.getLevel().addFreshEntity(mob);
+        return mob;
+    }
+
     private static void treasureStructuresHaveTheirOwnLoot(GameTestHelper helper) {
         ReloadableServerRegistries.Holder loot = helper.getLevel().getServer().reloadableRegistries();
         HolderSet.Named<Structure> structures = helper.getLevel().registryAccess().lookupOrThrow(Registries.STRUCTURE).getOrThrow(TreasureMobTags.Structures.SPAWNS_TREASURE_MOBS);
         for (Holder<Structure> structure : structures) {
             ResourceKey<Structure> key = structure.unwrapKey().orElseThrow();
-            if (!key.identifier().getPath().equals("snowball")) {
-                helper.assertTrue(loot.getLootTable(TreasureMob.chestLootFor(key)) != LootTable.EMPTY, "no treasure mob loot for " + key.identifier());
+            if (!key.location().getPath().equals("snowball")) {
+                helper.assertTrue(loot.getLootTable(TreasureMob.chestLootFor(key)) != LootTable.EMPTY, "no treasure mob loot for " + key.location());
             }
         }
 
         boolean assortedStructures = Services.PLATFORM.isModLoaded("assortedstructures");
-        ResourceKey<Structure> fountain = ResourceKey.create(Registries.STRUCTURE, Identifier.fromNamespaceAndPath("assortedstructures", "fountain"));
+        ResourceKey<Structure> fountain = ResourceKey.create(Registries.STRUCTURE, ResourceLocation.fromNamespaceAndPath("assortedstructures", "fountain"));
         helper.assertValueEqual(loot.getLootTable(TreasureMob.chestLootFor(fountain)) != LootTable.EMPTY, assortedStructures, "treasure mob loot for Assorted Structures' fountain loaded");
         helper.succeed();
     }
@@ -178,16 +189,16 @@ final class TreasureMobTests {
         TreasureMob mob = helper.spawnWithNoFreeWill(TreasureMobEntities.TREASURE_MOB.get(), CENTRE);
         ServerPlayer owner = survivalPlayer(helper);
         ServerPlayer stranger = survivalPlayer(helper);
-        owner.snapTo(helper.absoluteVec(Vec3.atBottomCenterOf(CENTRE.east())));
-        stranger.snapTo(helper.absoluteVec(Vec3.atBottomCenterOf(CENTRE.west())));
+        owner.moveTo(helper.absoluteVec(Vec3.atBottomCenterOf(CENTRE.east())));
+        stranger.moveTo(helper.absoluteVec(Vec3.atBottomCenterOf(CENTRE.west())));
         mob.tame(owner);
 
         stranger.setShiftKeyDown(true);
-        mob.interact(stranger, InteractionHand.MAIN_HAND, mob.position());
+        mob.interact(stranger, InteractionHand.MAIN_HAND);
         helper.assertFalse(stranger.containerMenu instanceof ChestMenu, "a treasure mob opened for a player who does not own it");
 
         owner.setShiftKeyDown(true);
-        mob.interact(owner, InteractionHand.MAIN_HAND, mob.position());
+        mob.interact(owner, InteractionHand.MAIN_HAND);
         helper.assertTrue(owner.containerMenu instanceof ChestMenu chest && chest.getContainer() == mob.getChest(), "sneaking and using a tame treasure mob did not open its chest for its owner");
         helper.succeed();
     }

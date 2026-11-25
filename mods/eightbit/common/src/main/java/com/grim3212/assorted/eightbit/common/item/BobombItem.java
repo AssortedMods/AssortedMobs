@@ -5,7 +5,6 @@ import com.grim3212.assorted.eightbit.common.entity.EightBitEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.UseOnContext;
@@ -27,18 +26,18 @@ public class BobombItem extends Item {
             return InteractionResult.SUCCESS;
         }
 
-        Bobomb bobomb = EightBitEntities.BOBOMB.get().create(level, EntitySpawnReason.SPAWN_ITEM_USE);
+        Bobomb bobomb = EightBitEntities.BOBOMB.get().create(level);
         if (bobomb == null) {
             return InteractionResult.FAIL;
         }
 
         BlockPos pos = context.getClickedPos().relative(context.getClickedFace());
         Player player = context.getPlayer();
-        bobomb.snapTo(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, player != null ? player.getYRot() : 0.0F, 0.0F);
+        bobomb.moveTo(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, player != null ? player.getYRot() : 0.0F, 0.0F);
         bobomb.setOwner(player);
         level.addFreshEntity(bobomb);
         level.gameEvent(player, GameEvent.ENTITY_PLACE, pos);
         context.getItemInHand().consume(1, player);
-        return InteractionResult.SUCCESS_SERVER;
+        return InteractionResult.CONSUME;
     }
 }

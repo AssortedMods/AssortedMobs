@@ -102,7 +102,9 @@ public class RaiseTuskGoal extends Goal {
             this.narwhal.setRaisingTusk(true);
             this.holdTicks = MIN_HOLD_TICKS + this.narwhal.getRandom().nextInt(MAX_HOLD_TICKS - MIN_HOLD_TICKS);
         } else if (this.narwhal.getNavigation().isDone()) {
-            this.narwhal.getNavigation().moveTo(this.narwhal.getX(), this.holdY, this.narwhal.getZ(), 1.0D);
+            // The path ends short when the narwhal has drifted against a wall on the way up, and a new one to
+            // the same spot ends at once, so it rises the rest of the way straight up, eased as it is held.
+            this.narwhal.setDeltaMovement(this.narwhal.getDeltaMovement().multiply(0.6D, 1.0D, 0.6D).add(0.0D, (this.holdY - this.narwhal.getY()) * 0.1D, 0.0D));
         }
     }
 }

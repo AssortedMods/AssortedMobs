@@ -10,7 +10,7 @@ import net.minecraft.world.entity.ai.control.MoveControl;
  * the attribute goes in twice, so an animal slow on land is slower still at sea, and one goal's
  * speed modifier counts for its square.
  */
-public class AmphibiousMoveControl extends MoveControl<Mob> {
+public class AmphibiousMoveControl extends MoveControl {
 
     private static final int MAX_TURN_X = 85;
     private static final int MAX_TURN_Y = 10;
@@ -51,7 +51,7 @@ public class AmphibiousMoveControl extends MoveControl<Mob> {
             double flat = Math.sqrt(xd * xd + zd * zd);
             if (Math.abs(yd) > 1.0E-5F || flat > 1.0E-5F) {
                 float xRotD = Mth.clamp(Mth.wrapDegrees(-(float) (Mth.atan2(yd, flat) * Mth.RAD_TO_DEG)), -MAX_TURN_X, MAX_TURN_X);
-                this.mob.setXRot(this.rotateTowards(this.mob.getXRot(), xRotD, 5.0F));
+                this.mob.setXRot(this.rotlerp(this.mob.getXRot(), xRotD, 5.0F));
             }
 
             this.mob.zza = Mth.cos(this.mob.getXRot() * Mth.DEG_TO_RAD);

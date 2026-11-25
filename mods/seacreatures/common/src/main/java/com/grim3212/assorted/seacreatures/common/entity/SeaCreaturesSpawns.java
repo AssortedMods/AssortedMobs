@@ -2,7 +2,7 @@ package com.grim3212.assorted.seacreatures.common.entity;
 
 import com.grim3212.assorted.lib.platform.Services;
 import net.minecraft.world.entity.SpawnPlacementTypes;
-import net.minecraft.world.entity.animal.fish.WaterAnimal;
+import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.level.levelgen.Heightmap;
 
 /**

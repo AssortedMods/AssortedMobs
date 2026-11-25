@@ -3,7 +3,7 @@ package com.grim3212.assorted.icepixie.api;
 import com.grim3212.assorted.icepixie.Constants;
 import com.grim3212.assorted.lib.util.LibCommonTags;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.biome.Biome;
@@ -16,7 +16,7 @@ public class IcePixieTags {
         public static final TagKey<Block> ICE_PIXIE_REPELLENTS = create("ice_pixie_repellents");
 
         private static TagKey<Block> create(String name) {
-            return TagKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath(Constants.MOD_ID, name));
+            return TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, name));
         }
     }
 
@@ -24,10 +24,10 @@ public class IcePixieTags {
         /** What a player has to be holding to hurt an ice pixie. */
         public static final TagKey<Item> ICE_PIXIE_WEAPONS = create("ice_pixie_weapons");
         /** Assorted Tools' frost rod, which an ice pixie can drop; kept here too so the drop still loads without Tools. */
-        public static final TagKey<Item> FROST_RODS = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(LibCommonTags.COMMON_NAMESPACE, "rods/frost"));
+        public static final TagKey<Item> FROST_RODS = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(LibCommonTags.COMMON_NAMESPACE, "rods/frost"));
 
         private static TagKey<Item> create(String name) {
-            return TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(Constants.MOD_ID, name));
+            return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, name));
         }
     }
 
@@ -35,7 +35,7 @@ public class IcePixieTags {
         public static final TagKey<Biome> SPAWNS_ICE_PIXIES = create("spawns_ice_pixies");
 
         private static TagKey<Biome> create(String name) {
-            return TagKey.create(Registries.BIOME, Identifier.fromNamespaceAndPath(Constants.MOD_ID, name));
+            return TagKey.create(Registries.BIOME, ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, name));
         }
     }
 }

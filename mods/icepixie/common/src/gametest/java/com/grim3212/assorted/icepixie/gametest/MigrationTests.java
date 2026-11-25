@@ -4,7 +4,7 @@ import com.grim3212.assorted.icepixie.Constants;
 import com.grim3212.assorted.icepixie.common.item.IcePixieItems;
 import com.grim3212.assorted.lib.family.Families;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 
 import java.util.function.BiConsumer;
@@ -21,8 +21,8 @@ final class MigrationTests {
     }
 
     private static void advancementRootFallsBackToTheIcePixie(GameTestHelper helper) {
-        Identifier root = Identifier.fromNamespaceAndPath(Constants.FAMILY_ID, "root");
-        Item drawn = helper.getLevel().getServer().getAdvancements().get(root).value().display().orElseThrow().icon().item().value();
+        ResourceLocation root = ResourceLocation.fromNamespaceAndPath(Constants.FAMILY_ID, "root");
+        Item drawn = helper.getLevel().getServer().getAdvancements().get(root).value().display().orElseThrow().getIcon().getItem();
         Item expected = Families.icon(Constants.FAMILY_ID).getItem();
         helper.assertTrue(drawn == expected, "the Assorted Mobs advancement root is drawn with " + drawn + ", not the family's first installed icon " + expected);
         // Beside a part whose icon ranks higher, as in a family's combined run, the root rightly shows that part's.

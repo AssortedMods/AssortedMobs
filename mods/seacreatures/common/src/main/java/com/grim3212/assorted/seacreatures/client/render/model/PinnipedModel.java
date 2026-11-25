@@ -1,7 +1,8 @@
 package com.grim3212.assorted.seacreatures.client.render.model;
 
 import com.grim3212.assorted.seacreatures.client.render.entity.AmphibiousRenderState;
-import net.minecraft.client.model.EntityModel;
+import com.grim3212.assorted.seacreatures.common.entity.AmphibiousAnimal;
+import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.util.Mth;
 
@@ -11,8 +12,10 @@ import net.minecraft.util.Mth;
  * straight, fore flippers swept back, and sculls with its hind end from side to side. The two are
  * blended by how far into the water it is.
  */
-public abstract class PinnipedModel extends EntityModel<AmphibiousRenderState> {
+public abstract class PinnipedModel<T extends AmphibiousAnimal> extends HierarchicalModel<T> {
 
+    private final AmphibiousRenderState state = new AmphibiousRenderState();
+    private final ModelPart root;
     private final ModelPart body;
     private final ModelPart chest;
     private final ModelPart head;
@@ -25,7 +28,7 @@ public abstract class PinnipedModel extends EntityModel<AmphibiousRenderState> {
 
     /** @param heft how much slower than a seal everything about it moves: 1 for the seal */
     protected PinnipedModel(ModelPart root, float heft) {
-        super(root);
+        this.root = root;
         this.body = root.getChild("body");
         this.chest = this.body.getChild("chest");
         this.head = this.chest.getChild("head");
@@ -38,8 +41,20 @@ public abstract class PinnipedModel extends EntityModel<AmphibiousRenderState> {
     }
 
     @Override
-    public void setupAnim(AmphibiousRenderState state) {
-        super.setupAnim(state);
+    public ModelPart root() {
+        return this.root;
+    }
+
+    @Override
+    public void prepareMobModel(T entity, float limbSwing, float limbSwingAmount, float partialTick) {
+        this.state.extract(entity, partialTick);
+    }
+
+    @Override
+    public void setupAnim(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+        AmphibiousRenderState state = this.state;
+        state.setUp(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+        this.root.getAllParts().forEach(ModelPart::resetPose);
 
         float speed = Math.min(state.walkAnimationSpeed, 1.0F);
         this.haulOut(state, 1.0F - state.waterAmount, speed);

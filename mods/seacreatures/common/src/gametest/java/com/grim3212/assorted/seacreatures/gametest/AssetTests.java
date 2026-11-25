@@ -6,7 +6,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.locale.Language;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.BlockItem;
@@ -36,12 +36,12 @@ final class AssetTests {
         List<String> missing = new ArrayList<>();
 
         for (Map.Entry<ResourceKey<Item>, Item> entry : BuiltInRegistries.ITEM.entrySet()) {
-            Identifier id = entry.getKey().identifier();
+            ResourceLocation id = entry.getKey().location();
             if (!Constants.MOD_ID.equals(id.getNamespace())) {
                 continue;
             }
-            if (!resourceExists("/assets/" + id.getNamespace() + "/items/" + id.getPath() + ".json")) {
-                missing.add("items/" + id.getPath() + ".json");
+            if (!resourceExists("/assets/" + id.getNamespace() + "/models/item/" + id.getPath() + ".json")) {
+                missing.add("models/item/" + id.getPath() + ".json");
             }
             // A block's item is drawn from its block model, which has no sprite of its own.
             if (!(entry.getValue() instanceof BlockItem) && !resourceExists("/assets/" + id.getNamespace() + "/textures/item/" + id.getPath() + ".png")) {
@@ -53,7 +53,7 @@ final class AssetTests {
         }
 
         for (Map.Entry<ResourceKey<EntityType<?>>, EntityType<?>> entry : BuiltInRegistries.ENTITY_TYPE.entrySet()) {
-            if (Constants.MOD_ID.equals(entry.getKey().identifier().getNamespace()) && !lang.has(entry.getValue().getDescriptionId())) {
+            if (Constants.MOD_ID.equals(entry.getKey().location().getNamespace()) && !lang.has(entry.getValue().getDescriptionId())) {
                 missing.add("lang key " + entry.getValue().getDescriptionId());
             }
         }
@@ -73,8 +73,8 @@ final class AssetTests {
      */
     private static void everyItemTagHasAName(GameTestHelper helper) {
         Language language = Language.getInstance();
-        List<String> missing = helper.getLevel().registryAccess().lookupOrThrow(Registries.ITEM).getTags()
-                .map(tag -> tag.key().location())
+        List<String> missing = helper.getLevel().registryAccess().registryOrThrow(Registries.ITEM).getTagNames()
+                .map(tag -> tag.location())
                 .filter(id -> !"minecraft".equals(id.getNamespace()))
                 .map(id -> "tag.item." + id.getNamespace() + "." + id.getPath().replace('/', '.'))
                 .filter(key -> !language.has(key))

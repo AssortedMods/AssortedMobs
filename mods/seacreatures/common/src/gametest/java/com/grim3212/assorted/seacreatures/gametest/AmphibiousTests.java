@@ -14,7 +14,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.EntityType;
@@ -76,12 +76,12 @@ final class AmphibiousTests {
     private static void seaCreaturesStayLikeFarmAnimals(GameTestHelper helper) {
         ServerLevel level = helper.getLevel();
         for (EntityType<? extends AmphibiousAnimal> type : List.of(SeaCreaturesEntities.SEA_OTTER.get(), SeaCreaturesEntities.SEAL.get(), SeaCreaturesEntities.WALRUS.get())) {
-            AmphibiousAnimal mob = type.create(level, EntitySpawnReason.NATURAL);
+            AmphibiousAnimal mob = type.create(level);
             helper.assertTrue(mob != null, type.getDescriptionId() + " could not be created");
             helper.assertFalse(mob.removeWhenFarAway(10000.0D), type.getDescriptionId() + " despawns once a player walks off");
             mob.discard();
         }
-        Narwhal narwhal = SeaCreaturesEntities.NARWHAL.get().create(level, EntitySpawnReason.NATURAL);
+        Narwhal narwhal = SeaCreaturesEntities.NARWHAL.get().create(level);
         helper.assertTrue(narwhal != null && narwhal.removeWhenFarAway(10000.0D), "a narwhal never despawns, so the cold seas fill with them");
         narwhal.discard();
         helper.succeed();
@@ -104,7 +104,7 @@ final class AmphibiousTests {
         // Not on its first tick: a blow then carries the same timestamp as no blow at all.
         helper.startSequence()
                 .thenIdle(5)
-                .thenExecute(() -> seal.hurtServer(helper.getLevel(), seal.damageSources().playerAttack(player), 1.0F))
+                .thenExecute(() -> seal.hurt(seal.damageSources().playerAttack(player), 1.0F))
                 .thenWaitUntil(() -> helper.assertTrue(seal.isInWater(), "the seal is still ashore"))
                 .thenSucceed();
     }
@@ -176,22 +176,22 @@ final class AmphibiousTests {
                 .thenIdle(25)
                 .thenExecute(() -> {
                     helper.assertTrue(seal.getShore() != null, "a seal in the water does not know where it is");
-                    helper.assertFalse(seal.hasHome(), "a seal in the water is kept to a range");
+                    helper.assertFalse(seal.hasRestriction(), "a seal in the water is kept to a range");
                     seal.tireOfHabitat();
                 })
                 // Its next look at where it is, once it is ashore.
-                .thenWaitUntil(() -> helper.assertTrue(!seal.isInWater() && seal.onGround() && seal.hasHome(), "the seal is not ashore and kept to its shore yet"))
+                .thenWaitUntil(() -> helper.assertTrue(!seal.isInWater() && seal.onGround() && seal.hasRestriction(), "the seal is not ashore and kept to its shore yet"))
                 .thenExecute(() -> {
                     BlockPos shore = seal.getShore();
                     helper.assertTrue(shore != null && helper.getLevel().getFluidState(shore).is(FluidTags.WATER), "what a hauled out seal takes for its shore is not water");
-                    helper.assertValueEqual(seal.getHomePosition(), shore, "where a hauled out seal keeps to");
-                    helper.assertValueEqual(seal.getHomeRadius(), AmphibiousAnimal.SHORE_RANGE, "how far a hauled out seal keeps to its shore");
+                    helper.assertValueEqual(seal.getRestrictCenter(), shore, "where a hauled out seal keeps to");
+                    helper.assertValueEqual(seal.getRestrictRadius(), (float) AmphibiousAnimal.SHORE_RANGE, "how far a hauled out seal keeps to its shore");
                     helper.assertFalse(seal.wantsWater(), "a seal that has only just hauled out wants back in");
                     helper.assertValueEqual(afterReload(helper, seal, SeaCreaturesEntities.SEAL.get()).getShore(), shore, "its shore after a reload");
 
                     // Forty blocks up is as far from its shore as forty blocks inland.
                     seal.setNoGravity(true);
-                    seal.snapTo(seal.getX(), seal.getY() + 40.0D, seal.getZ());
+                    seal.moveTo(seal.getX(), seal.getY() + 40.0D, seal.getZ());
                 })
                 .thenWaitUntil(() -> helper.assertTrue(seal.wantsWater(), "a seal carried far from its shore is content to stay there"))
                 .thenExecute(seal::discard)
@@ -213,11 +213,11 @@ final class AmphibiousTests {
             helper.assertValueEqual(level.getMaxLocalRawBrightness(deep), 0, "light in the sealed pool");
             // The narwhal is a WaterAnimal, so it had PathfinderMob's neutral value already; these three are Animals.
             for (EntityType<? extends AmphibiousAnimal> type : List.of(SeaCreaturesEntities.SEA_OTTER.get(), SeaCreaturesEntities.SEAL.get(), SeaCreaturesEntities.WALRUS.get())) {
-                AmphibiousAnimal mob = type.create(level, EntitySpawnReason.NATURAL);
+                AmphibiousAnimal mob = type.create(level);
                 helper.assertTrue(mob != null, type.getDescriptionId() + " could not be created");
-                mob.snapTo(deep.getX() + 0.5D, deep.getY(), deep.getZ() + 0.5D, 0.0F, 0.0F);
+                mob.moveTo(deep.getX() + 0.5D, deep.getY(), deep.getZ() + 0.5D, 0.0F, 0.0F);
                 helper.assertTrue(mob.getWalkTargetValue(deep, level) >= 0.0F, type.getDescriptionId() + " will not path into unlit water");
-                helper.assertTrue(mob.checkSpawnRules(level, EntitySpawnReason.NATURAL), type.getDescriptionId() + " turns down unlit water");
+                helper.assertTrue(mob.checkSpawnRules(level, MobSpawnType.NATURAL), type.getDescriptionId() + " turns down unlit water");
                 // Wanting no water, the sea is worth no more than the ice, so wandering ashore stays put.
                 helper.assertValueEqual(mob.wantsWater(), false, type.getDescriptionId() + " in the water wants water");
                 helper.assertValueEqual(mob.getWalkTargetValue(deep.above(4), level), mob.getWalkTargetValue(deep, level), type.getDescriptionId() + " prefers water while it is not after any");
@@ -231,7 +231,7 @@ final class AmphibiousTests {
         BlockPos snow = new BlockPos(1, 1, 4);
         helper.setBlock(snow, Blocks.SNOW_BLOCK);
         helper.setBlock(snow.east(6), Blocks.WATER);
-        helper.assertTrue(Seal.checkArcticSpawnRules(SeaCreaturesEntities.SEAL.get(), helper.getLevel(), EntitySpawnReason.NATURAL, helper.absolutePos(snow.above()), helper.getLevel().getRandom()),
+        helper.assertTrue(Seal.checkArcticSpawnRules(SeaCreaturesEntities.SEAL.get(), helper.getLevel(), MobSpawnType.NATURAL, helper.absolutePos(snow.above()), helper.getLevel().getRandom()),
                 "a seal will not spawn on snow six blocks from the water");
         helper.succeed();
     }
@@ -239,7 +239,7 @@ final class AmphibiousTests {
     /** Vanilla's two questions of a spot, as both spawners ask them. */
     private static boolean spawnsAt(GameTestHelper helper, EntityType<?> type, BlockPos spot) {
         return SpawnPlacements.isSpawnPositionOk(type, helper.getLevel(), helper.absolutePos(spot))
-                && SpawnPlacements.checkSpawnRules(type, helper.getLevel(), EntitySpawnReason.NATURAL, helper.absolutePos(spot), helper.getLevel().getRandom());
+                && SpawnPlacements.checkSpawnRules(type, helper.getLevel(), MobSpawnType.NATURAL, helper.absolutePos(spot), helper.getLevel().getRandom());
     }
 
     /**
@@ -276,14 +276,14 @@ final class AmphibiousTests {
         EntityType<SeaOtter> type = SeaCreaturesEntities.SEA_OTTER.get();
 
         helper.assertTrue(SpawnPlacements.isSpawnPositionOk(type, level, top), "the water is no place for an otter");
-        BlockPos atSeaLevel = new BlockPos(top.getX(), level.getSeaLevel() - 1, top.getZ());
-        helper.assertTrue(SpawnPlacements.checkSpawnRules(type, level, EntitySpawnReason.NATURAL, atSeaLevel, level.getRandom()), "an otter will not spawn just under sea level");
-        SeaOtter otter = type.create(level, EntitySpawnReason.NATURAL);
-        otter.snapTo(top.getX() + 0.5D, top.getY(), top.getZ() + 0.5D, 0.0F, 0.0F);
+        BlockPos atSeaLevel = new BlockPos(top.getX(), level.getChunkSource().getGenerator().getSeaLevel() - 1, top.getZ());
+        helper.assertTrue(SpawnPlacements.checkSpawnRules(type, level, MobSpawnType.NATURAL, atSeaLevel, level.getRandom()), "an otter will not spawn just under sea level");
+        SeaOtter otter = type.create(level);
+        otter.moveTo(top.getX() + 0.5D, top.getY(), top.getZ() + 0.5D, 0.0F, 0.0F);
         // Daylight test environment: PathfinderMob#checkSpawnRules is the light-based walk value, and the Fabric runner's
         // world may be at night. succeedWhen, because the light engine lags the blocks just placed.
         helper.succeedWhen(() -> {
-            helper.assertTrue(otter.checkSpawnRules(level, EntitySpawnReason.NATURAL), "a new otter turns its own spawn down");
+            helper.assertTrue(otter.checkSpawnRules(level, MobSpawnType.NATURAL), "a new otter turns its own spawn down");
             helper.assertTrue(otter.checkSpawnObstruction(level), "a new otter takes the water it is spawned in for an obstruction");
         });
     }
@@ -295,11 +295,11 @@ final class AmphibiousTests {
     private static void seaOttersKeepOutOfTheCold(GameTestHelper helper) {
         HolderLookup.RegistryLookup<Biome> biomes = helper.getLevel().registryAccess().lookupOrThrow(Registries.BIOME);
         for (ResourceKey<Biome> warm : List.of(Biomes.RIVER, Biomes.OCEAN, Biomes.COLD_OCEAN, Biomes.LUKEWARM_OCEAN, Biomes.WARM_OCEAN)) {
-            helper.assertTrue(SeaOtter.isWarmEnough(biomes.getOrThrow(warm)), "an otter turns down " + warm.identifier());
+            helper.assertTrue(SeaOtter.isWarmEnough(biomes.getOrThrow(warm)), "an otter turns down " + warm.location());
         }
         // Not the deep frozen ocean, which is as warm at heart as the cold one and only frozen at the top; it is no shallow sea, so it is not in the tag at all.
         for (ResourceKey<Biome> cold : List.of(Biomes.FROZEN_RIVER, Biomes.FROZEN_OCEAN)) {
-            helper.assertFalse(SeaOtter.isWarmEnough(biomes.getOrThrow(cold)), "an otter spawns in " + cold.identifier());
+            helper.assertFalse(SeaOtter.isWarmEnough(biomes.getOrThrow(cold)), "an otter spawns in " + cold.location());
         }
         helper.succeed();
     }

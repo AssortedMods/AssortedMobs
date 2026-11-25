@@ -37,11 +37,12 @@ final class IcePixieTests {
     private static void icePixieDropsSnowAndIce(GameTestHelper helper) {
         IcePixie pixie = helper.spawnWithNoFreeWill(IcePixieEntities.ICE_PIXIE.get(), CENTRE);
         ServerPlayer player = survivalPlayer(helper, new ItemStack(Items.TORCH));
-        pixie.hurtServer(helper.getLevel(), pixie.damageSources().playerAttack(player), 1000.0F);
+        pixie.hurt(pixie.damageSources().playerAttack(player), 1000.0F);
         helper.assertFalse(pixie.isAlive(), "a torch bearer could not kill the ice pixie");
 
         String table = readJson(helper, "/data/assortedicepixie/loot_table/entities/ice_pixie.json").toString();
-        helper.assertTrue(table.contains("\"#c:rods/frost\""), "the ice pixie has no chance of dropping a frost rod");
+        // 1.21.1 writes a tag entry as its own type, naming the tag without a '#'.
+        helper.assertTrue(table.contains("{\"type\":\"minecraft:tag\",\"expand\":true,\"name\":\"c:rods/frost\"}"), "the ice pixie has no chance of dropping a frost rod");
 
         helper.succeedWhen(() -> {
             helper.assertItemEntityPresent(Items.SNOWBALL, CENTRE, 2.0D);
@@ -54,7 +55,7 @@ final class IcePixieTests {
         IcePixie pixie = helper.spawnWithNoFreeWill(IcePixieEntities.ICE_PIXIE.get(), CENTRE);
         ServerPlayer player = survivalPlayer(helper, new ItemStack(Items.DIAMOND_SWORD));
 
-        boolean hurt = pixie.hurtServer(helper.getLevel(), pixie.damageSources().playerAttack(player), 4.0F);
+        boolean hurt = pixie.hurt(pixie.damageSources().playerAttack(player), 4.0F);
         helper.assertFalse(hurt, "a sword hurt an ice pixie");
         helper.assertValueEqual(pixie.getHealth(), pixie.getMaxHealth(), "ice pixie health after a sword");
         helper.succeed();
@@ -64,7 +65,7 @@ final class IcePixieTests {
         IcePixie pixie = helper.spawnWithNoFreeWill(IcePixieEntities.ICE_PIXIE.get(), CENTRE);
         ServerPlayer player = survivalPlayer(helper, new ItemStack(Items.TORCH));
 
-        boolean hurt = pixie.hurtServer(helper.getLevel(), pixie.damageSources().playerAttack(player), 4.0F);
+        boolean hurt = pixie.hurt(pixie.damageSources().playerAttack(player), 4.0F);
         helper.assertTrue(hurt, "a player holding a torch could not hurt an ice pixie");
         helper.assertTrue(pixie.getHealth() < pixie.getMaxHealth(), "the ice pixie lost no health to a torch bearer");
         helper.succeed();

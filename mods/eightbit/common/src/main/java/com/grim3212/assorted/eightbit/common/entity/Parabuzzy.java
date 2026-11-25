@@ -2,9 +2,9 @@ package com.grim3212.assorted.eightbit.common.entity;
 
 import com.grim3212.assorted.eightbit.api.EightBitTags;
 import com.grim3212.assorted.eightbit.common.sounds.EightBitSounds;
-import com.mojang.serialization.Codec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -18,10 +18,10 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -39,19 +39,16 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
-import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.equine.AbstractHorse;
+import net.minecraft.world.entity.animal.horse.AbstractHorse;
 import net.minecraft.world.entity.monster.Creeper;
 import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.OptionalInt;
@@ -80,7 +77,7 @@ public class Parabuzzy extends TamableAnimal implements PerchingMob {
     }
 
     public static AttributeSupplier.Builder createAttributes() {
-        return Animal.createAnimalAttributes().add(Attributes.MAX_HEALTH, Variant.BLUE.health).add(Attributes.MOVEMENT_SPEED, 0.35D).add(Attributes.ATTACK_DAMAGE, Variant.BLUE.damage);
+        return Mob.createMobAttributes().add(Attributes.MAX_HEALTH, Variant.BLUE.health).add(Attributes.MOVEMENT_SPEED, 0.35D).add(Attributes.ATTACK_DAMAGE, Variant.BLUE.damage);
     }
 
     @Override
@@ -97,7 +94,7 @@ public class Parabuzzy extends TamableAnimal implements PerchingMob {
         this.targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         this.targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
         this.targetSelector.addGoal(3, new HurtByTargetGoal(this).setAlertOthers());
-        this.targetSelector.addGoal(4, new NonTameRandomTargetGoal<>(this, Mob.class, true, (target, level) -> Bobomb.isEnemy(target)));
+        this.targetSelector.addGoal(4, new NonTameRandomTargetGoal<>(this, Mob.class, true, Bobomb::isEnemy));
     }
 
     @Override
@@ -139,29 +136,35 @@ public class Parabuzzy extends TamableAnimal implements PerchingMob {
         this.entityData.set(DATA_ANGRY, target != null && !this.isTame());
     }
 
+    // NeoForge deprecates finalizeSpawn as override-only, pointing callers to its event hook; an override
+    // calling up to the vanilla method is the use it allows.
+    @SuppressWarnings("deprecation")
     @Override
-    public @Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, EntitySpawnReason spawnReason, @Nullable SpawnGroupData groupData) {
+    public @Nullable SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnReason, @Nullable SpawnGroupData groupData) {
         this.setVariant(Variant.pick(level.getRandom()));
         return super.finalizeSpawn(level, difficulty, spawnReason, groupData);
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
-        super.addAdditionalSaveData(output);
-        output.store("variant", Variant.CODEC, this.getVariant());
+    public void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        tag.putString("variant", this.getVariant().getSerializedName());
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput input) {
-        super.readAdditionalSaveData(input);
+    public void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
         // Over the saved attributes, so retuned stats reach old parabuzzies; a lower max clamps health, it never heals.
-        input.read("variant", Variant.CODEC).ifPresent(this::applyVariant);
+        Variant variant = Variant.byName(tag.getString("variant"));
+        if (variant != null) {
+            this.applyVariant(variant);
+        }
     }
 
     /** Only the blue ones shed a shell, and a shell is all there is to drop. */
     @Override
-    protected boolean shouldDropLoot(ServerLevel level) {
-        return this.getVariant().dropsShell && super.shouldDropLoot(level);
+    protected boolean shouldDropLoot() {
+        return this.getVariant().dropsShell && super.shouldDropLoot();
     }
 
     @Override
@@ -190,7 +193,7 @@ public class Parabuzzy extends TamableAnimal implements PerchingMob {
                 carrier.resetFallDistance();
             }
             // A player moves itself, so only the instance that owns its movement can slow it.
-            if (carrier.isLocalInstanceAuthoritative() && isDescending(carrier)) {
+            if (carrier.isControlledByLocalInstance() && isDescending(carrier)) {
                 carrier.setDeltaMovement(carrier.getDeltaMovement().multiply(1.0D, HOVER, 1.0D));
             }
         }
@@ -201,7 +204,7 @@ public class Parabuzzy extends TamableAnimal implements PerchingMob {
     }
 
     @Override
-    public boolean causeFallDamage(double fallDistance, float damageModifier, DamageSource damageSource) {
+    public boolean causeFallDamage(float fallDistance, float damageModifier, DamageSource damageSource) {
         return false;
     }
 
@@ -212,8 +215,8 @@ public class Parabuzzy extends TamableAnimal implements PerchingMob {
     }
 
     @Override
-    public boolean hurtServer(ServerLevel level, DamageSource source, float damage) {
-        if (this.isInvulnerableTo(level, source)) {
+    public boolean hurt(DamageSource source, float damage) {
+        if (this.level().isClientSide() || this.isInvulnerableTo(source)) {
             return false;
         }
 
@@ -223,7 +226,7 @@ public class Parabuzzy extends TamableAnimal implements PerchingMob {
         if (attacker != null && !(attacker instanceof Player) && !(source.getDirectEntity() instanceof AbstractArrow)) {
             damage = (damage + 1.0F) / 2.0F;
         }
-        return super.hurtServer(level, source, damage);
+        return super.hurt(source, damage);
     }
 
     @Override
@@ -373,7 +376,6 @@ public class Parabuzzy extends TamableAnimal implements PerchingMob {
         BLUE_SPIKED("blue_spiked", 30.0D, BLUE.damage * 2.0D, true),
         RED_SPIKED("red_spiked", 34.0D, RED.damage * 2.0D, false);
 
-        public static final Codec<Variant> CODEC = StringRepresentable.fromEnum(Variant::values);
         private static final Variant[] VALUES = values();
 
         private final String name;
@@ -390,6 +392,17 @@ public class Parabuzzy extends TamableAnimal implements PerchingMob {
 
         public static Variant byId(int id) {
             return id >= 0 && id < VALUES.length ? VALUES[id] : BLUE;
+        }
+
+        /** The colour saved under {@code name}, or null for none or one this version does not know. */
+        @Nullable
+        public static Variant byName(String name) {
+            for (Variant variant : VALUES) {
+                if (variant.name.equals(name)) {
+                    return variant;
+                }
+            }
+            return null;
         }
 
         /** Colour is a coin flip, and one in four of either colour is spiked. */

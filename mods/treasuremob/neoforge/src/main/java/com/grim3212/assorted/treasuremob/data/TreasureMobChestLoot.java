@@ -1,12 +1,10 @@
 package com.grim3212.assorted.treasuremob.data;
 
 import com.grim3212.assorted.treasuremob.common.entity.TreasureMob;
-import net.minecraft.core.Holder;
-import net.minecraft.core.HolderGetter;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.loot.LootTableSubProvider;
-import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.levelgen.structure.BuiltinStructures;
@@ -17,34 +15,33 @@ import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.entries.NestedLootTable;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
-import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
-import net.neoforged.neoforge.common.conditions.ModLoadedCondition;
+import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.BiConsumer;
 
 /**
  * What a treasure mob's chest is filled with when it appears. Inside a structure it is one of that
  * structure's own chests, found by {@link TreasureMob#chestLootFor}; anywhere else, from bread to
  * diamonds. Lives in the NeoForge module for the mod-loaded condition on Assorted Structures' tables,
- * which {@code CrossLoaderData} gives Fabric's spelling as well.
+ * which {@code CrossLoaderData} gives Fabric's spelling as well; {@link TreasureMobChestLootProvider} writes it.
  */
 public class TreasureMobChestLoot implements LootTableSubProvider {
 
-    private static final String ASSORTED_STRUCTURES = "assortedstructures";
+    static final String ASSORTED_STRUCTURES = "assortedstructures";
 
-    private final LootTableSubProvider.Context output;
-    private final HolderGetter<LootTable> tables;
-    private final Set<ResourceKey<LootTable>> standIns = new HashSet<>();
-
-    public TreasureMobChestLoot(LootTableSubProvider.Context output) {
-        this.output = output;
-        this.tables = output.lookup(Registries.LOOT_TABLE);
-    }
+    /** Every table these draw from that is not written here, vanilla's and Assorted Structures'. */
+    private final Set<ResourceKey<LootTable>> external = new HashSet<>();
+    /** The tables that load only with Assorted Structures. */
+    private final Set<ResourceKey<LootTable>> needsAssortedStructures = new HashSet<>();
+    private BiConsumer<ResourceKey<LootTable>, LootTable.Builder> output;
 
     @Override
-    public void run() {
-        LootPool.Builder pool = LootPool.lootPool().setRolls(ContextIntProviders.between(3, 5));
+    public void generate(BiConsumer<ResourceKey<LootTable>, LootTable.Builder> output) {
+        this.output = output;
+        LootPool.Builder pool = LootPool.lootPool().setRolls(UniformGenerator.between(3, 5));
         entry(pool, Items.ARROW, 2, 1, 3);
         entry(pool, Items.GOLD_INGOT, 2, 1, 4);
         entry(pool, Items.APPLE, 2, 1, 4);
@@ -61,7 +58,7 @@ public class TreasureMobChestLoot implements LootTableSubProvider {
         entry(pool, Items.COAL, 2, 1, 5);
         entry(pool, Items.REDSTONE, 1, 1, 8);
 
-        output.accept(TreasureMob.CHEST_LOOT, LootTable.lootTable().withPool(pool));
+        this.output.accept(TreasureMob.CHEST_LOOT, LootTable.lootTable().withPool(pool));
 
         structure(BuiltinStructures.MINESHAFT, BuiltInLootTables.ABANDONED_MINESHAFT);
         structure(BuiltinStructures.MINESHAFT_MESA, BuiltInLootTables.ABANDONED_MINESHAFT);
@@ -84,29 +81,24 @@ public class TreasureMobChestLoot implements LootTableSubProvider {
         assortedStructures("water_dome", "chests/water_dome/cobblestone", "chests/water_dome/iron", "chests/water_dome/glowstone", "chests/water_dome/obsidian");
     }
 
-    private static LootPool.Builder one(Item item) {
-        return LootPool.lootPool().setRolls(ContextIntProviders.exactly(1)).add(LootItem.lootTableItem(item));
-    }
-
     /** One of {@code chests}, picked evenly, as if the mob had wandered off with one of them. */
     @SafeVarargs
     private LootTable.Builder oneOf(ResourceKey<LootTable>... chests) {
-        LootPool.Builder pool = LootPool.lootPool().setRolls(ContextIntProviders.exactly(1));
+        LootPool.Builder pool = LootPool.lootPool().setRolls(ConstantValue.exactly(1));
         for (ResourceKey<LootTable> chest : chests) {
-            pool.add(NestedLootTable.lootTableReference(this.table(chest)));
+            this.external.add(chest);
+            pool.add(NestedLootTable.lootTableReference(chest));
         }
         return LootTable.lootTable().withPool(pool);
     }
 
-    /**
-     * Assorted Structures' tables get empty stand-ins so vanilla's loot check can resolve them; only this mod's
-     * namespace is written out, so the stand-ins never are.
-     */
-    private Holder<LootTable> table(ResourceKey<LootTable> key) {
-        if (key.identifier().getNamespace().equals(ASSORTED_STRUCTURES) && this.standIns.add(key)) {
-            this.output.accept(key, LootTable.lootTable());
-        }
-        return this.tables.getOrThrow(key);
+    /** The tables these draw from that a datagen run cannot see, as it only holds the tables it writes. */
+    public Set<ResourceKey<LootTable>> external() {
+        return this.external;
+    }
+
+    public Set<ResourceKey<LootTable>> needsAssortedStructures() {
+        return this.needsAssortedStructures;
     }
 
     @SafeVarargs
@@ -118,13 +110,14 @@ public class TreasureMobChestLoot implements LootTableSubProvider {
     private void assortedStructures(String structure, String... chests) {
         ResourceKey<LootTable>[] chestTables = new ResourceKey[chests.length];
         for (int i = 0; i < chests.length; i++) {
-            chestTables[i] = ResourceKey.create(Registries.LOOT_TABLE, Identifier.fromNamespaceAndPath(ASSORTED_STRUCTURES, chests[i]));
+            chestTables[i] = ResourceKey.create(Registries.LOOT_TABLE, ResourceLocation.fromNamespaceAndPath(ASSORTED_STRUCTURES, chests[i]));
         }
-        ResourceKey<Structure> key = ResourceKey.create(Registries.STRUCTURE, Identifier.fromNamespaceAndPath(ASSORTED_STRUCTURES, structure));
-        this.output.accept(TreasureMob.chestLootFor(key), oneOf(chestTables).withCondition(new ModLoadedCondition(ASSORTED_STRUCTURES)));
+        ResourceKey<Structure> key = ResourceKey.create(Registries.STRUCTURE, ResourceLocation.fromNamespaceAndPath(ASSORTED_STRUCTURES, structure));
+        this.needsAssortedStructures.add(TreasureMob.chestLootFor(key));
+        this.output.accept(TreasureMob.chestLootFor(key), oneOf(chestTables));
     }
 
     private static void entry(LootPool.Builder pool, Item item, int weight, int min, int max) {
-        pool.add(LootItem.lootTableItem(item).setWeight(weight).apply(SetItemCountFunction.setCount(ContextIntProviders.between(min, max))));
+        pool.add(LootItem.lootTableItem(item).setWeight(weight).apply(SetItemCountFunction.setCount(UniformGenerator.between(min, max))));
     }
 }

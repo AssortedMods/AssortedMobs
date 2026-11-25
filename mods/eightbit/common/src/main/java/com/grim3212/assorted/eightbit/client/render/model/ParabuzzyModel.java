@@ -1,7 +1,7 @@
 package com.grim3212.assorted.eightbit.client.render.model;
 
-import com.grim3212.assorted.eightbit.client.render.entity.ParabuzzyRenderer;
-import net.minecraft.client.model.EntityModel;
+import com.grim3212.assorted.eightbit.common.entity.Parabuzzy;
+import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
@@ -17,13 +17,14 @@ import net.minecraft.util.Mth;
  * The spikes are always there; the plain colours' textures leave them clear. The textures are twice
  * the resolution these UVs are laid out for.
  */
-public class ParabuzzyModel extends EntityModel<ParabuzzyRenderer.State> {
+public class ParabuzzyModel extends HierarchicalModel<Parabuzzy> {
 
     /** Enough to put the belly on the ground, the legs no longer holding it up. */
     private static final float SIT_DROP = 4.0F;
     /** As far as the wings hang before their tips reach the ground. */
     private static final float SIT_WING_DROOP = 0.85F;
 
+    private final ModelPart root;
     private final ModelPart head;
     private final ModelPart rightWing;
     private final ModelPart leftWing;
@@ -33,7 +34,7 @@ public class ParabuzzyModel extends EntityModel<ParabuzzyRenderer.State> {
     private final ModelPart backRightLeg;
 
     public ParabuzzyModel(ModelPart root) {
-        super(root);
+        this.root = root;
         this.head = root.getChild("head");
         this.rightWing = root.getChild("right_wing");
         this.leftWing = root.getChild("left_wing");
@@ -67,14 +68,20 @@ public class ParabuzzyModel extends EntityModel<ParabuzzyRenderer.State> {
     }
 
     @Override
-    public void setupAnim(ParabuzzyRenderer.State state) {
-        super.setupAnim(state);
+    public ModelPart root() {
+        return this.root;
+    }
 
-        this.head.xRot = state.xRot / 100.0F;
-        this.head.yRot = state.yRot / 650.0F;
+    @Override
+    public void setupAnim(Parabuzzy entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+        this.root.getAllParts().forEach(ModelPart::resetPose);
 
-        if (state.isSitting) {
-            this.root().y = SIT_DROP;
+        this.head.xRot = headPitch / 100.0F;
+        this.head.yRot = netHeadYaw / 650.0F;
+
+        // Anything off the ground is drifting on its wings, sit order or not.
+        if (entity.isInSittingPose() && entity.onGround() && !entity.perch().isPerched()) {
+            this.root.y = SIT_DROP;
             this.leftWing.zRot = SIT_WING_DROOP;
             this.rightWing.zRot = -SIT_WING_DROOP;
             this.frontLeftLeg.xRot = -0.5F;
@@ -88,10 +95,10 @@ public class ParabuzzyModel extends EntityModel<ParabuzzyRenderer.State> {
             return;
         }
 
-        this.leftWing.zRot = Mth.cos(state.ageInTicks + Mth.PI);
-        this.rightWing.zRot = Mth.cos(state.ageInTicks);
+        this.leftWing.zRot = Mth.cos(ageInTicks + Mth.PI);
+        this.rightWing.zRot = Mth.cos(ageInTicks);
 
-        float step = Mth.cos(state.walkAnimationPos * 0.6662F) * 0.4F * state.walkAnimationSpeed;
+        float step = Mth.cos(limbSwing * 0.6662F) * 0.4F * limbSwingAmount;
         this.frontLeftLeg.xRot = step;
         this.frontRightLeg.xRot = step;
         this.backLeftLeg.xRot = step;

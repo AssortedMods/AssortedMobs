@@ -65,7 +65,7 @@ public final class Perch {
         this.mob.getNavigation().stop();
         this.mob.setTarget(null);
         this.follow(player);
-        player.sendOverlayMessage(Component.translatable("mount.onboard", Component.keybind("key.sneak")));
+        player.displayClientMessage(Component.translatable("mount.onboard", Component.keybind("key.sneak")), true);
         return true;
     }
 

@@ -2,13 +2,14 @@
   "type": "minecraft:chest",
   "pools": [
     {
+      "bonus_rolls": 0.0,
       "entries": [
         {
           "type": "minecraft:loot_table",
           "value": "minecraft:chests/nether_bridge"
         }
       ],
-      "rolls": 1
+      "rolls": 1.0
     }
   ],
   "random_sequence": "assortedtreasuremob:chests/treasure_mob/minecraft/fortress"

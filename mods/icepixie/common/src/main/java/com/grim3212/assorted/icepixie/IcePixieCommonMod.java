@@ -7,7 +7,7 @@ import com.grim3212.assorted.icepixie.common.item.IcePixieItems;
 import com.grim3212.assorted.lib.family.Families;
 import com.grim3212.assorted.lib.migration.AdvancementIcons;
 import com.grim3212.assorted.lib.migration.MovedIds;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Map;
 
@@ -20,7 +20,7 @@ public class IcePixieCommonMod {
     public static void init() {
         Constants.LOG.info(Constants.MOD_NAME + " starting up...");
         Families.join(Constants.MOD_ID, Constants.FAMILY_ID)
-                .icon(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "ice_pixie_spawn_egg"), 20)
+                .icon(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "ice_pixie_spawn_egg"), 20)
                 .manualOrder(70);
 
         IcePixieEntities.init();
@@ -31,7 +31,7 @@ public class IcePixieCommonMod {
         // Recipes and advancements unlocked when this was all one mod carry over to their new ids.
         MovedIds.inherit(Constants.FAMILY_ID, Constants.MOD_ID);
         // The advancement root every part shares: its icon is the first installed of the family's, its criteria renamed.
-        Identifier root = Identifier.fromNamespaceAndPath(Constants.FAMILY_ID, "root");
+        ResourceLocation root = ResourceLocation.fromNamespaceAndPath(Constants.FAMILY_ID, "root");
         AdvancementIcons.register(root, () -> Families.icons(Constants.FAMILY_ID));
         MovedIds.renameCriteria(root, Map.of("killed_ice_pixie", "killed"));
     }

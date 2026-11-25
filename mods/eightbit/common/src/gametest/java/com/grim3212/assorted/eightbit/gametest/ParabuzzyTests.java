@@ -29,7 +29,7 @@ final class ParabuzzyTests {
         double start = parabuzzy.distanceTo(player);
 
         // Not on its first tick: HurtByTargetGoal ignores a hurt timestamp of 0.
-        helper.runAfterDelay(5, () -> parabuzzy.hurtServer(helper.getLevel(), player.damageSources().playerAttack(player), 1.0F));
+        helper.runAfterDelay(5, () -> parabuzzy.hurt(player.damageSources().playerAttack(player), 1.0F));
         helper.succeedWhen(() -> {
             helper.assertTrue(parabuzzy.getTarget() == player, "the parabuzzy did not turn on the player who hit it: its target is " + parabuzzy.getTarget());
             helper.assertTrue(parabuzzy.isAngry(), "a wild parabuzzy going after a player is not angry");
@@ -46,7 +46,7 @@ final class ParabuzzyTests {
 
         helper.runAfterDelay(10, () -> {
             helper.assertTrue(parabuzzy.isInSittingPose(), "a parabuzzy ordered to sit never sat");
-            parabuzzy.interact(player, InteractionHand.MAIN_HAND, parabuzzy.position());
+            parabuzzy.interact(player, InteractionHand.MAIN_HAND);
             helper.assertTrue(parabuzzy.perch().isOn(player), "using a sitting tame parabuzzy did not put it on the player's head");
             helper.assertFalse(parabuzzy.isOrderedToSit(), "a parabuzzy on a head is still ordered to sit");
         });
@@ -65,10 +65,10 @@ final class ParabuzzyTests {
         helper.assertTrue(parabuzzy.isOwnedBy(player), "a reloaded parabuzzy no longer knows its owner");
 
         player.setShiftKeyDown(true);
-        parabuzzy.interact(player, InteractionHand.MAIN_HAND, parabuzzy.position());
+        parabuzzy.interact(player, InteractionHand.MAIN_HAND);
         helper.assertTrue(parabuzzy.isOrderedToSit(), "a sneaking owner's empty hand did not order it to sit");
         helper.assertFalse(parabuzzy.perch().isPerched(), "a sneaking owner's empty hand put it on their head");
-        parabuzzy.interact(player, InteractionHand.MAIN_HAND, parabuzzy.position());
+        parabuzzy.interact(player, InteractionHand.MAIN_HAND);
         helper.assertFalse(parabuzzy.isOrderedToSit(), "a second use did not stand it back up");
         helper.succeed();
     }

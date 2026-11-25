@@ -1,7 +1,8 @@
 package com.grim3212.assorted.seacreatures.client.render.model;
 
 import com.grim3212.assorted.seacreatures.client.render.entity.NarwhalRenderState;
-import net.minecraft.client.model.EntityModel;
+import com.grim3212.assorted.seacreatures.common.entity.Narwhal;
+import net.minecraft.client.model.HierarchicalModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
@@ -15,8 +16,10 @@ import net.minecraft.util.Mth;
  * runs down it from head to flukes, up and down as a whale's does, harder the faster it goes. It
  * pitches with its dives, leans into its turns, and stands on its tail to raise its tusk.
  */
-public class NarwhalModel extends EntityModel<NarwhalRenderState> {
+public class NarwhalModel extends HierarchicalModel<Narwhal> {
 
+    private final NarwhalRenderState state = new NarwhalRenderState();
+    private final ModelPart root;
     private final ModelPart body;
     private final ModelPart head;
     private final ModelPart tail;
@@ -26,7 +29,7 @@ public class NarwhalModel extends EntityModel<NarwhalRenderState> {
     private final ModelPart rightFlipper;
 
     public NarwhalModel(ModelPart root) {
-        super(root);
+        this.root = root;
         this.body = root.getChild("body");
         this.head = this.body.getChild("head");
         this.tail = this.body.getChild("tail");
@@ -54,8 +57,20 @@ public class NarwhalModel extends EntityModel<NarwhalRenderState> {
     }
 
     @Override
-    public void setupAnim(NarwhalRenderState state) {
-        super.setupAnim(state);
+    public ModelPart root() {
+        return this.root;
+    }
+
+    @Override
+    public void prepareMobModel(Narwhal entity, float limbSwing, float limbSwingAmount, float partialTick) {
+        this.state.extract(entity, partialTick);
+    }
+
+    @Override
+    public void setupAnim(Narwhal entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+        NarwhalRenderState state = this.state;
+        state.setUp(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+        this.root.getAllParts().forEach(ModelPart::resetPose);
 
         float speed = Math.min(state.walkAnimationSpeed, 1.0F);
         float stroke = state.ageInTicks * 0.22F;

@@ -10,15 +10,13 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.random.Weighted;
-import net.minecraft.world.attribute.EnvironmentAttributes;
-import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.SpawnPlacementTypes;
 import net.minecraft.world.entity.SpawnPlacements;
 import net.minecraft.world.entity.monster.Monster;
@@ -57,7 +55,7 @@ final class SpawnTests {
     /** A living type with no attributes cannot even be constructed. */
     private static void creaturesSpawnWithTheirAttributes(GameTestHelper helper) {
         for (EntityType<? extends Mob> type : List.of(TreasureMobEntities.TREASURE_MOB.get())) {
-            Mob mob = helper.spawn(type, CENTRE, EntitySpawnReason.SPAWN_ITEM_USE);
+            Mob mob = helper.spawn(type, CENTRE);
             helper.assertTrue(mob.isAlive() && mob.getHealth() > 0, type.getDescriptionId() + " did not spawn alive");
             mob.discard();
         }
@@ -69,7 +67,7 @@ final class SpawnTests {
         for (EntityType<?> type : HABITS.values()) {
             for (MobCategory category : MobCategory.values()) {
                 helper.getLevel().registryAccess().lookupOrThrow(Registries.BIOME).listElementIds().forEach(biome ->
-                        helper.assertTrue(spawnEntry(helper, biome, category, type).isEmpty(), type.getDescriptionId() + " is on the biome spawn list of " + biome.identifier() + " as well as a habit"));
+                        helper.assertTrue(spawnEntry(helper, biome, category, type).isEmpty(), type.getDescriptionId() + " is on the biome spawn list of " + biome.location() + " as well as a habit"));
             }
         }
         helper.succeed();
@@ -78,14 +76,14 @@ final class SpawnTests {
     /** Each habit loaded from data/assortedtreasuremob/spawn_habit, on with its mod installed, capped, and seeding new terrain where it can. */
     private static void creaturesHaveSpawnHabits(GameTestHelper helper) {
         HABITS.forEach((name, type) -> {
-            SpawnHabit habit = SpawnHabits.get(Identifier.fromNamespaceAndPath(Constants.MOD_ID, name));
+            SpawnHabit habit = SpawnHabits.get(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, name));
             helper.assertTrue(habit != null, "no spawn habit " + name + " loaded; loaded: " + SpawnHabits.all().keySet());
             helper.assertValueEqual(habit.entity(), type, "the creature of habit " + name);
             helper.assertTrue(habit.isEnabled(), "habit " + name + " is off");
             helper.assertTrue(habit.cap().isPresent(), "habit " + name + " has no cap");
             helper.assertTrue(habit.seed() > 0.0D || !habit.site().seedsAtGeneration(), "habit " + name + " never seeds new terrain");
         });
-        helper.assertValueEqual(SpawnHabits.get(Identifier.fromNamespaceAndPath(Constants.MOD_ID, "treasure_mob")).site().type(), SpawnSites.STRUCTURE, "treasure mob site");
+        helper.assertValueEqual(SpawnHabits.get(ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "treasure_mob")).site().type(), SpawnSites.STRUCTURE, "treasure mob site");
         helper.assertValueEqual(TreasureMobEntities.TREASURE_MOB.get().getCategory(), MobCategory.MISC, "treasure mob category");
         helper.succeed();
     }
@@ -123,11 +121,11 @@ final class SpawnTests {
 
         helper.succeedWhen(() -> {
             helper.assertValueEqual(level.getMaxLocalRawBrightness(mob.blockPosition()), 0, "light in the sealed cell");
-            helper.assertTrue(mob.checkSpawnRules(level, EntitySpawnReason.NATURAL), "a treasure mob cannot spawn in the dark");
+            helper.assertTrue(mob.checkSpawnRules(level, MobSpawnType.NATURAL), "a treasure mob cannot spawn in the dark");
             // Its placement rule is the monsters' light check now, so a lit cell turns it down where a dark one does not.
             helper.assertTrue(Monster.isDarkEnoughToSpawn(level, dark, level.getRandom()), "the sealed cell is not dark enough for a monster");
             helper.assertTrue(level.getBrightness(LightLayer.BLOCK, lit) > 0, "the glowstone cell has no block light");
-            helper.assertFalse(SpawnPlacements.checkSpawnRules(TreasureMobEntities.TREASURE_MOB.get(), level, EntitySpawnReason.NATURAL, lit, level.getRandom()),
+            helper.assertFalse(SpawnPlacements.checkSpawnRules(TreasureMobEntities.TREASURE_MOB.get(), level, MobSpawnType.NATURAL, lit, level.getRandom()),
                     "a treasure mob spawns in a lit room");
             mob.discard();
         });
@@ -145,8 +143,8 @@ final class SpawnTests {
         }
     }
 
-    private static Optional<Weighted<MobSpawnSettings.SpawnerData>> spawnEntry(GameTestHelper helper, ResourceKey<Biome> biome, MobCategory category, EntityType<?> type) {
+    private static Optional<MobSpawnSettings.SpawnerData> spawnEntry(GameTestHelper helper, ResourceKey<Biome> biome, MobCategory category, EntityType<?> type) {
         Holder<Biome> holder = helper.getLevel().registryAccess().lookupOrThrow(Registries.BIOME).getOrThrow(biome);
-        return holder.value().getAttributes().applyModifier(EnvironmentAttributes.NATURAL_MOB_SPAWNS, MobSpawnSettings.EMPTY).getMobsToSpawn(category).unwrap().stream().filter(weighted -> weighted.value().type() == type).findFirst();
+        return holder.value().getMobSettings().getMobs(category).unwrap().stream().filter(data -> data.type == type).findFirst();
     }
 }

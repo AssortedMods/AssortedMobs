@@ -46,12 +46,12 @@ final class TamingTests {
         ServerPlayer player = standingPlayer(helper, CENTRE);
         Parabuzzy parabuzzy = helper.spawnWithNoFreeWill(EightBitEntities.PARABUZZY.get(), CENTRE.east());
         parabuzzy.tame(player);
-        parabuzzy.interact(player, InteractionHand.MAIN_HAND, parabuzzy.position());
+        parabuzzy.interact(player, InteractionHand.MAIN_HAND);
         helper.assertTrue(parabuzzy.perch().isOn(player), "the tame parabuzzy did not climb onto its owner");
 
-        player.fallDistance = 20.0D;
+        player.fallDistance = 20.0F;
         parabuzzy.tick();
-        helper.assertValueEqual(player.fallDistance, 0.0D, "the fall its owner had built up with a parabuzzy on their head");
+        helper.assertValueEqual(player.fallDistance, 0.0F, "the fall its owner had built up with a parabuzzy on their head");
         helper.succeed();
     }
 }

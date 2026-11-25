@@ -27,5 +27,6 @@ public final class TreasureMobGameTests {
         SpawnerTests.register(out);
         FamilyTests.register(out);
         CommonTests.register(out, Constants.MOD_ID);
+        CommonTests.registerSpawnEggs(out, Constants.MOD_ID);
     }
 }

@@ -4,6 +4,8 @@ import com.grim3212.assorted.lib.util.BlockPosUtil;
 import com.grim3212.assorted.seacreatures.common.entity.ai.AmphibiousMoveControl;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.util.valueproviders.UniformInt;
@@ -17,8 +19,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.world.level.pathfinder.PathType;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
@@ -127,7 +127,7 @@ public abstract class AmphibiousAnimal extends Animal {
         if (inWater) {
             this.shore = this.blockPosition();
             if (!this.isLeashed()) {
-                this.clearHome();
+                this.clearRestriction();
             }
             return;
         }
@@ -143,7 +143,7 @@ public abstract class AmphibiousAnimal extends Animal {
             return;
         }
 
-        this.setHomeTo(this.shore, SHORE_RANGE);
+        this.restrictTo(this.shore, SHORE_RANGE);
         if (!this.shore.closerToCenterThan(this.position(), SHORE_RANGE + STRAYED_BEYOND)) {
             this.habitatTicks = 0;
         }
@@ -155,15 +155,17 @@ public abstract class AmphibiousAnimal extends Animal {
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
-        super.addAdditionalSaveData(output);
-        output.storeNullable("shore", BlockPos.CODEC, this.shore);
+    public void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        if (this.shore != null) {
+            tag.put("shore", NbtUtils.writeBlockPos(this.shore));
+        }
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput input) {
-        super.readAdditionalSaveData(input);
-        this.shore = input.read("shore", BlockPos.CODEC).orElse(null);
+    public void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        this.shore = NbtUtils.readBlockPos(tag, "shore").orElse(null);
     }
 
     @Override
@@ -179,7 +181,16 @@ public abstract class AmphibiousAnimal extends Animal {
 
     /** Afloat, and not just wading: in a puddle or a trickle it is still on its feet. */
     protected boolean isSwimmingPose() {
-        return this.isInWater() && this.getFluidHeight(FluidTags.WATER) > WADING_DEPTH;
+        return this.isInWater() && this.getWaterDepth() > WADING_DEPTH;
+    }
+
+    /**
+     * How deep in water it is, from its feet. NeoForge deprecates getFluidHeight for its fluid types, which only NeoForge
+     * code can name; vanilla, which Fabric runs, has nothing else.
+     */
+    @SuppressWarnings("deprecation")
+    public double getWaterDepth() {
+        return this.getFluidHeight(FluidTags.WATER);
     }
 
     /** 0 on land to 1 in the water. Client only. */
@@ -192,19 +203,26 @@ public abstract class AmphibiousAnimal extends Animal {
         return Mth.lerp(partialTick, this.swimPitchO, this.swimPitch);
     }
 
-    /** No gravity and no sinking: it goes where it swims, as an axolotl does. */
+    /** No gravity and no sinking in the water: it goes where it swims, as an axolotl does. */
     @Override
-    protected void travelInWater(Vec3 input, double baseGravity, boolean isFalling, double oldY) {
+    public void travel(Vec3 input) {
+        if (!this.isControlledByLocalInstance() || !this.isInWater()) {
+            super.travel(input);
+            return;
+        }
+
+        double oldY = this.getY();
         this.moveRelative(this.getSpeed(), input);
         this.move(MoverType.SELF, this.getDeltaMovement());
         this.setDeltaMovement(this.getDeltaMovement().scale(0.9D));
 
-        // Vanilla's jumpOutOfFluid, which is private and went with the method this replaces: up against a bank with room
+        // Vanilla's own bank hop from LivingEntity#travel, which this replaces in the water: up against a bank with room
         // over it, a kick upwards. Without it nothing afloat gets over the lip of a shore, since only what stands can step up.
         Vec3 movement = this.getDeltaMovement();
         if (this.horizontalCollision && this.isFree(movement.x, movement.y + BANK_HOP_CLEARANCE - this.getY() + oldY, movement.z)) {
             this.setDeltaMovement(movement.x, BANK_HOP, movement.z);
         }
+        this.calculateEntityAnimation(false);
     }
 
     /**
@@ -233,11 +251,8 @@ public abstract class AmphibiousAnimal extends Animal {
         return this.wantsWater() && level.getFluidState(pos).is(FluidTags.WATER) ? 10.0F : 0.0F;
     }
 
-    @Override
-    public boolean canBreatheUnderwater() {
-        return true;
-    }
-
+    /** NeoForge deprecates this for its fluid types, but its own fluid-type version still defers to it, and it is all vanilla has. */
+    @SuppressWarnings("deprecation")
     @Override
     public boolean isPushedByFluid() {
         return false;

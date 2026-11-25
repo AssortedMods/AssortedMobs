@@ -4,27 +4,26 @@ import com.grim3212.assorted.eightbit.Constants;
 import com.grim3212.assorted.eightbit.common.item.EightBitItems;
 import com.grim3212.assorted.lib.test.TestSupport;
 import net.minecraft.SharedConstants;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.gametest.framework.GameTestAssertException;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.resources.Identifier;
-import net.minecraft.resources.ResourceKey;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.PlayerAdvancements;
-import net.minecraft.stats.RecipeBookSettings;
 import net.minecraft.stats.ServerRecipeBook;
-import net.minecraft.world.item.crafting.Recipe;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /** A player who played when this was all Assorted Mobs keeps their recipe book and advancements. */
 final class MigrationTests {
 
-    private static final Identifier ROOT = Identifier.fromNamespaceAndPath(Constants.FAMILY_ID, "root");
+    private static final ResourceLocation ROOT = ResourceLocation.fromNamespaceAndPath(Constants.FAMILY_ID, "root");
 
     private MigrationTests() {
     }
@@ -37,8 +36,12 @@ final class MigrationTests {
 
     private static void recipeBookCarriesOver(GameTestHelper helper) {
         ServerRecipeBook book = TestSupport.survivalPlayer(helper).getRecipeBook();
-        book.loadUntrusted(new ServerRecipeBook.Packed(new RecipeBookSettings(), List.of(recipe(Constants.FAMILY_ID, "bobomb")), List.of()),
-                key -> helper.getLevel().recipeAccess().byKey(key).isPresent());
+        // Laid out the way a player's saved recipe book is.
+        ListTag known = new ListTag();
+        known.add(StringTag.valueOf(recipe(Constants.FAMILY_ID, "bobomb").toString()));
+        CompoundTag saved = new CompoundTag();
+        saved.put("recipes", known);
+        book.fromNbt(saved, helper.getLevel().getRecipeManager());
         helper.assertTrue(book.contains(recipe(Constants.MOD_ID, "bobomb")), "the Bob-omb recipe a player had unlocked as assortedmobs:bobomb was not carried over");
         helper.succeed();
     }
@@ -52,26 +55,26 @@ final class MigrationTests {
             saved = Files.createTempFile("assortedeightbit-advancements", ".json");
             Files.writeString(saved, "{\"assortedmobs:shell_game\": {\"criteria\": {\"tamed_parabuzzy\": " + date + "}, \"done\": true}, "
                     + "\"assortedmobs:root\": {\"criteria\": {\"has_parabuzzy_shell\": " + date + "}, \"done\": true}, "
-                    + "\"DataVersion\": " + SharedConstants.getCurrentVersion().dataVersion().version() + "}");
+                    + "\"DataVersion\": " + SharedConstants.getCurrentVersion().getDataVersion().getVersion() + "}");
         } catch (IOException e) {
-            throw helper.assertionException("could not write a progress file: " + e);
+            throw new GameTestAssertException("could not write a progress file: " + e);
         }
 
         PlayerAdvancements advancements = new PlayerAdvancements(server.getFixerUpper(), server.getPlayerList(), server.getAdvancements(), saved,
                 TestSupport.survivalPlayer(helper));
-        Identifier shellGame = Identifier.fromNamespaceAndPath(Constants.MOD_ID, "shell_game");
+        ResourceLocation shellGame = ResourceLocation.fromNamespaceAndPath(Constants.MOD_ID, "shell_game");
         helper.assertTrue(advancements.getOrStartProgress(server.getAdvancements().get(shellGame)).isDone(), "Shell Game did not carry over to " + shellGame);
         helper.assertTrue(advancements.getOrStartProgress(server.getAdvancements().get(ROOT)).isDone(), "the root, done by a criterion since renamed, is not done");
         helper.succeed();
     }
 
     private static void advancementRootShowsTheBobomb(GameTestHelper helper) {
-        helper.assertTrue(helper.getLevel().getServer().getAdvancements().get(ROOT).value().display().orElseThrow().icon().item().value() == EightBitItems.BOBOMB.get(),
+        helper.assertTrue(helper.getLevel().getServer().getAdvancements().get(ROOT).value().display().orElseThrow().getIcon().getItem() == EightBitItems.BOBOMB.get(),
                 "the Assorted Mobs advancement root is not drawn with the Bob-omb, the family's first icon");
         helper.succeed();
     }
 
-    private static ResourceKey<Recipe<?>> recipe(String namespace, String path) {
-        return ResourceKey.create(Registries.RECIPE, Identifier.fromNamespaceAndPath(namespace, path));
+    private static ResourceLocation recipe(String namespace, String path) {
+        return ResourceLocation.fromNamespaceAndPath(namespace, path);
     }
 }

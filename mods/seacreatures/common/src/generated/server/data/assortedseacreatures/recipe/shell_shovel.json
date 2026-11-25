@@ -14,8 +14,12 @@
     }
   ],
   "key": {
-    "S": "assortedseacreatures:sea_shell",
-    "T": "#c:rods/wooden"
+    "S": {
+      "item": "assortedseacreatures:sea_shell"
+    },
+    "T": {
+      "tag": "c:rods/wooden"
+    }
   },
   "pattern": [
     "S",
@@ -23,6 +27,7 @@
     "T"
   ],
   "result": {
+    "count": 1,
     "id": "assortedseacreatures:shell_shovel"
   }
 }

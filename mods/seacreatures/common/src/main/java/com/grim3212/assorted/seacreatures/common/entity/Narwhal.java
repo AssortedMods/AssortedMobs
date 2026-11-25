@@ -17,10 +17,10 @@ import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.PanicGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.RandomSwimmingGoal;
-import net.minecraft.world.entity.ai.goal.TryFindLiquidGoal;
+import net.minecraft.world.entity.ai.goal.TryFindWaterGoal;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.navigation.WaterBoundPathNavigation;
-import net.minecraft.world.entity.animal.fish.WaterAnimal;
+import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -52,7 +52,7 @@ public class Narwhal extends WaterAnimal {
     public Narwhal(EntityType<? extends Narwhal> type, Level level) {
         super(type, level);
         // No buoyancy from the control: nothing in travelInWater sinks it for that to hold up.
-        this.moveControl = new SmoothSwimmingMoveControl<>(this, 85, 10, 0.02F, 0.1F, false);
+        this.moveControl = new SmoothSwimmingMoveControl(this, 85, 10, 0.02F, 0.1F, false);
         this.lookControl = new SmoothSwimmingLookControl(this, 10);
     }
 
@@ -68,7 +68,7 @@ public class Narwhal extends WaterAnimal {
 
     @Override
     protected void registerGoals() {
-        this.goalSelector.addGoal(0, new TryFindLiquidGoal(this, FluidTags.WATER));
+        this.goalSelector.addGoal(0, new TryFindWaterGoal(this));
         this.goalSelector.addGoal(1, new PanicGoal(this, 1.4D, swimmer -> DamageTypeTags.PANIC_CAUSES));
         this.raiseTuskGoal = new RaiseTuskGoal(this);
         this.goalSelector.addGoal(3, this.raiseTuskGoal);
@@ -124,10 +124,17 @@ public class Narwhal extends WaterAnimal {
         return Mth.lerp(partialTick, this.tuskAmountO, this.tuskAmount);
     }
 
+    /** No gravity and no sinking in the water, as a dolphin swims. */
     @Override
-    protected void travelInWater(Vec3 input, double baseGravity, boolean isFalling, double oldY) {
+    public void travel(Vec3 input) {
+        if (!this.isControlledByLocalInstance() || !this.isInWater()) {
+            super.travel(input);
+            return;
+        }
+
         this.moveRelative(this.getSpeed(), input);
         this.move(MoverType.SELF, this.getDeltaMovement());
         this.setDeltaMovement(this.getDeltaMovement().scale(0.9D));
+        this.calculateEntityAnimation(false);
     }
 }
